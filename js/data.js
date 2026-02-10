@@ -1,6 +1,46 @@
 window.portfolioData = {
   "works": [
     {
+      "id": "work003",
+      "title": "유명한아이 - Ride or Die",
+      "majorCategory": "production",
+      "minorCategory": "musicvideo",
+      "date": "2025",
+      "featured": false,
+      "youtubeUrl": "https://youtu.be/zNexk1f8McE?si=UqSf18rOJqo7BUv5",
+      "description": "",
+      "thumbnail": "images/works/work003/thumb.jpg",
+      "stills": [],
+      "credits": {
+        "client": "",
+        "director": "신형준",
+        "cinematographer": "정다빈",
+        "lighting": "김형민",
+        "editor": "신형준"
+      },
+      "_originalIndex": 0
+    },
+    {
+      "id": "work002",
+      "title": "유명한아이 - Master card",
+      "majorCategory": "production",
+      "minorCategory": "musicvideo",
+      "date": "2026",
+      "featured": false,
+      "youtubeUrl": "https://youtu.be/FWiJjxwFq2w?si=RwVmeo-tJGSzePAu",
+      "description": "",
+      "thumbnail": "images/works/work002/thumb.jpg",
+      "stills": [],
+      "credits": {
+        "client": "",
+        "director": "신형준",
+        "cinematographer": "정다빈",
+        "lighting": "정준혁",
+        "editor": "신형준"
+      },
+      "_originalIndex": 1
+    },
+    {
       "id": "work001",
       "title": "다농바이오 브랜드필름",
       "majorCategory": "production",
@@ -32,7 +72,8 @@ window.portfolioData = {
         "cinematographer": "정다빈",
         "lighting": "임진우",
         "editor": "신형준"
-      }
+      },
+      "_originalIndex": 2
     }
   ]
 };

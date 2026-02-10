@@ -434,6 +434,7 @@ select {
 .modal-content {
     background: var(--bg-dark);
     padding: 20px;
+    padding-top: 50px;
     border-radius: 8px;
     position: relative;
     width: 90%;
@@ -444,13 +445,33 @@ select {
 }
 
 .close-modal {
-    position: absolute;
-    top: 10px;
-    right: 20px;
-    font-size: 30px;
+    position: fixed;
+    top: 20px;
+    right: 30px;
+    font-size: 40px;
     cursor: pointer;
-    color: var(--text-main);
-    z-index: 10;
+    color: #fff;
+    z-index: 9999;
+    transition: all 0.2s;
+    pointer-events: auto;
+    background: rgba(0, 0, 0, 0.6);
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    line-height: 1;
+    padding: 0;
+    font-family: sans-serif;
+}
+
+.close-modal:hover {
+    color: #fff;
+    background: var(--danger);
+    border-color: var(--danger);
+    transform: scale(1.1);
 }
 
 #preview-frame-container {
@@ -458,6 +479,8 @@ select {
     height: 100%;
     background: #000;
     overflow-y: auto;
+    position: relative;
+    z-index: 1;
 }
 
 /* Toast */

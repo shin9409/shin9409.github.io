@@ -179,8 +179,28 @@ function setupEventListeners() {
     document.getElementById('thumb-file').addEventListener('change', (e) => handleThumbSelect(e.target.files[0]));
     document.getElementById('stills-file').addEventListener('change', (e) => handleStillsSelect(Array.from(e.target.files)));
 
-    // Modal
-    document.querySelector('.close-modal').addEventListener('click', () => elements.modal.classList.add('hidden'));
+    // 모달 닫기: X 버튼
+    document.querySelector('.close-modal').addEventListener('click', (e) => {
+        e.stopPropagation();
+        elements.modal.classList.add('hidden');
+        elements.previewContainer.innerHTML = '';
+    });
+
+    // 모달 닫기: 배경 클릭
+    elements.modal.addEventListener('click', (e) => {
+        if (e.target === elements.modal) {
+            elements.modal.classList.add('hidden');
+            elements.previewContainer.innerHTML = '';
+        }
+    });
+
+    // 모달 닫기: ESC 키
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && !elements.modal.classList.contains('hidden')) {
+            elements.modal.classList.add('hidden');
+            elements.previewContainer.innerHTML = '';
+        }
+    });
 
     // Auto Save Restore
     document.getElementById('restore-btn').addEventListener('click', restoreAutoSave);
@@ -276,6 +296,7 @@ function openEditor(index) {
             work.stills.forEach(path => {
                 const div = document.createElement('div');
                 div.className = 'still-preview-item';
+                div.dataset.path = path; // IMPORTANT for sync
                 div.innerHTML = `<img src="${path}" onclick="removeStill(this)">`;
                 stillsContainer.appendChild(div);
             });
@@ -313,7 +334,11 @@ function updateThumbPath() {
     const id = document.getElementById('work-id').value || '{id}';
     const input = document.getElementById('thumb-file');
     if (input.files[0]) {
-        document.getElementById('thumb-path-display').textContent = `images/works/${id}/${input.files[0].name}`;
+        const file = input.files[0];
+        const ext = file.name.split('.').pop().toLowerCase();
+        // Rename to thumb.ext standard
+        const fileName = `thumb.${ext}`;
+        document.getElementById('thumb-path-display').textContent = `images/works/${id}/${fileName}`;
     }
 }
 
@@ -324,11 +349,21 @@ function updateStillsPath() {
     // But for the PATHS, we generate based on the CURRENT visual list + new files
     // This is complex. Let's simplify:
     if (input.files.length > 0) {
-        const paths = Array.from(input.files).map(f => `images/works/${id}/${f.name}`);
-        // Append to existing display? Or replace? Logic: Append new files.
-        const existing = document.getElementById('stills-path-display').textContent.split('\n').filter(s => s);
-        const combined = [...existing, ...paths];
-        // Unique
+        // Read existing count to continue numbering
+        const existing = document.getElementById('stills-path-display').textContent.split('\n').filter(s => s.trim());
+        let startIdx = existing.length + 1;
+
+        // If we want to rename ALL based on order, we could do that, but appending is safer for now.
+        // However, user feedback implies they want the standard to be 'still1', 'still2'.
+        // Let's try to map the NEW files to the sequence.
+
+        const newPaths = Array.from(input.files).map((f, i) => {
+            const ext = f.name.split('.').pop().toLowerCase();
+            const fileName = `still${startIdx + i}.${ext}`;
+            return `images/works/${id}/${fileName}`;
+        });
+
+        const combined = [...existing, ...newPaths];
         const unique = [...new Set(combined)];
         document.getElementById('stills-path-display').textContent = unique.join('\n');
     }
@@ -344,34 +379,6 @@ function handleThumbSelect(file) {
     updateThumbPath();
 }
 
-function handleStillsSelect(files) {
-    const container = document.getElementById('stills-preview');
-    // Don't clear container, append
-    files.forEach(file => {
-        const reader = new FileReader();
-        reader.onload = e => {
-            const div = document.createElement('div');
-            div.className = 'still-preview-item';
-            div.innerHTML = `<img src="${e.target.result}" onclick="removeStill(this)">`; // Add remove handler
-            container.appendChild(div);
-        };
-        reader.readAsDataURL(file);
-    });
-    updateStillsPath();
-}
-
-// Global scope for onclick
-window.removeStill = function (imgElement) {
-    if (confirm('이 이미지를 목록에서 제외하시겠습니까?')) {
-        const div = imgElement.parentElement;
-        div.remove();
-        // Also update text paths? This is tricky without syncing file names. 
-        // For simplicty in this pure JS version:
-        // We will rebuild styles paths on SAVE based on the ID and standard naming or just keep existing.
-        // Let's rely on the user to put files correctly.
-    }
-};
-
 // --- Form Handling ---
 
 function handleFormSubmit(e) {
@@ -379,11 +386,8 @@ function handleFormSubmit(e) {
     const formData = new FormData(e.target);
     const id = formData.get('id');
 
-    // Reconstruct Stills paths from the Preview list images source? 
-    // No, that's base64 or paths. 
-    // Simplified strategy: Read from the text display area which we update.
+    // 썸네일 경로: 표시 영역에서 읽기
     const thumbnailPath = document.getElementById('thumb-path-display').textContent;
-    const stillsPaths = document.getElementById('stills-path-display').textContent.split('\n').filter(s => s.trim());
 
     const newWork = {
         id: id,
@@ -395,7 +399,7 @@ function handleFormSubmit(e) {
         youtubeUrl: formData.get('youtubeUrl'),
         description: formData.get('description'),
         thumbnail: thumbnailPath || `images/works/${id}/thumb.jpg`,
-        stills: stillsPaths,
+        stills: getStillsFromDOM(),
         credits: {
             client: formData.get('credits.client'),
             director: formData.get('credits.director'),
@@ -415,9 +419,63 @@ function handleFormSubmit(e) {
     renderTable();
     closeEditor();
 
-    // Clear autosave
+    // 자동저장 클리어
     localStorage.removeItem('admin_autosave');
 }
+
+// Helper to get stills from DOM order
+function getStillsFromDOM() {
+    const items = document.querySelectorAll('.still-preview-item');
+    const paths = [];
+    items.forEach(item => {
+        if (item.dataset.path) {
+            paths.push(item.dataset.path);
+        }
+    });
+    return paths;
+}
+
+// Updated Stills Selector
+function handleStillsSelect(files) {
+    if (!files.length) return;
+
+    const id = document.getElementById('work-id').value || '{id}';
+    const container = document.getElementById('stills-preview');
+    const existingCount = container.children.length; // Count current visual items
+
+    files.forEach((file, index) => {
+        const ext = file.name.split('.').pop().toLowerCase();
+        // Naming convention: still{N}.ext
+        // We start from existingCount + 1 + index
+        const fileName = `still${existingCount + 1 + index}.${ext}`;
+        const finalPath = `images/works/${id}/${fileName}`;
+
+        const reader = new FileReader();
+        reader.onload = e => {
+            const div = document.createElement('div');
+            div.className = 'still-preview-item';
+            div.dataset.path = finalPath; // Store path in DOM
+            div.innerHTML = `<img src="${e.target.result}" onclick="removeStill(this)">`;
+            container.appendChild(div);
+            // Update display text immediately
+            updateStillsTextDisplay();
+        };
+        reader.readAsDataURL(file);
+    });
+}
+
+function updateStillsTextDisplay() {
+    const paths = getStillsFromDOM();
+    document.getElementById('stills-path-display').textContent = paths.join('\n');
+}
+
+window.removeStill = function (imgElement) {
+    if (confirm('이 이미지를 목록에서 제외하시겠습니까?')) {
+        const div = imgElement.parentElement;
+        div.remove();
+        updateStillsTextDisplay();
+    }
+};
 
 function handleDelete() {
     if (confirm('정말 삭제하시겠습니까?')) {
@@ -503,58 +561,73 @@ function restoreAutoSave() {
 // --- Preview ---
 
 function showPreview() {
-    const formData = new FormData(elements.form);
-    const youtubeUrl = formData.get('youtubeUrl');
-    const thumbUrl = document.getElementById('thumb-preview').querySelector('img')?.src || '';
+    try {
+        const formData = new FormData(elements.form);
+        const youtubeUrl = formData.get('youtubeUrl');
 
-    // Video Fallback Logic
-    let heroContent = '';
-    if (youtubeUrl) {
-        heroContent = `
-            <div style="width: 100%; aspect-ratio: 16/9; background: #222; display:flex; align-items:center; justify-content:center;">
-                <p>YouTube Video Preview</p>
-            </div>`;
-    } else {
-        heroContent = `
-            <div style="width: 100%; aspect-ratio: 16/9; background: #222; overflow:hidden;">
-                <img src="${thumbUrl}" style="width:100%; height:100%; object-fit:cover;">
-            </div>`;
+        let thumbUrl = '';
+        const thumbImg = document.getElementById('thumb-preview').querySelector('img');
+        if (thumbImg) {
+            thumbUrl = thumbImg.src;
+        }
+
+        // Video Fallback Logic
+        let heroContent = '';
+        if (youtubeUrl) {
+            // Robust ID extraction for preview
+            const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+            const match = youtubeUrl.match(regExp);
+            let videoId = (match && match[2]) ? match[2] : youtubeUrl;
+
+            // Just for preview, we can use a simple image or valid iframe if we wanted
+            // But user just wants to know it detected video.
+            // Let's actually show the thumbnail from YouTube as "Video Preview" background
+            const previewThumb = `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
+
+            heroContent = `
+                <div style="width: 100%; aspect-ratio: 16/9; background: #222; position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center;">
+                   <img src="${previewThumb}" style="width:100%; height:100%; object-fit:cover; opacity: 0.7;">
+                   <div style="position: absolute; color: #fff; font-size: 20px; font-weight: bold; text-shadow: 0 2px 4px rgba(0,0,0,0.8);">▶ YouTube Video (${videoId})</div>
+                </div>`;
+        } else {
+            heroContent = `
+                <div style="width: 100%; aspect-ratio: 16/9; background: #222; overflow:hidden;">
+                    <img src="${thumbUrl}" style="width:100%; height:100%; object-fit:cover;" alt="Preview Thumbnail">
+                </div>`;
+        }
+
+        let dateStr = formData.get('date');
+
+        const html = `
+            <div style="color: #fff; padding: 40px;">
+                <h1 style="font-family: 'Playfair Display'; font-size:3rem; margin-bottom: 20px;">${formData.get('title') || 'Untitled Project'}</h1>
+                <div style="font-size: 1.2rem; color: var(--accent); margin-bottom: 40px;">
+                    ${(formData.get('majorCategory') || '').toUpperCase()} / ${(formData.get('minorCategory') || '').toUpperCase()}
+                    &nbsp;|&nbsp;
+                    ${dateStr || ''}
+                </div>
+                
+                <div style="margin-bottom: 50px;">
+                    ${heroContent}
+                </div>
+
+                <div style="max-width: 800px; margin-bottom: 50px;">
+                    <p style="font-size: 1.1rem; line-height: 1.8; white-space: pre-wrap;">${formData.get('description') || ''}</p>
+                </div>
+
+                <div style="border-top: 1px solid #333; padding-top: 30px;">
+                    <h4>Director: ${formData.get('credits.director') || '-'}</h4>
+                    <h4>Client: ${formData.get('credits.client') || '-'}</h4>
+                </div>
+            </div>
+        `;
+
+        elements.previewContainer.innerHTML = html;
+        elements.modal.classList.remove('hidden');
+    } catch (e) {
+        console.error('Preview Error:', e);
+        alert('프리뷰를 여는 중 오류가 발생했습니다: ' + e.message);
     }
-
-    // Date Logic
-    let dateStr = formData.get('date');
-    // If user typed YYYY-MM-DD, maybe slice it? 
-    // The user wants "Year Only" if Month empty (which means short string), or "Year Month".
-    // We display exactly what is typed for now, as Admin input is flexible.
-
-    // Construct HTML for preview (Simulating work-detail.html structure)
-    // In a real app we might load the iframe, but here we inject HTML
-    const html = `
-        <div style="color: #fff; padding: 40px;">
-            <h1 style="font-family: 'Playfair Display'; font-size:3rem; margin-bottom: 20px;">${formData.get('title')}</h1>
-            <div style="font-size: 1.2rem; color: var(--accent); margin-bottom: 40px;">
-                ${formData.get('majorCategory').toUpperCase()} / ${formData.get('minorCategory').toUpperCase()}
-                &nbsp;|&nbsp;
-                ${dateStr}
-            </div>
-            
-            <div style="margin-bottom: 50px;">
-                ${heroContent}
-            </div>
-
-            <div style="max-width: 800px; margin-bottom: 50px;">
-                <p style="font-size: 1.1rem; line-height: 1.8;">${formData.get('description')}</p>
-            </div>
-
-            <div style="border-top: 1px solid #333; padding-top: 30px;">
-                <h4>Director: ${formData.get('credits.director')}</h4>
-                <h4>Client: ${formData.get('credits.client')}</h4>
-            </div>
-        </div>
-    `;
-
-    elements.previewContainer.innerHTML = html;
-    elements.modal.classList.remove('hidden');
 }
 
 function closeEditor() {

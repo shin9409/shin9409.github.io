@@ -159,16 +159,27 @@ function renderWorkDetail() {
     // Embed Youtube if exists, otherwise show thumbnail (Hero Image)
     let videoHtml = '';
     if (work.youtubeUrl) {
-        // Ensure parameters for better compatibility
-        let embedUrl = work.youtubeUrl.replace('youtube.com', 'youtube-nocookie.com');
+        // Robust YouTube URL parser
+        let videoId = '';
+        const url = work.youtubeUrl;
 
-        const origin = window.location.origin !== 'null' ? window.location.origin : 'http://localhost:8080';
+        // Handle various formats:
+        // 1. https://www.youtube.com/watch?v=ID
+        // 2. https://youtu.be/ID
+        // 3. https://www.youtube.com/embed/ID
 
-        if (embedUrl.indexOf('?') === -1) {
-            embedUrl += `?rel=0&playsinline=1&modestbranding=1&enablejsapi=1&origin=${origin}`;
+        const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+        const match = url.match(regExp);
+
+        if (match && match[2]) {
+            videoId = match[2];
         } else {
-            embedUrl += `&rel=0&playsinline=1&modestbranding=1&enablejsapi=1&origin=${origin}`;
+            // Fallback if already an embed URL or just ID
+            videoId = url;
         }
+
+        // Minimal valid params for local/web compatibility
+        const embedUrl = `https://www.youtube.com/embed/${videoId}?rel=0&playsinline=1&modestbranding=1`;
 
         videoHtml = `
             <div class="video-container">
@@ -192,9 +203,9 @@ function renderWorkDetail() {
         </div>
     `).join('');
 
-    // Stills HTML
-    const stillsHtml = work.stills.map(src => `
-        <img src="${src}" alt="Still from ${work.title}" onerror="this.src='https://via.placeholder.com/1280x720/1a1a1a/888?text=Image+Not+Found'">
+    // 스틸 HTML - 클릭 시 라이트박스 열기
+    const stillsHtml = work.stills.map((src, idx) => `
+        <img src="${src}" alt="Still from ${work.title}" data-index="${idx}" class="still-clickable" onerror="this.src='https://via.placeholder.com/1280x720/1a1a1a/888?text=Image+Not+Found'">
     `).join('');
 
     container.innerHTML = `
@@ -226,6 +237,132 @@ function renderWorkDetail() {
             </div>
         </section>
     `;
+
+    // 라이트박스 갤러리 초기화
+    setupLightbox(work.stills);
+}
+
+// 라이트박스 갤러리 기능
+function setupLightbox(stills) {
+    if (!stills || stills.length === 0) return;
+
+    const lightbox = document.getElementById('lightbox');
+    const lightboxImg = document.getElementById('lightbox-img');
+    const lightboxCurrent = document.getElementById('lightbox-current');
+    const lightboxTotal = document.getElementById('lightbox-total');
+    let currentIndex = 0;
+
+    // 총 개수 표시
+    lightboxTotal.textContent = stills.length;
+
+    // 이미지 업데이트 함수
+    function showImage(index) {
+        currentIndex = index;
+        lightboxImg.style.opacity = '0';
+        lightboxImg.style.transform = 'scale(0.95)';
+
+        setTimeout(() => {
+            lightboxImg.src = stills[currentIndex];
+            lightboxCurrent.textContent = currentIndex + 1;
+            lightboxImg.style.opacity = '1';
+            lightboxImg.style.transform = 'scale(1)';
+        }, 150);
+    }
+
+    // 라이트박스 열기
+    function openLightbox(index) {
+        currentIndex = index;
+        lightboxImg.src = stills[currentIndex];
+        lightboxCurrent.textContent = currentIndex + 1;
+        lightbox.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+    }
+
+    // 라이트박스 닫기
+    function closeLightbox() {
+        lightbox.classList.add('hidden');
+        document.body.style.overflow = '';
+    }
+
+    // 이전/다음 이동
+    function prevImage() {
+        const newIndex = currentIndex <= 0 ? stills.length - 1 : currentIndex - 1;
+        showImage(newIndex);
+    }
+
+    function nextImage() {
+        const newIndex = currentIndex >= stills.length - 1 ? 0 : currentIndex + 1;
+        showImage(newIndex);
+    }
+
+    // 스틸 이미지 클릭 → 라이트박스 열기
+    document.querySelectorAll('.still-clickable').forEach(img => {
+        img.addEventListener('click', () => {
+            const idx = parseInt(img.dataset.index);
+            openLightbox(idx);
+        });
+    });
+
+    // 닫기 버튼
+    document.querySelector('.lightbox-close').addEventListener('click', closeLightbox);
+
+    // 이전/다음 버튼
+    document.querySelector('.lightbox-prev').addEventListener('click', (e) => {
+        e.stopPropagation();
+        prevImage();
+    });
+    document.querySelector('.lightbox-next').addEventListener('click', (e) => {
+        e.stopPropagation();
+        nextImage();
+    });
+
+    // 배경 클릭 시 닫기
+    lightbox.addEventListener('click', (e) => {
+        if (e.target === lightbox) {
+            closeLightbox();
+        }
+    });
+
+    // 키보드 이벤트: ESC(닫기), ←(이전), →(다음)
+    document.addEventListener('keydown', (e) => {
+        if (lightbox.classList.contains('hidden')) return;
+
+        switch (e.key) {
+            case 'Escape':
+                closeLightbox();
+                break;
+            case 'ArrowLeft':
+                prevImage();
+                break;
+            case 'ArrowRight':
+                nextImage();
+                break;
+        }
+    });
+
+    // 터치 스와이프 (모바일)
+    let touchStartX = 0;
+    let touchEndX = 0;
+
+    lightbox.addEventListener('touchstart', (e) => {
+        touchStartX = e.changedTouches[0].screenX;
+    }, { passive: true });
+
+    lightbox.addEventListener('touchend', (e) => {
+        touchEndX = e.changedTouches[0].screenX;
+        const diff = touchStartX - touchEndX;
+
+        if (Math.abs(diff) > 50) {
+            if (diff > 0) {
+                nextImage(); // 왼쪽 스와이프 → 다음
+            } else {
+                prevImage(); // 오른쪽 스와이프 → 이전
+            }
+        }
+    }, { passive: true });
+
+    // 이미지 전환 시 부드러운 애니메이션
+    lightboxImg.style.transition = 'opacity 0.15s ease, transform 0.15s ease';
 }
 
 // Mobile Menu

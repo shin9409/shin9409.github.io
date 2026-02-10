@@ -8,22 +8,55 @@ document.addEventListener('DOMContentLoaded', () => {
 // Global Data Storage
 let allWorks = [];
 
-// 1. Fetch Data (Modified to use js/data.js for local file support)
+// 1. 데이터 로드 (data.js 기본 + localStorage 병합)
 function loadData() {
     try {
-        if (window.portfolioData && window.portfolioData.works) {
-            allWorks = window.portfolioData.works;
+        // data.js에서 기본 데이터 로드
+        const baseWorks = (window.portfolioData && window.portfolioData.works)
+            ? window.portfolioData.works : [];
 
-            // Determine current page and render accordingly
-            if (document.getElementById('featured-works-grid')) {
-                renderFeaturedWorks();
-            } else if (document.getElementById('all-works-grid')) {
-                renderAllWorks(); // Will be implemented for works.html
-            } else if (document.getElementById('work-detail-container')) {
-                renderWorkDetail(); // Will be implemented for work-detail.html
+        // localStorage에서 관리자 저장 데이터 로드
+        const savedData = localStorage.getItem('portfolioWorksData');
+
+        if (savedData) {
+            try {
+                const savedWorks = JSON.parse(savedData);
+
+                // data.js와 localStorage를 병합:
+                // localStorage의 stills가 비어있는데 data.js에는 있으면 data.js 우선 사용
+                allWorks = savedWorks.map(savedWork => {
+                    const baseWork = baseWorks.find(bw => bw.id === savedWork.id);
+                    if (baseWork &&
+                        (!savedWork.stills || savedWork.stills.length === 0) &&
+                        baseWork.stills && baseWork.stills.length > 0) {
+                        // data.js의 스틸 데이터로 보충
+                        return { ...savedWork, stills: baseWork.stills };
+                    }
+                    return savedWork;
+                });
+
+                // data.js에만 있고 localStorage에 없는 새 작업도 추가
+                baseWorks.forEach(bw => {
+                    if (!allWorks.find(w => w.id === bw.id)) {
+                        allWorks.push(bw);
+                    }
+                });
+
+            } catch (parseErr) {
+                console.warn('localStorage 파싱 실패, data.js 사용:', parseErr);
+                allWorks = baseWorks;
             }
         } else {
-            throw new Error("Data not found");
+            allWorks = baseWorks;
+        }
+
+        // 현재 페이지에 맞는 렌더링 실행
+        if (document.getElementById('featured-works-grid')) {
+            renderFeaturedWorks();
+        } else if (document.getElementById('all-works-grid')) {
+            renderAllWorks();
+        } else if (document.getElementById('work-detail-container')) {
+            renderWorkDetail();
         }
 
     } catch (error) {

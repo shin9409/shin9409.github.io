@@ -1,5 +1,6 @@
-/* Google Fonts Import */
-@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap');
+/* Google Fonts + Pretendard 한글 폰트 */
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap');
+@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css');
 
 :root {
     --bg-color: #050505;
@@ -18,7 +19,7 @@
 }
 
 body {
-    font-family: 'Noto Sans KR', sans-serif;
+    font-family: 'Pretendard Variable', 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, 'Helvetica Neue', 'Segoe UI', 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', sans-serif;
     background-color: var(--bg-color);
     color: var(--text-color);
     line-height: 1.6;
@@ -32,10 +33,11 @@ h3,
 h4,
 h5,
 h6 {
-    font-family: 'Playfair Display', serif;
-    font-weight: 700;
+    font-family: 'Pretendard Variable', 'Pretendard', -apple-system, sans-serif;
+    font-weight: 800;
     margin-bottom: 1rem;
-    letter-spacing: -0.02em;
+    letter-spacing: -0.04em;
+    word-break: keep-all;
 }
 
 a {
@@ -86,8 +88,8 @@ header .container {
 }
 
 .logo {
-    font-family: 'Noto Sans KR', sans-serif;
-    /* Changed to Sans-serif for bold look */
+    font-family: 'Pretendard Variable', 'Pretendard', sans-serif;
+    /* 모던 산세리프 로고 */
     font-size: 1.5rem;
     font-weight: 800;
     /* Extra bold */
@@ -421,7 +423,7 @@ section {
     color: var(--text-muted);
     text-transform: uppercase;
     margin-bottom: 5px;
-    font-family: 'Noto Sans KR', sans-serif;
+    font-family: 'Pretendard Variable', 'Pretendard', sans-serif;
 }
 
 .credit-item p {
@@ -685,7 +687,7 @@ footer {
 }
 
 .footer-logo {
-    font-family: 'Playfair Display', serif;
+    font-family: 'Pretendard Variable', 'Pretendard', sans-serif;
     font-size: 1.2rem;
     color: var(--text-color);
     margin-bottom: 20px;
@@ -789,7 +791,7 @@ footer {
 
 .contact-title {
     font-size: 3.5rem;
-    font-family: 'Playfair Display', serif;
+    font-family: 'Pretendard Variable', 'Pretendard', sans-serif;
     margin-bottom: 2rem;
     animation: fadeInUp 1s ease forwards;
     letter-spacing: -1px;
@@ -865,7 +867,7 @@ footer {
     padding: 15px 0;
     color: #fff;
     font-size: 1rem;
-    font-family: 'Noto Sans KR', sans-serif;
+    font-family: 'Pretendard Variable', 'Pretendard', sans-serif;
     transition: all 0.3s ease;
 }
 

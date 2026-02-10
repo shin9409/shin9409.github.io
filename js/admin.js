@@ -1,9 +1,35 @@
-// Admin JS Logic (Enhanced)
+// Admin JS Logic (Final Fix)
 
 let worksData = [];
-// Assuming window.portfolioData is loaded from data.js
-if (window.portfolioData && window.portfolioData.works) {
-    worksData = window.portfolioData.works;
+// data.js 기본 데이터 + localStorage 병합
+const basePortfolioWorks = (window.portfolioData && window.portfolioData.works)
+    ? [...window.portfolioData.works] : [];
+const savedPortfolioData = localStorage.getItem('portfolioWorksData');
+
+// 스틸컷 경로 관리용 전역 배열 (DOM 의존성 제거)
+let currentStills = [];
+
+if (savedPortfolioData) {
+    try {
+        const savedWorks = JSON.parse(savedPortfolioData);
+        // localStorage의 stills가 비어있는데 data.js에는 있으면 data.js 우선
+        worksData = savedWorks.map(sw => {
+            const bw = basePortfolioWorks.find(b => b.id === sw.id);
+            if (bw && (!sw.stills || sw.stills.length === 0) && bw.stills && bw.stills.length > 0) {
+                return { ...sw, stills: bw.stills };
+            }
+            return sw;
+        });
+        // data.js에만 있는 새 작업 추가
+        basePortfolioWorks.forEach(bw => {
+            if (!worksData.find(w => w.id === bw.id)) worksData.push(bw);
+        });
+    } catch (e) {
+        console.warn('localStorage 파싱 실패, data.js 사용:', e);
+        worksData = basePortfolioWorks;
+    }
+} else {
+    worksData = basePortfolioWorks;
 }
 
 // State
@@ -162,7 +188,7 @@ function setupEventListeners() {
     const importBtn = document.getElementById('import-btn');
     const importFile = document.getElementById('import-file');
     importBtn.addEventListener('click', () => importFile.click());
-    importFile.addEventListener('change', handleImport);
+    importFile.addEventListener('change', handleImport); // **Added Function Definition Below**
 
     // Auto ID & Path Auto-gen
     const idInput = document.getElementById('work-id');
@@ -179,14 +205,13 @@ function setupEventListeners() {
     document.getElementById('thumb-file').addEventListener('change', (e) => handleThumbSelect(e.target.files[0]));
     document.getElementById('stills-file').addEventListener('change', (e) => handleStillsSelect(Array.from(e.target.files)));
 
-    // 모달 닫기: X 버튼
+    // Modal Close
     document.querySelector('.close-modal').addEventListener('click', (e) => {
         e.stopPropagation();
         elements.modal.classList.add('hidden');
         elements.previewContainer.innerHTML = '';
     });
 
-    // 모달 닫기: 배경 클릭
     elements.modal.addEventListener('click', (e) => {
         if (e.target === elements.modal) {
             elements.modal.classList.add('hidden');
@@ -194,7 +219,6 @@ function setupEventListeners() {
         }
     });
 
-    // 모달 닫기: ESC 키
     document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape' && !elements.modal.classList.contains('hidden')) {
             elements.modal.classList.add('hidden');
@@ -243,10 +267,13 @@ function openEditor(index) {
     elements.form.reset();
 
     // Reset previews
-    document.getElementById('thumb-preview').innerHTML = '<span class="text-muted">No image</span>';
+    document.getElementById('thumb-preview').innerHTML = '<span class="text-muted">No image selected</span>';
     document.getElementById('stills-preview').innerHTML = '';
-    document.getElementById('thumb-path-display').textContent = '';
+    document.getElementById('thumb-path-display').value = '';
     document.getElementById('stills-path-display').textContent = '';
+
+    // **스틸컷 배열 안전 초기화**
+    currentStills = [];
 
     if (currentEditIndex === -1) {
         // New
@@ -266,12 +293,7 @@ function openEditor(index) {
         document.getElementById('work-featured').checked = work.featured;
         document.getElementById('work-major').value = work.majorCategory;
         document.getElementById('work-minor').value = work.minorCategory;
-
-        // Date formatting for edit (if legacy data exists)
-        // If data is YYYY-MM-DD, we might want to keep it or slice it?
-        // User wants YYYY-MM or YYYY. Let's show as is, user can edit.
         document.getElementById('work-date').value = work.date;
-
         document.getElementById('work-youtube').value = work.youtubeUrl || '';
         document.getElementById('work-desc').value = work.description || '';
 
@@ -285,22 +307,26 @@ function openEditor(index) {
         }
 
         // Images preview
-        document.getElementById('thumb-path-display').textContent = work.thumbnail;
+        document.getElementById('thumb-path-display').value = work.thumbnail || '';
         if (work.thumbnail) {
             document.getElementById('thumb-preview').innerHTML = `<img src="${work.thumbnail}" onerror="this.src='https://placehold.co/600x400?text=No+Image'">`;
         }
 
         const stillsContainer = document.getElementById('stills-preview');
         stillsContainer.innerHTML = '';
-        if (work.stills) {
+
+        // **스틸컷 로드 및 복사 (Data -> currentStills)**
+        if (work.stills && Array.isArray(work.stills)) {
+            currentStills = [...work.stills]; // Sync array
+
             work.stills.forEach(path => {
                 const div = document.createElement('div');
                 div.className = 'still-preview-item';
-                div.dataset.path = path; // IMPORTANT for sync
+                div.dataset.path = path;
                 div.innerHTML = `<img src="${path}" onclick="removeStill(this)">`;
                 stillsContainer.appendChild(div);
             });
-            document.getElementById('stills-path-display').textContent = work.stills.join('\n');
+            updateStillsTextDisplay();
         }
     }
 }
@@ -309,7 +335,7 @@ function handleYoutubeInput(e) {
     const url = e.target.value;
     if (!url) return;
 
-    // Extract ID (simple regex for v= parameter or short url)
+    // Extract ID
     let videoId = '';
     if (url.includes('v=')) {
         videoId = url.split('v=')[1].split('&')[0];
@@ -321,9 +347,6 @@ function handleYoutubeInput(e) {
         const thumbUrl = `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
         if (confirm('유튜브 썸네일을 대표 이미지로 사용하시겠습니까?')) {
             document.getElementById('thumb-preview').innerHTML = `<img src="${thumbUrl}">`;
-            // Note: We can't save this URL directly for local files, but we can set the path display roughly
-            // Actually, user wants to use youtube thumbnail. We can suggest saving it.
-            // For now, let's just preview it.
         }
     }
 }
@@ -331,42 +354,12 @@ function handleYoutubeInput(e) {
 // --- Image Handling Helpers ---
 
 function updateThumbPath() {
-    const id = document.getElementById('work-id').value || '{id}';
-    const input = document.getElementById('thumb-file');
-    if (input.files[0]) {
-        const file = input.files[0];
-        const ext = file.name.split('.').pop().toLowerCase();
-        // Rename to thumb.ext standard
-        const fileName = `thumb.${ext}`;
-        document.getElementById('thumb-path-display').textContent = `images/works/${id}/${fileName}`;
-    }
+    // This is called by ID Change or other events
+    // But handleThumbSelect does ITSELF now
 }
 
 function updateStillsPath() {
-    const id = document.getElementById('work-id').value || '{id}';
-    const input = document.getElementById('stills-file');
-    // For stills, since we want to allow reordering/deleting, we should mainly rely on what's in the DOM preview
-    // But for the PATHS, we generate based on the CURRENT visual list + new files
-    // This is complex. Let's simplify:
-    if (input.files.length > 0) {
-        // Read existing count to continue numbering
-        const existing = document.getElementById('stills-path-display').textContent.split('\n').filter(s => s.trim());
-        let startIdx = existing.length + 1;
-
-        // If we want to rename ALL based on order, we could do that, but appending is safer for now.
-        // However, user feedback implies they want the standard to be 'still1', 'still2'.
-        // Let's try to map the NEW files to the sequence.
-
-        const newPaths = Array.from(input.files).map((f, i) => {
-            const ext = f.name.split('.').pop().toLowerCase();
-            const fileName = `still${startIdx + i}.${ext}`;
-            return `images/works/${id}/${fileName}`;
-        });
-
-        const combined = [...existing, ...newPaths];
-        const unique = [...new Set(combined)];
-        document.getElementById('stills-path-display').textContent = unique.join('\n');
-    }
+    updateStillsTextDisplay();
 }
 
 function handleThumbSelect(file) {
@@ -376,7 +369,21 @@ function handleThumbSelect(file) {
         document.getElementById('thumb-preview').innerHTML = `<img src="${e.target.result}">`;
     };
     reader.readAsDataURL(file);
-    updateThumbPath();
+
+    // **Immediate Path Update with Correct Extension**
+    const id = document.getElementById('work-id').value || '{id}';
+    const ext = file.name.split('.').pop().toLowerCase();
+    const fileName = `thumb.${ext}`;
+    document.getElementById('thumb-path-display').value = `images/works/${id}/${fileName}`;
+}
+
+// --- localStorage 동기화 ---
+function syncToLocalStorage() {
+    try {
+        localStorage.setItem('portfolioWorksData', JSON.stringify(worksData));
+    } catch (e) {
+        console.warn('localStorage 저장 실패:', e);
+    }
 }
 
 // --- Form Handling ---
@@ -386,8 +393,11 @@ function handleFormSubmit(e) {
     const formData = new FormData(e.target);
     const id = formData.get('id');
 
-    // 썸네일 경로: 표시 영역에서 읽기
-    const thumbnailPath = document.getElementById('thumb-path-display').textContent;
+    // 썸네일 경로
+    const thumbnailPath = document.getElementById('thumb-path-display').value;
+
+    // ** DEBUG LOG **
+    console.log('Saving stills for', id, ':', currentStills);
 
     const newWork = {
         id: id,
@@ -399,7 +409,13 @@ function handleFormSubmit(e) {
         youtubeUrl: formData.get('youtubeUrl'),
         description: formData.get('description'),
         thumbnail: thumbnailPath || `images/works/${id}/thumb.jpg`,
-        stills: getStillsFromDOM(),
+        // **수정된 로직: currentStills 우선 사용**
+        // 만약 currentStills가 비어있어도 의도된 삭제일 수 있음. 
+        // 그러나 DOM에 이미지가 있는데 currentStills가 비었다면 문제임.
+        // 안전장치: DOM에 요소가 있는데 currentStills가 비었다면 DOM에서 복구 (Sync Error Case)
+        stills: (currentStills.length === 0 && getStillsFromDOM().length > 0)
+            ? getStillsFromDOM()
+            : currentStills,
         credits: {
             client: formData.get('credits.client'),
             director: formData.get('credits.director'),
@@ -418,12 +434,11 @@ function handleFormSubmit(e) {
     updateStats();
     renderTable();
     closeEditor();
-
-    // 자동저장 클리어
+    syncToLocalStorage();
     localStorage.removeItem('admin_autosave');
 }
 
-// Helper to get stills from DOM order
+// Helper to get stills from DOM order (Fallback usage)
 function getStillsFromDOM() {
     const items = document.querySelectorAll('.still-preview-item');
     const paths = [];
@@ -435,20 +450,24 @@ function getStillsFromDOM() {
     return paths;
 }
 
-// Updated Stills Selector
+// Updated Stills Selector with currentStills Sync
 function handleStillsSelect(files) {
     if (!files.length) return;
 
     const id = document.getElementById('work-id').value || '{id}';
     const container = document.getElementById('stills-preview');
-    const existingCount = container.children.length; // Count current visual items
+    // 계속 이어서 번호 매기기 (Total length 기준)
+    const startIdx = currentStills.length;
 
     files.forEach((file, index) => {
         const ext = file.name.split('.').pop().toLowerCase();
         // Naming convention: still{N}.ext
-        // We start from existingCount + 1 + index
-        const fileName = `still${existingCount + 1 + index}.${ext}`;
+        // startIdx + 1 + index
+        const fileName = `still${startIdx + 1 + index}.${ext}`;
         const finalPath = `images/works/${id}/${fileName}`;
+
+        // Add to Array
+        currentStills.push(finalPath);
 
         const reader = new FileReader();
         reader.onload = e => {
@@ -457,21 +476,24 @@ function handleStillsSelect(files) {
             div.dataset.path = finalPath; // Store path in DOM
             div.innerHTML = `<img src="${e.target.result}" onclick="removeStill(this)">`;
             container.appendChild(div);
-            // Update display text immediately
-            updateStillsTextDisplay();
         };
         reader.readAsDataURL(file);
     });
+    updateStillsTextDisplay();
 }
 
 function updateStillsTextDisplay() {
-    const paths = getStillsFromDOM();
-    document.getElementById('stills-path-display').textContent = paths.join('\n');
+    document.getElementById('stills-path-display').textContent = currentStills.join('\n');
 }
 
 window.removeStill = function (imgElement) {
     if (confirm('이 이미지를 목록에서 제외하시겠습니까?')) {
         const div = imgElement.parentElement;
+        const pathToRemove = div.dataset.path;
+
+        // **Remove from Array**
+        currentStills = currentStills.filter(p => p !== pathToRemove);
+
         div.remove();
         updateStillsTextDisplay();
     }
@@ -483,7 +505,52 @@ function handleDelete() {
         renderTable();
         closeEditor();
         updateStats();
+        syncToLocalStorage();
     }
+}
+
+// --- Import Logic (New) ---
+
+function handleImport(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+        try {
+            const content = event.target.result;
+            let importedData;
+
+            if (file.name.endsWith('.json')) {
+                const json = JSON.parse(content);
+                importedData = json.works || json;
+            } else if (file.name.endsWith('.js')) {
+                // JS 파일은 window.portfolioData = {...} 형태
+                // 단순하게 window.portfolioData = 부분 제거하고 파싱 시도
+                const jsonContent = content.replace(/window\.portfolioData\s*=\s*/, '').replace(/;$/, '');
+                const parsed = JSON.parse(jsonContent);
+                importedData = parsed.works || parsed;
+            } else {
+                throw new Error('지원하지 않는 파일 형식입니다. (.json 또는 .js)');
+            }
+
+            if (Array.isArray(importedData)) {
+                worksData = importedData;
+                currentStills = []; // Import 시 초기화
+                syncToLocalStorage();
+                renderTable();
+                updateStats();
+                alert('데이터를 성공적으로 불러왔습니다.');
+            } else {
+                throw new Error('올바르지 않은 데이터 형식입니다.');
+            }
+        } catch (err) {
+            console.error(err);
+            alert('파일을 읽는 중 오류가 발생했습니다: ' + err.message);
+        }
+    };
+    reader.readAsText(file);
+    e.target.value = ''; // Reset input
 }
 
 // --- Bulk Actions ---
@@ -494,6 +561,7 @@ function handleBulkDelete() {
         selectedIds.clear();
         updateStats();
         renderTable();
+        syncToLocalStorage();
     }
 }
 
@@ -541,18 +609,17 @@ function restoreAutoSave() {
     if (!saved) return;
 
     if (saved.editIndex !== -1) {
-        // Was editing an existing item
         openEditor(saved.editIndex);
     } else {
         openEditor(-1);
     }
 
-    // Restore fields
     const data = saved.formData;
     document.getElementById('work-id').value = data.id;
     document.getElementById('work-title').value = data.title;
     document.getElementById('work-desc').value = data.description;
-    // ... restore others as needed ...
+
+    // ... restore others
 
     elements.autosaveNotice.classList.add('hidden');
     alert('임시 저장된 내용을 복구했습니다.');
@@ -571,17 +638,12 @@ function showPreview() {
             thumbUrl = thumbImg.src;
         }
 
-        // Video Fallback Logic
         let heroContent = '';
         if (youtubeUrl) {
-            // Robust ID extraction for preview
             const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
             const match = youtubeUrl.match(regExp);
             let videoId = (match && match[2]) ? match[2] : youtubeUrl;
 
-            // Just for preview, we can use a simple image or valid iframe if we wanted
-            // But user just wants to know it detected video.
-            // Let's actually show the thumbnail from YouTube as "Video Preview" background
             const previewThumb = `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
 
             heroContent = `
@@ -677,19 +739,15 @@ function handleDragOver(e) {
 }
 function handleDrop(e) {
     if (e.stopPropagation) e.stopPropagation();
-    const dragIdx = this.dataset.index; // Note: using filtered index might be tricky. 
-    // For strict array reordering, drag/drop works best when no filter is active.
-    // We can disable drag if filter is active, or map indexes back to original data.
-    // For simplicity, we only allow reordering when showing all data.
+    const dragIdx = this.dataset.index;
     if (elements.searchInput.value || elements.filterMajor.value !== 'all') {
         alert('Please clear filters to reorder.');
         return false;
     }
 
-    // Swap logic
     const item = worksData.splice(dragIdx, 1)[0];
     worksData.splice(this.dataset.index, 0, item);
     renderTable();
+    syncToLocalStorage();
     return false;
 }
-

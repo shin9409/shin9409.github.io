@@ -156,7 +156,7 @@ function renderWorkDetail() {
         return;
     }
 
-    // Embed Youtube if exists
+    // Embed Youtube if exists, otherwise show thumbnail (Hero Image)
     let videoHtml = '';
     if (work.youtubeUrl) {
         // Ensure parameters for better compatibility
@@ -173,6 +173,13 @@ function renderWorkDetail() {
         videoHtml = `
             <div class="video-container">
                 <iframe src="${embedUrl}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            </div>
+        `;
+    } else {
+        // Fallback to thumbnail as Hero Image (Using same container size as video)
+        videoHtml = `
+            <div class="video-container">
+                <img src="${work.thumbnail}" alt="${work.title}" style="width: 100%; height: 100%; object-fit: cover;">
             </div>
         `;
     }
@@ -223,6 +230,29 @@ function renderWorkDetail() {
 
 // Mobile Menu
 function setupMobileMenu() {
-    // Simple toggle for mobile nav
-    // Implementation can be added if needed
+    const menuToggle = document.querySelector('.menu-toggle');
+    const navLinks = document.querySelector('.nav-links');
+
+    if (menuToggle && navLinks) {
+        menuToggle.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
+            menuToggle.classList.toggle('active'); // Optional: for animation
+
+            // Toggle body scroll
+            if (navLinks.classList.contains('active')) {
+                document.body.style.overflow = 'hidden';
+            } else {
+                document.body.style.overflow = '';
+            }
+        });
+
+        // Close menu when clicking a link
+        navLinks.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                navLinks.classList.remove('active');
+                menuToggle.classList.remove('active');
+                document.body.style.overflow = '';
+            });
+        });
+    }
 }

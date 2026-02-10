@@ -493,3 +493,90 @@ select {
 .hidden {
     display: none !important;
 }
+
+/* Mobile Responsive */
+@media (max-width: 1024px) {
+    .content-wrapper {
+        flex-direction: column;
+    }
+
+    .list-section {
+        width: 100%;
+        margin-bottom: 20px;
+    }
+
+    .editor-section {
+        width: 100%;
+        position: fixed;
+        top: 0;
+        right: -100%;
+        /* Slide in effect */
+        height: 100vh;
+        max-height: 100vh;
+        z-index: 1000;
+        transition: right 0.3s ease;
+        border-left: 1px solid var(--border);
+        box-shadow: -5px 0 15px rgba(0, 0, 0, 0.5);
+    }
+
+    .editor-section:not(.hidden) {
+        display: block;
+        /* Override flex/none if needed */
+        right: 0;
+    }
+}
+
+@media (max-width: 768px) {
+    .admin-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+
+    .header-actions {
+        width: 100%;
+        flex-wrap: wrap;
+    }
+
+    .header-actions button,
+    .header-actions a,
+    .header-actions input {
+        flex: 1;
+        text-align: center;
+    }
+
+    .dashboard-section {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .section-top {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 15px;
+    }
+
+    .search-filters {
+        flex-direction: column;
+        margin: 0;
+    }
+
+    .search-filters input,
+    .search-filters select {
+        width: 100%;
+    }
+
+    #add-new-btn {
+        width: 100%;
+    }
+
+    .editor-section {
+        width: 100%;
+        /* Full screen on mobile */
+    }
+}
+
+@media (max-width: 480px) {
+    .dashboard-section {
+        grid-template-columns: 1fr;
+    }
+}

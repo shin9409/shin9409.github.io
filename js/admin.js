@@ -234,7 +234,7 @@ function openEditor(index) {
         deleteBtn.classList.add('hidden');
         document.getElementById('work-today-date');
         document.getElementById('work-id').value = generateNextId();
-        document.getElementById('work-date').valueAsDate = new Date();
+        document.getElementById('work-date').value = new Date().getFullYear();
     } else {
         // Edit
         document.getElementById('editor-title').textContent = 'Edit Work';
@@ -246,7 +246,12 @@ function openEditor(index) {
         document.getElementById('work-featured').checked = work.featured;
         document.getElementById('work-major').value = work.majorCategory;
         document.getElementById('work-minor').value = work.minorCategory;
+
+        // Date formatting for edit (if legacy data exists)
+        // If data is YYYY-MM-DD, we might want to keep it or slice it?
+        // User wants YYYY-MM or YYYY. Let's show as is, user can edit.
         document.getElementById('work-date').value = work.date;
+
         document.getElementById('work-youtube').value = work.youtubeUrl || '';
         document.getElementById('work-desc').value = work.description || '';
 
@@ -499,6 +504,28 @@ function restoreAutoSave() {
 
 function showPreview() {
     const formData = new FormData(elements.form);
+    const youtubeUrl = formData.get('youtubeUrl');
+    const thumbUrl = document.getElementById('thumb-preview').querySelector('img')?.src || '';
+
+    // Video Fallback Logic
+    let heroContent = '';
+    if (youtubeUrl) {
+        heroContent = `
+            <div style="width: 100%; aspect-ratio: 16/9; background: #222; display:flex; align-items:center; justify-content:center;">
+                <p>YouTube Video Preview</p>
+            </div>`;
+    } else {
+        heroContent = `
+            <div style="width: 100%; aspect-ratio: 16/9; background: #222; overflow:hidden;">
+                <img src="${thumbUrl}" style="width:100%; height:100%; object-fit:cover;">
+            </div>`;
+    }
+
+    // Date Logic
+    let dateStr = formData.get('date');
+    // If user typed YYYY-MM-DD, maybe slice it? 
+    // The user wants "Year Only" if Month empty (which means short string), or "Year Month".
+    // We display exactly what is typed for now, as Admin input is flexible.
 
     // Construct HTML for preview (Simulating work-detail.html structure)
     // In a real app we might load the iframe, but here we inject HTML
@@ -507,10 +534,12 @@ function showPreview() {
             <h1 style="font-family: 'Playfair Display'; font-size:3rem; margin-bottom: 20px;">${formData.get('title')}</h1>
             <div style="font-size: 1.2rem; color: var(--accent); margin-bottom: 40px;">
                 ${formData.get('majorCategory').toUpperCase()} / ${formData.get('minorCategory').toUpperCase()}
+                &nbsp;|&nbsp;
+                ${dateStr}
             </div>
             
-            <div style="width: 100%; aspect-ratio: 16/9; background: #222; margin-bottom: 50px; display:flex; align-items:center; justify-content:center;">
-                ${formData.get('youtubeUrl') ? '<p>Video Player Placeholder</p>' : '<p>No Video URL</p>'}
+            <div style="margin-bottom: 50px;">
+                ${heroContent}
             </div>
 
             <div style="max-width: 800px; margin-bottom: 50px;">

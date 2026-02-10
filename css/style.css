@@ -384,7 +384,8 @@ section {
 }
 
 .detail-info {
-    padding: 80px 0;
+    padding: 80px 40px;
+    /* Restore container padding */
 }
 
 .detail-header {
@@ -535,26 +536,72 @@ footer {
 @media (max-width: 768px) {
     .nav-links {
         display: none;
-        /* Mobile menu implementation needed if required */
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100vh;
+        background: rgba(0, 0, 0, 0.95);
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        z-index: 999;
+        /* Below toggle button */
+        gap: 30px;
+        backdrop-filter: blur(10px);
+    }
+
+    .nav-links.active {
+        display: flex;
+        animation: fadeIn 0.3s ease forwards;
+    }
+
+    .nav-links li a {
+        font-size: 1.5rem;
     }
 
     .menu-toggle {
         display: block;
+        z-index: 2001;
+        /* Ultra high z-index */
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
     }
 
-    .hero-title {
-        font-size: 2.5rem;
+    to {
+        opacity: 1;
     }
+}
 
-    .works-grid {
-        grid-template-columns: 1fr;
-    }
+/* Filters Fix */
+.sub-filters {
+    flex-wrap: wrap;
+    /* Allow wrapping */
+    gap: 10px;
+}
 
-    .section-header {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 10px;
-    }
+.sub-filter-btn {
+    font-size: 0.8rem;
+    padding: 6px 12px;
+}
+
+.hero-title {
+    font-size: 2.5rem;
+}
+
+.works-grid {
+    grid-template-columns: 1fr;
+}
+
+.section-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+}
 }
 
 /* Contact Page Styles (Enhanced) */
@@ -710,5 +757,35 @@ footer {
 
     .contact-form-wrapper {
         padding: 30px;
+    }
+}
+
+/* Detail Page Mobile */
+@media (max-width: 768px) {
+    .detail-hero {
+        min-height: 40vh;
+        /* Reduce height on mobile */
+        padding: 20px 0;
+    }
+
+    .detail-meta {
+        flex-direction: column;
+        gap: 5px;
+        margin-bottom: 10px;
+    }
+
+    .section-title {
+        font-size: 2rem;
+        /* Smaller title */
+    }
+
+    .detail-desc {
+        font-size: 1rem;
+    }
+
+    .detail-credits {
+        grid-template-columns: 1fr 1fr;
+        /* 2 cols on mobile instead of 1 if possible, or 1 */
+        gap: 20px;
     }
 }

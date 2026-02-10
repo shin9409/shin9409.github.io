@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Works - LOOKUP MEDIA</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <a href="index.html" class="logo">LOOK<span class="logo-highlight">UP</span> MEDIA</a>
+            <ul class="nav-links">
+                <li><a href="index.html">Main</a></li>
+                <li class="dropdown">
+                    <a href="works.html" class="active">Works</a>
+                    <ul class="dropdown-content">
+                        <li><a href="works.html?filter=production">Production</a></li>
+                        <li><a href="works.html?filter=lighting">Lighting</a></li>
+                    </ul>
+                </li>
+                <li><a href="contact.html">Contact</a></li>
+            </ul>
+            <div class="menu-toggle">☰</div>
+        </div>
+    </header>
+
+    <div style="height: var(--header-height);"></div>
+
+    <section class="works-section">
+        <div class="container">
+
+
+            <!-- Filters -->
+            <div class="filters">
+                <!-- Major Category -->
+                <div class="filter-group">
+                    <button class="filter-btn active" data-filter="all">All</button>
+                    <button class="filter-btn" data-filter="production">Production</button>
+                    <button class="filter-btn" data-filter="lighting">Lighting</button>
+                </div>
+
+                <!-- Minor Category -->
+                <div class="sub-filters">
+                    <button class="sub-filter-btn active" data-filter="all">All</button>
+                    <button class="sub-filter-btn" data-filter="musicvideo">Music Video</button>
+                    <button class="sub-filter-btn" data-filter="film">Film</button>
+                    <button class="sub-filter-btn" data-filter="commercial">Commercial</button>
+                    <button class="sub-filter-btn" data-filter="etc">Etc</button>
+                </div>
+            </div>
+
+            <!-- Works Grid -->
+            <div class="works-grid" id="all-works-grid">
+                <p style="color: #666;">Loading works...</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <a href="index.html" class="footer-logo">LOOK<span class="logo-highlight"></span>UP</span> MEDIA</a>
+            <p>&copy; 2025 LOOKUP MEDIA. All Rights Reserved.</p>
+            <div class="social-links" style="margin-top: 20px;">
+                <a href="https://www.instagram.com/lookupmedia_?igsh=aDZvbzg3czVyOTMz" target="_blank">Instagram</a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/data.js"></script>
+    <script src="js/main.js"></script>
+</body>
+
+</html>

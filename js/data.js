@@ -149,7 +149,7 @@ window.portfolioData = {
     {
       "id": "work009",
       "title": "TRENDZ - 위로위로",
-      "majorCategory": "production",
+      "majorCategory": "lighting",
       "minorCategory": "musicvideo",
       "date": "2024-01",
       "role": "Gaffer",

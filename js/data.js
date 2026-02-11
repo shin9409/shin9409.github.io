@@ -1,43 +1,24 @@
 window.portfolioData = {
   "works": [
     {
-      "id": "work005",
-      "title": "다농바이오 DANONG BIO - '풍류' 행사 영상 스케치",
+      "id": "work006",
+      "title": "'태키타카' 시즌1",
       "majorCategory": "production",
       "minorCategory": "etc",
-      "date": "2024",
-      "role": "product , edit",
+      "date": "2025",
+      "role": "product",
       "featured": false,
-      "youtubeUrl": "https://youtu.be/iMKmkhE91eU?si=G7qP-0uAJmharvAJ",
-      "description": "",
-      "thumbnail": "images/works/work005/thumb.png",
-      "stills": [
-        "images/works/work005/still1.png",
-        "images/works/work005/still2.png",
-        "images/works/work005/still3.png",
-        "images/works/work005/still4.png",
-        "images/works/work005/still5.png",
-        "images/works/work005/still6.png",
-        "images/works/work005/still7.png",
-        "images/works/work005/still8.png",
-        "images/works/work005/still9.png",
-        "images/works/work005/still10.png",
-        "images/works/work005/still11.png",
-        "images/works/work005/still12.png",
-        "images/works/work005/still13.png",
-        "images/works/work005/still14.png",
-        "images/works/work005/still15.png",
-        "images/works/work005/still16.png",
-        "images/works/work005/still17.png",
-        "images/works/work005/still18.png",
-        "images/works/work005/still19.png",
-        "images/works/work005/still20.png",
-        "images/works/work005/still21.png",
-        "images/works/work005/still22.png"
-      ],
+      "youtubeUrl": "https://youtu.be/9wgx_GKLE90?si=gnZc1rfP2GabSwC1",
+      "description": "KTA 유튜브 예능 시리즈 \n'태키타카' 시즌1\nEP.01 ~ EP.12",
+      "thumbnail": "images/works/work006/thumb.jpg",
+      "stills": [],
       "credits": [
         {
-          "role": "a film by",
+          "role": "Client",
+          "name": "대한태권도협회"
+        },
+        {
+          "role": "production",
           "name": "LOOKUP MEDIA"
         }
       ],
@@ -152,6 +133,49 @@ window.portfolioData = {
       "role": "Director, Editor"
     },
     {
+      "id": "work005",
+      "title": "다농바이오 DANONG BIO - '풍류' 행사 영상 스케치",
+      "majorCategory": "production",
+      "minorCategory": "etc",
+      "date": "2024",
+      "role": "product , edit",
+      "featured": false,
+      "youtubeUrl": "https://youtu.be/iMKmkhE91eU?si=G7qP-0uAJmharvAJ",
+      "description": "",
+      "thumbnail": "images/works/work005/thumb.png",
+      "stills": [
+        "images/works/work005/still1.png",
+        "images/works/work005/still2.png",
+        "images/works/work005/still3.png",
+        "images/works/work005/still4.png",
+        "images/works/work005/still5.png",
+        "images/works/work005/still6.png",
+        "images/works/work005/still7.png",
+        "images/works/work005/still8.png",
+        "images/works/work005/still9.png",
+        "images/works/work005/still10.png",
+        "images/works/work005/still11.png",
+        "images/works/work005/still12.png",
+        "images/works/work005/still13.png",
+        "images/works/work005/still14.png",
+        "images/works/work005/still15.png",
+        "images/works/work005/still16.png",
+        "images/works/work005/still17.png",
+        "images/works/work005/still18.png",
+        "images/works/work005/still19.png",
+        "images/works/work005/still20.png",
+        "images/works/work005/still21.png",
+        "images/works/work005/still22.png"
+      ],
+      "credits": [
+        {
+          "role": "a film by",
+          "name": "LOOKUP MEDIA"
+        }
+      ],
+      "_originalIndex": 4
+    },
+    {
       "id": "work001",
       "title": "다농바이오 브랜드필름",
       "majorCategory": "production",
@@ -184,7 +208,7 @@ window.portfolioData = {
         "lighting": "임진우",
         "editor": "신형준"
       },
-      "_originalIndex": 4,
+      "_originalIndex": 5,
       "role": "Director, Editor"
     }
   ]

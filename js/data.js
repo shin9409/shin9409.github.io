@@ -1,6 +1,56 @@
 window.portfolioData = {
   "works": [
     {
+      "id": "work012",
+      "title": "SMTECH",
+      "majorCategory": "lighting",
+      "minorCategory": "commercial",
+      "date": "2025-08",
+      "role": "Gaffer",
+      "featured": false,
+      "youtubeUrl": "https://youtu.be/hqqjKZcl4nA?si=ylwKbtrGBITeJpEO",
+      "description": "",
+      "thumbnail": "images/works/work012/thumb.jpg",
+      "stills": [
+        "images/works/work012/still1.jpg",
+        "images/works/work012/still2.jpg",
+        "images/works/work012/still3.jpg",
+        "images/works/work012/still4.jpg",
+        "images/works/work012/still5.jpg",
+        "images/works/work012/still6.jpg",
+        "images/works/work012/still7.jpg",
+        "images/works/work012/still8.jpg",
+        "images/works/work012/still9.jpg",
+        "images/works/work012/still10.jpg",
+        "images/works/work012/still11.jpg",
+        "images/works/work012/still12.jpg",
+        "images/works/work012/still13.jpg"
+      ],
+      "credits": [
+        {
+          "role": "Production",
+          "name": "TENDIVISION"
+        },
+        {
+          "role": "Director",
+          "name": "LEE JU MUN"
+        },
+        {
+          "role": "Producer",
+          "name": "KIM KANG MIN"
+        },
+        {
+          "role": "DOP",
+          "name": "JUNG DA BIN (ICF)"
+        },
+        {
+          "role": "Gaffer",
+          "name": "SHIN HYUNG JUN (LOOKUP MEDIA)"
+        }
+      ],
+      "_originalIndex": 0
+    },
+    {
       "id": "work011",
       "title": "Arte",
       "majorCategory": "lighting",
@@ -46,7 +96,7 @@ window.portfolioData = {
           "name": "SHIN HYEONG JUN"
         }
       ],
-      "_originalIndex": 0
+      "_originalIndex": 1
     },
     {
       "id": "work010",
@@ -94,7 +144,7 @@ window.portfolioData = {
           "name": "Shin Hyung Jun"
         }
       ],
-      "_originalIndex": 1
+      "_originalIndex": 2
     },
     {
       "id": "work009",
@@ -140,7 +190,7 @@ window.portfolioData = {
           "name": "Shin Hyung Jun"
         }
       ],
-      "_originalIndex": 2
+      "_originalIndex": 3
     },
     {
       "id": "work008",
@@ -186,7 +236,7 @@ window.portfolioData = {
           "name": "Shin Hyung Jun"
         }
       ],
-      "_originalIndex": 3
+      "_originalIndex": 4
     },
     {
       "id": "work007",
@@ -231,7 +281,7 @@ window.portfolioData = {
           "name": "Shin Hyung Jun"
         }
       ],
-      "_originalIndex": 4
+      "_originalIndex": 5
     },
     {
       "id": "work006",
@@ -255,7 +305,7 @@ window.portfolioData = {
           "name": "LOOKUP MEDIA"
         }
       ],
-      "_originalIndex": 5
+      "_originalIndex": 6
     },
     {
       "id": "work004",
@@ -275,7 +325,7 @@ window.portfolioData = {
           "name": "LOOKUP MEDIA"
         }
       ],
-      "_originalIndex": 6
+      "_originalIndex": 7
     },
     {
       "id": "work003",
@@ -338,7 +388,7 @@ window.portfolioData = {
           "name": "Shin HyungJun"
         }
       ],
-      "_originalIndex": 7
+      "_originalIndex": 8
     },
     {
       "id": "work002",
@@ -405,7 +455,7 @@ window.portfolioData = {
           "name": "TPY_system"
         }
       ],
-      "_originalIndex": 8
+      "_originalIndex": 9
     },
     {
       "id": "work005",
@@ -448,7 +498,7 @@ window.portfolioData = {
           "name": "LOOKUP MEDIA"
         }
       ],
-      "_originalIndex": 9
+      "_originalIndex": 10
     },
     {
       "id": "work001",
@@ -483,7 +533,7 @@ window.portfolioData = {
         "lighting": "임진우",
         "editor": "신형준"
       },
-      "_originalIndex": 10,
+      "_originalIndex": 11,
       "role": "Director, Editor"
     }
   ]

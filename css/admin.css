@@ -130,6 +130,17 @@ tr:hover {
     color: var(--text-muted);
 }
 
+/* Drag & Drop Styles */
+tr.dragging {
+    opacity: 0.4;
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+tr.drag-over {
+    border-top: 2px solid var(--accent);
+    background-color: rgba(197, 160, 89, 0.1);
+}
+
 /* Buttons */
 .btn {
     padding: 8px 16px;

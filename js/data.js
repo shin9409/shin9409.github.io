@@ -1,6 +1,239 @@
 window.portfolioData = {
   "works": [
     {
+      "id": "work011",
+      "title": "Arte",
+      "majorCategory": "lighting",
+      "minorCategory": "musicvideo",
+      "date": "2024-06",
+      "role": "Gaffer",
+      "featured": false,
+      "youtubeUrl": "https://youtu.be/b6hI95xvlPE?si=ZmhNatHCEuMYkYX9",
+      "description": "",
+      "thumbnail": "images/works/work011/thumb.png",
+      "stills": [
+        "images/works/work011/still1.png",
+        "images/works/work011/still2.png",
+        "images/works/work011/still3.png",
+        "images/works/work011/still4.png",
+        "images/works/work011/still5.png",
+        "images/works/work011/still6.png",
+        "images/works/work011/still7.png",
+        "images/works/work011/still8.png",
+        "images/works/work011/still9.png",
+        "images/works/work011/still10.png",
+        "images/works/work011/still11.png"
+      ],
+      "credits": [
+        {
+          "role": "Production",
+          "name": "TENDIVISION"
+        },
+        {
+          "role": "Director",
+          "name": "LEE JU MUN"
+        },
+        {
+          "role": "Producer",
+          "name": "KIM KANG MIN"
+        },
+        {
+          "role": "DOP",
+          "name": "JUNG DA BIN (ICF)"
+        },
+        {
+          "role": "Gaffer",
+          "name": "SHIN HYEONG JUN"
+        }
+      ],
+      "_originalIndex": 0
+    },
+    {
+      "id": "work010",
+      "title": "TRENDZ - GLOW",
+      "majorCategory": "lighting",
+      "minorCategory": "musicvideo",
+      "date": "2024-06",
+      "role": "Gaffer",
+      "featured": false,
+      "youtubeUrl": "https://youtu.be/PUYqO3c6xps?si=GE1UTty8jmRaFAKg",
+      "description": "",
+      "thumbnail": "images/works/work010/thumb.png",
+      "stills": [
+        "images/works/work010/still1.png",
+        "images/works/work010/still2.png",
+        "images/works/work010/still3.png",
+        "images/works/work010/still4.png",
+        "images/works/work010/still5.png",
+        "images/works/work010/still6.png",
+        "images/works/work010/still7.png",
+        "images/works/work010/still8.png",
+        "images/works/work010/still9.png",
+        "images/works/work010/still10.png",
+        "images/works/work010/still11.png",
+        "images/works/work010/still12.png",
+        "images/works/work010/still13.png",
+        "images/works/work010/still14.png",
+        "images/works/work010/still15.png"
+      ],
+      "credits": [
+        {
+          "role": "Production",
+          "name": "Sonet ent."
+        },
+        {
+          "role": "Director",
+          "name": "Lee Hyeong Jong"
+        },
+        {
+          "role": "DOP",
+          "name": "Jung Da Bin"
+        },
+        {
+          "role": "Gaffer",
+          "name": "Shin Hyung Jun"
+        }
+      ],
+      "_originalIndex": 1
+    },
+    {
+      "id": "work009",
+      "title": "TRENDZ - 위로위로",
+      "majorCategory": "production",
+      "minorCategory": "musicvideo",
+      "date": "2024-01",
+      "role": "Gaffer",
+      "featured": false,
+      "youtubeUrl": "https://youtu.be/A_RIS7jBXTs?si=PaQuQrHIDVGU2erh",
+      "description": "",
+      "thumbnail": "images/works/work009/thumb.png",
+      "stills": [
+        "images/works/work009/still1.png",
+        "images/works/work009/still2.png",
+        "images/works/work009/still3.png",
+        "images/works/work009/still4.png",
+        "images/works/work009/still5.png",
+        "images/works/work009/still6.png",
+        "images/works/work009/still7.png",
+        "images/works/work009/still8.png",
+        "images/works/work009/still9.png",
+        "images/works/work009/still10.png",
+        "images/works/work009/still11.png",
+        "images/works/work009/still12.png",
+        "images/works/work009/still13.png"
+      ],
+      "credits": [
+        {
+          "role": "Production",
+          "name": "Sonet ent."
+        },
+        {
+          "role": "Director",
+          "name": "Lee Hyeong Jong"
+        },
+        {
+          "role": "DOP",
+          "name": "Jung Da Bin"
+        },
+        {
+          "role": "Gaffer",
+          "name": "Shin Hyung Jun"
+        }
+      ],
+      "_originalIndex": 2
+    },
+    {
+      "id": "work008",
+      "title": "GS칼텍스 브랜드필름",
+      "majorCategory": "lighting",
+      "minorCategory": "commercial",
+      "date": "2023-11",
+      "role": "Gaffer",
+      "featured": false,
+      "youtubeUrl": "https://youtu.be/ul5vCIoVPWs?si=y2BDqjjwFbybbgFt",
+      "description": "",
+      "thumbnail": "images/works/work008/thumb.png",
+      "stills": [
+        "images/works/work008/still1.png",
+        "images/works/work008/still2.png",
+        "images/works/work008/still3.png",
+        "images/works/work008/still4.png",
+        "images/works/work008/still5.png",
+        "images/works/work008/still6.png",
+        "images/works/work008/still7.png",
+        "images/works/work008/still8.png",
+        "images/works/work008/still9.png",
+        "images/works/work008/still10.png",
+        "images/works/work008/still11.png",
+        "images/works/work008/still12.png",
+        "images/works/work008/still13.png"
+      ],
+      "credits": [
+        {
+          "role": "Production",
+          "name": "Sonet ent."
+        },
+        {
+          "role": "Director",
+          "name": "Lee Hyeong Jong"
+        },
+        {
+          "role": "DOP",
+          "name": "Jung Da Bin"
+        },
+        {
+          "role": "Gaffer",
+          "name": "Shin Hyung Jun"
+        }
+      ],
+      "_originalIndex": 3
+    },
+    {
+      "id": "work007",
+      "title": "TRENDZ X 광장시장",
+      "majorCategory": "lighting",
+      "minorCategory": "musicvideo",
+      "date": "2023-09",
+      "role": "Gaffer",
+      "featured": false,
+      "youtubeUrl": "https://youtu.be/vUvK5LMMZtM?si=zzrhdmThzzr7KbhU",
+      "description": "",
+      "thumbnail": "images/works/work007/thumb.png",
+      "stills": [
+        "images/works/work007/still1.png",
+        "images/works/work007/still2.png",
+        "images/works/work007/still3.png",
+        "images/works/work007/still4.png",
+        "images/works/work007/still5.png",
+        "images/works/work007/still6.png",
+        "images/works/work007/still7.png",
+        "images/works/work007/still8.png",
+        "images/works/work007/still9.png",
+        "images/works/work007/still10.png",
+        "images/works/work007/still11.png",
+        "images/works/work007/still12.png"
+      ],
+      "credits": [
+        {
+          "role": "Production",
+          "name": "Sonet ent."
+        },
+        {
+          "role": "Director",
+          "name": "Lee Hyeong Jong"
+        },
+        {
+          "role": "DOP",
+          "name": "Jung Da Bin"
+        },
+        {
+          "role": "Gaffer",
+          "name": "Shin Hyung Jun"
+        }
+      ],
+      "_originalIndex": 4
+    },
+    {
       "id": "work006",
       "title": "'태키타카' 시즌1",
       "majorCategory": "production",
@@ -22,7 +255,7 @@ window.portfolioData = {
           "name": "LOOKUP MEDIA"
         }
       ],
-      "_originalIndex": 0
+      "_originalIndex": 5
     },
     {
       "id": "work004",
@@ -42,7 +275,7 @@ window.portfolioData = {
           "name": "LOOKUP MEDIA"
         }
       ],
-      "_originalIndex": 1
+      "_originalIndex": 6
     },
     {
       "id": "work003",
@@ -50,6 +283,7 @@ window.portfolioData = {
       "majorCategory": "production",
       "minorCategory": "musicvideo",
       "date": "2025",
+      "role": "Director, Editor",
       "featured": false,
       "youtubeUrl": "https://youtu.be/zNexk1f8McE?si=UqSf18rOJqo7BUv5",
       "description": "",
@@ -82,22 +316,37 @@ window.portfolioData = {
         "images/works/work003/still25.jpg",
         "images/works/work003/still26.jpg"
       ],
-      "credits": {
-        "client": "",
-        "director": "신형준",
-        "cinematographer": "정다빈",
-        "lighting": "김형민",
-        "editor": "신형준"
-      },
-      "_originalIndex": 2,
-      "role": "Director, Editor"
+      "credits": [
+        {
+          "role": "Production",
+          "name": "LOOKUP MEDIA"
+        },
+        {
+          "role": "Director",
+          "name": "Shin HyungJun"
+        },
+        {
+          "role": "DOP",
+          "name": "Jung DaBin"
+        },
+        {
+          "role": "Gaffer",
+          "name": "Kim HyoungMin"
+        },
+        {
+          "role": "Editor",
+          "name": "Shin HyungJun"
+        }
+      ],
+      "_originalIndex": 7
     },
     {
       "id": "work002",
       "title": "유명한아이 - Master card",
       "majorCategory": "production",
       "minorCategory": "musicvideo",
-      "date": "2025",
+      "date": "2024-08",
+      "role": "Director, Editor",
       "featured": false,
       "youtubeUrl": "https://youtu.be/FWiJjxwFq2w?si=RwVmeo-tJGSzePAu",
       "description": "",
@@ -122,15 +371,41 @@ window.portfolioData = {
         "images/works/work002/still17.png",
         "images/works/work002/still18.png"
       ],
-      "credits": {
-        "client": "",
-        "director": "신형준",
-        "cinematographer": "정다빈",
-        "lighting": "정준혁",
-        "editor": "신형준"
-      },
-      "_originalIndex": 3,
-      "role": "Director, Editor"
+      "credits": [
+        {
+          "role": "Production",
+          "name": "LOOKUP MEDIA"
+        },
+        {
+          "role": "Director",
+          "name": "Shin Hyung Jun"
+        },
+        {
+          "role": "DOP",
+          "name": "Jung Da Bin"
+        },
+        {
+          "role": "Gaffer",
+          "name": "Jung Jun Hyeok"
+        },
+        {
+          "role": "Cast",
+          "name": "Kim Sin Woo"
+        },
+        {
+          "role": "Producer",
+          "name": "Lim Jin Woo"
+        },
+        {
+          "role": "Assistant Director",
+          "name": "Gwon Hyo Jin"
+        },
+        {
+          "role": "Art Director",
+          "name": "TPY_system"
+        }
+      ],
+      "_originalIndex": 8
     },
     {
       "id": "work005",
@@ -173,7 +448,7 @@ window.portfolioData = {
           "name": "LOOKUP MEDIA"
         }
       ],
-      "_originalIndex": 4
+      "_originalIndex": 9
     },
     {
       "id": "work001",
@@ -208,7 +483,7 @@ window.portfolioData = {
         "lighting": "임진우",
         "editor": "신형준"
       },
-      "_originalIndex": 5,
+      "_originalIndex": 10,
       "role": "Director, Editor"
     }
   ]

@@ -179,7 +179,8 @@ tr:hover {
 
 /* Editor Section */
 .editor-section {
-    width: 450px;
+    width: 550px;
+    min-width: 500px;
     background: var(--bg-panel);
     border-left: 1px solid var(--border);
     padding: 20px;
@@ -188,6 +189,8 @@ tr:hover {
     top: 20px;
     max-height: calc(100vh - 40px);
     overflow-y: auto;
+    flex-shrink: 0;
+    /* Prevent shrinking */
 }
 
 .editor-section.hidden {
@@ -270,6 +273,43 @@ small {
 .credits-fieldset legend {
     color: var(--text-muted);
     padding: 0 5px;
+}
+
+/* Dynamic Credits Styling */
+.credit-row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 10px;
+    align-items: center;
+}
+
+.credit-row select {
+    flex: 0 0 130px;
+}
+
+.credit-row .custom-role-input {
+    flex: 0 0 110px;
+    background: #333;
+}
+
+.credit-row .credit-name-input {
+    flex: 1;
+}
+
+.credit-row .remove-credit-btn {
+    background: #444;
+    color: #ff5252;
+    border: 1px solid #555;
+    border-radius: 4px;
+    width: 30px;
+    height: 36px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.credit-row .remove-credit-btn:hover {
+    background: #ff5252;
+    color: #fff;
 }
 
 /* Image Config */

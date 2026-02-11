@@ -15,8 +15,15 @@ if (savedPortfolioData) {
         // localStorage의 stills가 비어있는데 data.js에는 있으면 data.js 우선
         worksData = savedWorks.map(sw => {
             const bw = basePortfolioWorks.find(b => b.id === sw.id);
-            if (bw && (!sw.stills || sw.stills.length === 0) && bw.stills && bw.stills.length > 0) {
-                return { ...sw, stills: bw.stills };
+            if (bw) {
+                const mergedWork = { ...sw };
+                if ((!sw.stills || sw.stills.length === 0) && bw.stills && bw.stills.length > 0) {
+                    mergedWork.stills = bw.stills;
+                }
+                if (!sw.role && bw.role) {
+                    mergedWork.role = bw.role;
+                }
+                return mergedWork;
             }
             return sw;
         });
@@ -137,7 +144,54 @@ function updateBulkActionUI() {
 
 // --- Event Listeners ---
 
+const commonRoles = [
+    "Client", "Director", "Assistant Director", "DOP",
+    "Lighting Director", "Gaffer", "Art Director",
+    "Editor", "Colorist", "VFX", "Sound", "Stylist",
+    "Hair & Makeup", "Producer", "Production Manager"
+];
+
+function addCreditRow(role = "", name = "") {
+    const container = document.getElementById('credits-container');
+    const row = document.createElement('div');
+    row.className = 'credit-row';
+
+    // Role Select
+    let roleOptions = commonRoles.map(r => `<option value="${r}" ${role === r ? 'selected' : ''}>${r}</option>`).join('');
+    const isCustom = role && !commonRoles.includes(role);
+
+    row.innerHTML = `
+        <select class="role-select">
+            <option value="">Role Select...</option>
+            ${roleOptions}
+            <option value="custom" ${isCustom ? 'selected' : ''}>직접 입력</option>
+        </select>
+        <input type="text" class="custom-role-input ${isCustom ? '' : 'hidden'}" placeholder="Role" value="${isCustom ? role : ''}">
+        <input type="text" class="credit-name-input" placeholder="Name" value="${name}">
+        <button type="button" class="remove-credit-btn">&times;</button>
+    `;
+
+    // Toggle custom input
+    const select = row.querySelector('.role-select');
+    const customInput = row.querySelector('.custom-role-input');
+    select.addEventListener('change', () => {
+        if (select.value === 'custom') {
+            customInput.classList.remove('hidden');
+            customInput.focus();
+        } else {
+            customInput.classList.add('hidden');
+        }
+    });
+
+    // Remove row
+    row.querySelector('.remove-credit-btn').addEventListener('click', () => row.remove());
+
+    container.appendChild(row);
+}
+
 function setupEventListeners() {
+    // ...
+    document.getElementById('add-credit-btn').addEventListener('click', () => addCreditRow());
     // Search & Filter
     elements.searchInput.addEventListener('input', renderTable);
     elements.filterMajor.addEventListener('change', renderTable);
@@ -294,16 +348,31 @@ function openEditor(index) {
         document.getElementById('work-major').value = work.majorCategory;
         document.getElementById('work-minor').value = work.minorCategory;
         document.getElementById('work-date').value = work.date;
+        document.getElementById('work-role').value = work.role || '';
         document.getElementById('work-youtube').value = work.youtubeUrl || '';
         document.getElementById('work-desc').value = work.description || '';
 
         // Credits
+        // Render Credits (Array or Old Object)
+        const container = document.getElementById('credits-container');
+        container.innerHTML = '';
+
         if (work.credits) {
-            document.getElementById('credit-client').value = work.credits.client || '';
-            document.getElementById('credit-director').value = work.credits.director || '';
-            document.getElementById('credit-cinema').value = work.credits.cinematographer || '';
-            document.getElementById('credit-lighting').value = work.credits.lighting || '';
-            document.getElementById('credit-editor').value = work.credits.editor || '';
+            if (Array.isArray(work.credits)) {
+                work.credits.forEach(c => addCreditRow(c.role, c.name));
+            } else {
+                // Backward compatibility: Convert object to array
+                const roleMap = {
+                    client: "Client",
+                    director: "Director",
+                    cinematographer: "DOP",
+                    lighting: "Lighting Director",
+                    editor: "Editor"
+                };
+                Object.entries(work.credits).forEach(([key, name]) => {
+                    if (name) addCreditRow(roleMap[key] || key, name);
+                });
+            }
         }
 
         // Images preview
@@ -399,30 +468,31 @@ function handleFormSubmit(e) {
     // ** DEBUG LOG **
     console.log('Saving stills for', id, ':', currentStills);
 
+    // Collect dynamic credits
+    const creditRows = document.querySelectorAll('.credit-row');
+    const credits = Array.from(creditRows).map(row => {
+        const select = row.querySelector('.role-select');
+        const customRoleInput = row.querySelector('.custom-role-input');
+        const name = row.querySelector('.credit-name-input').value;
+        const role = select.value === 'custom' ? customRoleInput.value : select.value;
+        return { role, name };
+    }).filter(c => c.role || c.name); // Filter empty rows
+
     const newWork = {
         id: id,
         title: formData.get('title'),
         majorCategory: formData.get('majorCategory'),
         minorCategory: formData.get('minorCategory'),
         date: formData.get('date'),
+        role: formData.get('role'),
         featured: formData.get('featured') === 'on',
         youtubeUrl: formData.get('youtubeUrl'),
         description: formData.get('description'),
         thumbnail: thumbnailPath || `images/works/${id}/thumb.jpg`,
-        // **수정된 로직: currentStills 우선 사용**
-        // 만약 currentStills가 비어있어도 의도된 삭제일 수 있음. 
-        // 그러나 DOM에 이미지가 있는데 currentStills가 비었다면 문제임.
-        // 안전장치: DOM에 요소가 있는데 currentStills가 비었다면 DOM에서 복구 (Sync Error Case)
         stills: (currentStills.length === 0 && getStillsFromDOM().length > 0)
             ? getStillsFromDOM()
             : currentStills,
-        credits: {
-            client: formData.get('credits.client'),
-            director: formData.get('credits.director'),
-            cinematographer: formData.get('credits.cinematographer'),
-            lighting: formData.get('credits.lighting'),
-            editor: formData.get('credits.editor')
-        }
+        credits: credits
     };
 
     if (currentEditIndex === -1) {
@@ -436,6 +506,7 @@ function handleFormSubmit(e) {
     closeEditor();
     syncToLocalStorage();
     localStorage.removeItem('admin_autosave');
+    showToast('저장되었습니다.');
 }
 
 // Helper to get stills from DOM order (Fallback usage)
@@ -615,11 +686,14 @@ function restoreAutoSave() {
     }
 
     const data = saved.formData;
-    document.getElementById('work-id').value = data.id;
-    document.getElementById('work-title').value = data.title;
-    document.getElementById('work-desc').value = data.description;
-
-    // ... restore others
+    document.getElementById('work-id').value = data.id || '';
+    document.getElementById('work-title').value = data.title || '';
+    document.getElementById('work-role').value = data.role || '';
+    document.getElementById('work-desc').value = data.description || '';
+    document.getElementById('work-date').value = data.date || '';
+    document.getElementById('work-major').value = data.majorCategory || 'production';
+    document.getElementById('work-minor').value = data.minorCategory || 'musicvideo';
+    document.getElementById('work-youtube').value = data.youtubeUrl || '';
 
     elements.autosaveNotice.classList.add('hidden');
     alert('임시 저장된 내용을 복구했습니다.');

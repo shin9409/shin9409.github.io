@@ -21,6 +21,7 @@
         "images/works/work001/still03.jpg"
       ],
       "date": "2024-11-20",
+      "role": "Director, Editor",
       "featured": true
     },
     {
@@ -66,6 +67,7 @@
         "images/works/work003/still03.jpg"
       ],
       "date": "2024-12-05",
+      "role": "Director, Editor",
       "featured": false
     },
     {

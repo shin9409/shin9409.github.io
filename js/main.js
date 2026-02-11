@@ -26,11 +26,17 @@ function loadData() {
                 // localStorage의 stills가 비어있는데 data.js에는 있으면 data.js 우선 사용
                 allWorks = savedWorks.map(savedWork => {
                     const baseWork = baseWorks.find(bw => bw.id === savedWork.id);
-                    if (baseWork &&
-                        (!savedWork.stills || savedWork.stills.length === 0) &&
-                        baseWork.stills && baseWork.stills.length > 0) {
-                        // data.js의 스틸 데이터로 보충
-                        return { ...savedWork, stills: baseWork.stills };
+                    if (baseWork) {
+                        const mergedWork = { ...savedWork };
+                        // stills 보충
+                        if ((!savedWork.stills || savedWork.stills.length === 0) && baseWork.stills && baseWork.stills.length > 0) {
+                            mergedWork.stills = baseWork.stills;
+                        }
+                        // role 보충 (새롭게 추가된 필드 대응)
+                        if (!savedWork.role && baseWork.role) {
+                            mergedWork.role = baseWork.role;
+                        }
+                        return mergedWork;
                     }
                     return savedWork;
                 });
@@ -88,8 +94,13 @@ function createWorkCard(work) {
         <div class="work-card" onclick="location.href='work-detail.html?id=${work.id}'">
             <img src="${work.thumbnail}" alt="${work.title}" class="work-thumb" onerror="this.src='https://via.placeholder.com/640x360/1a1a1a/888?text=No+Image'">
             <div class="work-overlay">
-                <div class="work-category">${work.majorCategory} / ${work.minorCategory}</div>
-                <h3 class="work-title">${work.title}</h3>
+                <div class="work-info">
+                    <h3 class="work-title">${work.title}</h3>
+                    <div class="work-meta">
+                        <span class="work-date">${work.date}</span>
+                        <span class="work-role">${work.role || ''}</span>
+                    </div>
+                </div>
             </div>
         </div>
     `;
@@ -228,13 +239,25 @@ function renderWorkDetail() {
         `;
     }
 
-    // Credits HTML
-    const creditsHtml = Object.entries(work.credits).map(([role, name]) => `
-        <div class="credit-item">
-            <h4>${role}</h4>
-            <p>${name}</p>
-        </div>
-    `).join('');
+    // Credits HTML (Array or Old Object Support)
+    let creditsHtml = '';
+    if (work.credits) {
+        if (Array.isArray(work.credits)) {
+            creditsHtml = work.credits.map(c => `
+                <div class="credit-item">
+                    <h4>${c.role}</h4>
+                    <p>${c.name}</p>
+                </div>
+            `).join('');
+        } else {
+            creditsHtml = Object.entries(work.credits).map(([role, name]) => `
+                <div class="credit-item">
+                    <h4>${role}</h4>
+                    <p>${name}</p>
+                </div>
+            `).join('');
+        }
+    }
 
     // 스틸 HTML - 클릭 시 라이트박스 열기
     const stillsHtml = work.stills.map((src, idx) => `

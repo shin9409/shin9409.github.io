@@ -6,6 +6,7 @@ window.portfolioData = {
       "majorCategory": "production",
       "minorCategory": "musicvideo",
       "date": "2025",
+      "role": "Director, Editor",
       "featured": false,
       "youtubeUrl": "https://youtu.be/zNexk1f8McE?si=UqSf18rOJqo7BUv5",
       "description": "",
@@ -53,6 +54,7 @@ window.portfolioData = {
       "majorCategory": "production",
       "minorCategory": "musicvideo",
       "date": "2025",
+      "role": "Director, Editor",
       "featured": false,
       "youtubeUrl": "https://youtu.be/FWiJjxwFq2w?si=RwVmeo-tJGSzePAu",
       "description": "",
@@ -92,6 +94,7 @@ window.portfolioData = {
       "majorCategory": "production",
       "minorCategory": "commercial",
       "date": "2024-05",
+      "role": "Director, Editor",
       "featured": false,
       "youtubeUrl": "https://youtu.be/hQyXen5-dY8?si=nKO-JnbAWWBS6A3I",
       "description": "",
@@ -112,13 +115,12 @@ window.portfolioData = {
         "images/works/work001/still13.png",
         "images/works/work001/still14.png"
       ],
-      "credits": {
-        "client": "다농바이오",
-        "director": "신형준",
-        "cinematographer": "정다빈",
-        "lighting": "임진우",
-        "editor": "신형준"
-      },
+      "credits": [
+        { "role": "Client", "name": "다농바이오" },
+        { "role": "Director", "name": "신형준" },
+        { "role": "DOP", "name": "정다빈" },
+        { "role": "Color", "name": "신형준" }
+      ],
       "_originalIndex": 2
     }
   ]

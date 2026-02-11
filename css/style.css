@@ -241,30 +241,33 @@ header .container {
 .hero-logo-wrapper::before {
     content: '';
     position: absolute;
-    top: 50%;
+    top: 40%;
     left: 50%;
     transform: translate(-50%, -50%);
     width: 140%;
     height: 140%;
-    background: radial-gradient(circle,
+    /* Position slightly higher for top-down feel */
+    background: radial-gradient(ellipse at center,
             rgba(255, 255, 255, 0.15) 0%,
-            rgba(255, 255, 255, 0.05) 40%,
+            rgba(255, 255, 255, 0.02) 50%,
             transparent 70%);
-    filter: blur(20px);
+    /* Soft white spotlight */
+    filter: blur(25px);
+    /* Increase blur for atmosphere */
     z-index: -1;
     pointer-events: none;
-    border-radius: 50%;
-    animation: pulseGlow 4s ease-in-out infinite alternate;
+    opacity: 0.8;
+    animation: spotlightBreathe 5s ease-in-out infinite alternate;
 }
 
-@keyframes pulseGlow {
+@keyframes spotlightBreathe {
     0% {
-        opacity: 0.8;
+        opacity: 0.5;
         transform: translate(-50%, -50%) scale(0.95);
     }
 
     100% {
-        opacity: 1;
+        opacity: 0.9;
         transform: translate(-50%, -50%) scale(1.05);
     }
 }

@@ -1,12 +1,74 @@
 window.portfolioData = {
   "works": [
     {
+      "id": "work005",
+      "title": "다농바이오 DANONG BIO - '풍류' 행사 영상 스케치",
+      "majorCategory": "production",
+      "minorCategory": "etc",
+      "date": "2024",
+      "role": "product , edit",
+      "featured": false,
+      "youtubeUrl": "https://youtu.be/iMKmkhE91eU?si=G7qP-0uAJmharvAJ",
+      "description": "",
+      "thumbnail": "images/works/work005/thumb.png",
+      "stills": [
+        "images/works/work005/still1.png",
+        "images/works/work005/still2.png",
+        "images/works/work005/still3.png",
+        "images/works/work005/still4.png",
+        "images/works/work005/still5.png",
+        "images/works/work005/still6.png",
+        "images/works/work005/still7.png",
+        "images/works/work005/still8.png",
+        "images/works/work005/still9.png",
+        "images/works/work005/still10.png",
+        "images/works/work005/still11.png",
+        "images/works/work005/still12.png",
+        "images/works/work005/still13.png",
+        "images/works/work005/still14.png",
+        "images/works/work005/still15.png",
+        "images/works/work005/still16.png",
+        "images/works/work005/still17.png",
+        "images/works/work005/still18.png",
+        "images/works/work005/still19.png",
+        "images/works/work005/still20.png",
+        "images/works/work005/still21.png",
+        "images/works/work005/still22.png"
+      ],
+      "credits": [
+        {
+          "role": "a film by",
+          "name": "LOOKUP MEDIA"
+        }
+      ],
+      "_originalIndex": 0
+    },
+    {
+      "id": "work004",
+      "title": "이자카야 산쥬로쿠 홍보영상",
+      "majorCategory": "production",
+      "minorCategory": "etc",
+      "date": "2025",
+      "role": "product / direct / edit",
+      "featured": false,
+      "youtubeUrl": "https://youtube.com/shorts/cFpCfgA204Y",
+      "description": "",
+      "thumbnail": "images/works/work004/thumb.png",
+      "stills": [],
+      "credits": [
+        {
+          "role": "a film by",
+          "name": "LOOKUP MEDIA"
+        }
+      ],
+      "_originalIndex": 1
+    },
+    {
       "id": "work003",
       "title": "유명한아이 - Ride or Die",
       "majorCategory": "production",
       "minorCategory": "musicvideo",
       "date": "2025",
-      "role": "Director, Editor",
       "featured": false,
       "youtubeUrl": "https://youtu.be/zNexk1f8McE?si=UqSf18rOJqo7BUv5",
       "description": "",
@@ -46,7 +108,8 @@ window.portfolioData = {
         "lighting": "김형민",
         "editor": "신형준"
       },
-      "_originalIndex": 0
+      "_originalIndex": 2,
+      "role": "Director, Editor"
     },
     {
       "id": "work002",
@@ -54,7 +117,6 @@ window.portfolioData = {
       "majorCategory": "production",
       "minorCategory": "musicvideo",
       "date": "2025",
-      "role": "Director, Editor",
       "featured": false,
       "youtubeUrl": "https://youtu.be/FWiJjxwFq2w?si=RwVmeo-tJGSzePAu",
       "description": "",
@@ -86,7 +148,8 @@ window.portfolioData = {
         "lighting": "정준혁",
         "editor": "신형준"
       },
-      "_originalIndex": 1
+      "_originalIndex": 3,
+      "role": "Director, Editor"
     },
     {
       "id": "work001",
@@ -94,7 +157,6 @@ window.portfolioData = {
       "majorCategory": "production",
       "minorCategory": "commercial",
       "date": "2024-05",
-      "role": "Director, Editor",
       "featured": false,
       "youtubeUrl": "https://youtu.be/hQyXen5-dY8?si=nKO-JnbAWWBS6A3I",
       "description": "",
@@ -115,13 +177,15 @@ window.portfolioData = {
         "images/works/work001/still13.png",
         "images/works/work001/still14.png"
       ],
-      "credits": [
-        { "role": "Client", "name": "다농바이오" },
-        { "role": "Director", "name": "신형준" },
-        { "role": "DOP", "name": "정다빈" },
-        { "role": "Color", "name": "신형준" }
-      ],
-      "_originalIndex": 2
+      "credits": {
+        "client": "다농바이오",
+        "director": "신형준",
+        "cinematographer": "정다빈",
+        "lighting": "임진우",
+        "editor": "신형준"
+      },
+      "_originalIndex": 4,
+      "role": "Director, Editor"
     }
   ]
 };

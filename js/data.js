@@ -51,7 +51,7 @@ window.portfolioData = {
       "date": "2025",
       "role": "product / direct / edit",
       "featured": false,
-      "youtubeUrl": "https://youtube.com/shorts/cFpCfgA204Y?si=nFk38AQUipfDVCEk",
+      "youtubeUrl": "https://youtube.com/embed/cFpCfgA204Y?si=nFk38AQUipfDVCEk",
       "description": "",
       "thumbnail": "images/works/work004/thumb.png",
       "stills": [],

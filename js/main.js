@@ -89,9 +89,22 @@ function renderFeaturedWorks() {
 }
 
 // Helper: Create Work Card HTML
+// Helper: Create Work Card HTML
 function createWorkCard(work) {
+    let categoryClass = '';
+    let tagHtml = '';
+
+    if (work.majorCategory === 'production') {
+        categoryClass = 'category-production';
+        tagHtml = '<span class="work-tag">PRODUCTION</span>';
+    } else if (work.majorCategory === 'lighting') {
+        categoryClass = 'category-lighting';
+        tagHtml = '<span class="work-tag">LIGHT</span>';
+    }
+
     return `
-        <div class="work-card" onclick="location.href='work-detail.html?id=${work.id}'">
+        <div class="work-card ${categoryClass}" onclick="location.href='work-detail.html?id=${work.id}'">
+            ${tagHtml}
             <img src="${work.thumbnail}" alt="${work.title}" class="work-thumb" onerror="this.src='https://via.placeholder.com/640x360/1a1a1a/888?text=No+Image'">
             <div class="work-overlay">
                 <div class="work-info">
@@ -135,17 +148,27 @@ function renderFilteredGrid(works) {
 }
 
 function setupFilters(initialMajor = 'all') {
+    const filtersContainer = document.querySelector('.filters');
     const majorFilters = document.querySelectorAll('.filter-btn');
     const subFilters = document.querySelectorAll('.sub-filter-btn');
 
     let currentMajor = initialMajor;
     let currentMinor = 'all';
 
+    // Helper to update mode class
+    const updateFilterMode = (mode) => {
+        if (!filtersContainer) return;
+        filtersContainer.classList.remove('mode-production', 'mode-lighting');
+        if (mode === 'production') filtersContainer.classList.add('mode-production');
+        if (mode === 'lighting') filtersContainer.classList.add('mode-lighting');
+    };
+
     // Set initial active state for Major Filters
     majorFilters.forEach(btn => {
         btn.classList.remove('active');
         if (btn.dataset.filter === initialMajor) {
             btn.classList.add('active');
+            updateFilterMode(initialMajor);
         }
     });
 
@@ -157,6 +180,8 @@ function setupFilters(initialMajor = 'all') {
             btn.classList.add('active');
 
             currentMajor = btn.dataset.filter;
+            updateFilterMode(currentMajor);
+
             filterWorks(currentMajor, currentMinor);
         });
     });

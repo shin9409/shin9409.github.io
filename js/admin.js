@@ -163,7 +163,10 @@ function addCreditRow(role = "", name = "") {
     let roleOptions = commonRoles.map(r => `<option value="${r}" ${role === r ? 'selected' : ''}>${r}</option>`).join('');
     const isCustom = role && !commonRoles.includes(role);
 
+    row.draggable = true; // Make row draggable
+
     row.innerHTML = `
+        <div class="drag-handle" style="cursor:grab; padding:0 10px; color:#888;">☰</div>
         <select class="role-select">
             <option value="">Role Select...</option>
             ${roleOptions}
@@ -189,7 +192,65 @@ function addCreditRow(role = "", name = "") {
     // Remove row
     row.querySelector('.remove-credit-btn').addEventListener('click', () => row.remove());
 
+    // Drag events
+    row.addEventListener('dragstart', handleCreditDragStart);
+    row.addEventListener('dragover', handleCreditDragOver);
+    row.addEventListener('drop', handleCreditDrop);
+    row.addEventListener('dragenter', handleCreditDragEnter);
+    row.addEventListener('dragleave', handleCreditDragLeave);
+    row.addEventListener('dragend', handleCreditDragEnd);
+
     container.appendChild(row);
+}
+
+// Credits Drag & Drop Handlers
+let creditDragSrcEl = null;
+
+function handleCreditDragStart(e) {
+    creditDragSrcEl = this;
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/html', this.innerHTML);
+    this.classList.add('dragging');
+}
+
+function handleCreditDragOver(e) {
+    if (e.preventDefault) e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+    return false;
+}
+
+function handleCreditDragEnter(e) {
+    this.classList.add('drag-over');
+}
+
+function handleCreditDragLeave(e) {
+    this.classList.remove('drag-over');
+}
+
+function handleCreditDragEnd(e) {
+    this.classList.remove('dragging');
+    const rows = document.querySelectorAll('.credit-row');
+    rows.forEach(row => row.classList.remove('drag-over'));
+}
+
+function handleCreditDrop(e) {
+    if (e.stopPropagation) e.stopPropagation();
+
+    if (creditDragSrcEl !== this) {
+        // Swap DOM elements
+        const container = document.getElementById('credits-container');
+        // Get all rows as array
+        const rows = Array.from(container.children);
+        const srcIndex = rows.indexOf(creditDragSrcEl);
+        const targetIndex = rows.indexOf(this);
+
+        if (srcIndex < targetIndex) {
+            container.insertBefore(creditDragSrcEl, this.nextSibling);
+        } else {
+            container.insertBefore(creditDragSrcEl, this);
+        }
+    }
+    return false;
 }
 
 function setupEventListeners() {
@@ -260,7 +321,10 @@ function setupEventListeners() {
 
     // File Inputs
     document.getElementById('thumb-file').addEventListener('change', (e) => handleThumbSelect(e.target.files[0]));
+    // File Inputs
+    document.getElementById('thumb-file').addEventListener('change', (e) => handleThumbSelect(e.target.files[0]));
     document.getElementById('stills-file').addEventListener('change', (e) => handleStillsSelect(Array.from(e.target.files)));
+    document.getElementById('clear-stills-btn').addEventListener('click', clearAllStills);
 
     // Modal Close
     document.querySelector('.close-modal').addEventListener('click', (e) => {
@@ -395,7 +459,10 @@ function openEditor(index) {
                 const div = document.createElement('div');
                 div.className = 'still-preview-item';
                 div.dataset.path = path;
-                div.innerHTML = `<img src="${path}" onclick="removeStill(this)">`;
+                div.innerHTML = `
+                    <img src="${path}">
+                    <button type="button" class="btn-remove-still" onclick="removeStill(this)">×</button>
+                `;
                 stillsContainer.appendChild(div);
             });
             updateStillsTextDisplay();
@@ -525,11 +592,22 @@ function getStillsFromDOM() {
 }
 
 // Updated Stills Selector with currentStills Sync
+// Updated Stills Selector with Append/Replace Mode
 function handleStillsSelect(files) {
     if (!files.length) return;
 
     const id = document.getElementById('work-id').value || '{id}';
     const container = document.getElementById('stills-preview');
+
+    // Check mode
+    const mode = document.querySelector('input[name="stills-mode"]:checked').value;
+
+    // If replace mode, clear existing
+    if (mode === 'replace') {
+        currentStills = [];
+        container.innerHTML = '';
+    }
+
     // 계속 이어서 번호 매기기 (Total length 기준)
     const startIdx = currentStills.length;
 
@@ -548,30 +626,44 @@ function handleStillsSelect(files) {
             const div = document.createElement('div');
             div.className = 'still-preview-item';
             div.dataset.path = finalPath; // Store path in DOM
-            div.innerHTML = `<img src="${e.target.result}" onclick="removeStill(this)">`;
+            div.innerHTML = `
+                <img src="${e.target.result}">
+                <button type="button" class="btn-remove-still" onclick="removeStill(this)">×</button>
+            `;
             container.appendChild(div);
         };
         reader.readAsDataURL(file);
     });
     updateStillsTextDisplay();
+
+    // Reset file input so we can select the same file again if needed
+    document.getElementById('stills-file').value = '';
+    // Reset mode to append for safety? Or keep it? keeping it is probably better UX.
 }
 
 function updateStillsTextDisplay() {
     document.getElementById('stills-path-display').textContent = currentStills.join('\n');
 }
 
-window.removeStill = function (imgElement) {
-    if (confirm('이 이미지를 목록에서 제외하시겠습니까?')) {
-        const div = imgElement.parentElement;
-        const pathToRemove = div.dataset.path;
+window.removeStill = function (btnElement) {
+    // btnElement is now the X button, not the image
+    const div = btnElement.parentElement;
+    const pathToRemove = div.dataset.path;
 
-        // **Remove from Array**
-        currentStills = currentStills.filter(p => p !== pathToRemove);
+    // Remove from Array immediately
+    currentStills = currentStills.filter(p => p !== pathToRemove);
 
-        div.remove();
+    div.remove();
+    updateStillsTextDisplay();
+};
+
+function clearAllStills() {
+    if (confirm('모든 스틸컷을 목록에서 제거하시겠습니까?')) {
+        currentStills = [];
+        document.getElementById('stills-preview').innerHTML = '';
         updateStillsTextDisplay();
     }
-};
+}
 
 function handleDelete() {
     if (confirm('정말 삭제하시겠습니까?')) {

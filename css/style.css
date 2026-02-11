@@ -373,6 +373,33 @@ section {
     padding: 25px;
 }
 
+/* Category Tags on Thumbnail */
+.work-tag {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    font-size: 0.65rem;
+    padding: 4px 8px;
+    border-radius: 2px;
+    color: white;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    z-index: 2;
+    opacity: 0.9;
+    pointer-events: none;
+}
+
+.work-card.category-production .work-tag {
+    background-color: var(--accent-color);
+    color: #fff;
+}
+
+.work-card.category-lighting .work-tag {
+    background-color: #c5a059;
+    color: #000;
+}
+
 .work-card:hover .work-thumb {
     transform: scale(1.05);
 }
@@ -404,7 +431,18 @@ section {
     display: flex;
     gap: 12px;
     text-transform: uppercase;
+    text-transform: uppercase;
     letter-spacing: 1px;
+    transition: color 0.3s ease;
+}
+
+/* Hover dynamic color for meta */
+.work-card:hover.category-production .work-meta {
+    color: var(--accent-color);
+}
+
+.work-card:hover.category-lighting .work-meta {
+    color: #c5a059;
 }
 
 .work-date {
@@ -521,25 +559,49 @@ section {
 .filter-group {
     display: flex;
     justify-content: center;
-    gap: 20px;
-    margin-bottom: 30px;
+    gap: 30px;
+    margin-bottom: 40px;
     flex-wrap: wrap;
 }
 
 .filter-btn {
-    background: none;
-    border: none;
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.2);
     color: var(--text-muted);
-    font-size: 1rem;
+    font-size: 1.2rem;
+    font-weight: 700;
     cursor: pointer;
     text-transform: uppercase;
-    padding: 5px 10px;
-    transition: color 0.3s ease;
+    padding: 15px 40px;
+    transition: all 0.3s ease;
+    border-radius: 4px;
+    letter-spacing: 2px;
 }
 
-.filter-btn.active,
-.filter-btn:hover {
-    color: var(--text-color);
+/* ALL Tab */
+.filter-btn[data-filter="all"].active,
+.filter-btn[data-filter="all"]:hover {
+    border-color: #fff;
+    color: #fff;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+/* PRODUCTION Tab */
+.filter-btn[data-filter="production"].active,
+.filter-btn[data-filter="production"]:hover {
+    border-color: var(--accent-color);
+    color: #fff;
+    background: var(--accent-color);
+    box-shadow: 0 0 15px rgba(210, 32, 39, 0.4);
+}
+
+/* LIGHTING Tab */
+.filter-btn[data-filter="lighting"].active,
+.filter-btn[data-filter="lighting"]:hover {
+    border-color: #c5a059;
+    color: #fff;
+    background: #c5a059;
+    box-shadow: 0 0 15px rgba(197, 160, 89, 0.4);
 }
 
 .sub-filters {
@@ -560,9 +622,24 @@ section {
     transition: all 0.3s ease;
 }
 
+/* Default (All) - Red */
 .sub-filter-btn.active,
 .sub-filter-btn:hover {
     background: var(--accent-color);
+    color: #fff;
+}
+
+/* Production Mode - Red */
+.filters.mode-production .sub-filter-btn.active,
+.filters.mode-production .sub-filter-btn:hover {
+    background: var(--accent-color);
+    color: #fff;
+}
+
+/* Lighting Mode - Gold */
+.filters.mode-lighting .sub-filter-btn.active,
+.filters.mode-lighting .sub-filter-btn:hover {
+    background: #c5a059;
     color: #000;
 }
 

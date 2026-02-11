@@ -10,7 +10,7 @@ window.portfolioData = {
       "featured": false,
       "youtubeUrl": "https://youtu.be/9wgx_GKLE90?si=gnZc1rfP2GabSwC1",
       "description": "KTA 유튜브 예능 시리즈 \n'태키타카' 시즌1\nEP.01 ~ EP.12",
-      "thumbnail": "images/works/work006/thumb.jpg",
+      "thumbnail": "images/works/work006/thumb.png",
       "stills": [],
       "credits": [
         {

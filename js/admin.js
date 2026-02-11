@@ -102,7 +102,7 @@ function renderTable() {
     filteredWorks.forEach(work => {
         const tr = document.createElement('tr');
         tr.draggable = true;
-        tr.dataset.index = work._originalIndex;
+        tr.dataset.index = work._originalIndex; // Use original index for correct editing/reordering
         if (selectedIds.has(work.id)) tr.classList.add('selected');
 
         tr.innerHTML = `
@@ -126,6 +126,9 @@ function renderTable() {
         tr.addEventListener('dragstart', handleDragStart);
         tr.addEventListener('dragover', handleDragOver);
         tr.addEventListener('drop', handleDrop);
+        tr.addEventListener('dragenter', handleDragEnter);
+        tr.addEventListener('dragleave', handleDragLeave);
+        tr.addEventListener('dragend', handleDragEnd);
 
         tbody.appendChild(tr);
     });
@@ -800,28 +803,59 @@ function downloadData(type) {
 }
 
 // Drag & Drop
+// Drag & Drop
 let dragSrcEl = null;
+
 function handleDragStart(e) {
     dragSrcEl = this;
     e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/html', this.innerHTML);
     this.classList.add('dragging');
 }
+
 function handleDragOver(e) {
     if (e.preventDefault) e.preventDefault();
     e.dataTransfer.dropEffect = 'move';
     return false;
 }
+
+function handleDragEnter(e) {
+    this.classList.add('drag-over');
+}
+
+function handleDragLeave(e) {
+    this.classList.remove('drag-over');
+}
+
+function handleDragEnd(e) {
+    this.classList.remove('dragging');
+    const rows = document.querySelectorAll('#works-table tbody tr');
+    rows.forEach(row => row.classList.remove('drag-over'));
+}
+
 function handleDrop(e) {
     if (e.stopPropagation) e.stopPropagation();
-    const dragIdx = this.dataset.index;
-    if (elements.searchInput.value || elements.filterMajor.value !== 'all') {
-        alert('Please clear filters to reorder.');
-        return false;
-    }
 
-    const item = worksData.splice(dragIdx, 1)[0];
-    worksData.splice(this.dataset.index, 0, item);
-    renderTable();
-    syncToLocalStorage();
+    if (dragSrcEl !== this) {
+        if (elements.searchInput.value || elements.filterMajor.value !== 'all' || elements.filterMinor.value !== 'all') {
+            alert('필터나 검색이 적용된 상태에서는 순서를 변경할 수 없습니다.');
+            return false;
+        }
+
+        const srcIdx = parseInt(dragSrcEl.dataset.index);
+        let targetIdx = parseInt(this.dataset.index);
+
+        // Adjust target index if moving down (because removal shifts indices)
+        if (srcIdx < targetIdx) {
+            targetIdx--;
+        }
+
+        // Move item in array
+        const item = worksData.splice(srcIdx, 1)[0];
+        worksData.splice(targetIdx, 0, item);
+
+        renderTable();
+        syncToLocalStorage();
+    }
     return false;
 }

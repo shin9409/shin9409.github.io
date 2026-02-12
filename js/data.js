@@ -1,6 +1,638 @@
 window.portfolioData = {
   "works": [
     {
+      "id": "work027",
+      "title": "먹태와 녹차",
+      "majorCategory": "lighting",
+      "minorCategory": "film",
+      "date": "2026-01",
+      "role": "Gaffer",
+      "featured": false,
+      "youtubeUrl": "",
+      "description": "Running Time : 24min 56sec \n\n출연 : 김인우, 이하리\n\n[제 27회 신영균문화예술제단 필름게이트 제작지원작]\n[제 13회 필름게이트 영화제 작품상]\n[2025 제이포엔터테인먼트 단편영화 제작지원작]​​​​​​",
+      "thumbnail": "images/works/work027/thumb.jpg",
+      "stills": [
+        "images/works/work027/still1.jpg",
+        "images/works/work027/still2.jpg",
+        "images/works/work027/still3.jpg",
+        "images/works/work027/still4.jpg",
+        "images/works/work027/still5.jpg",
+        "images/works/work027/still6.jpg",
+        "images/works/work027/still7.jpg",
+        "images/works/work027/still8.jpg",
+        "images/works/work027/still9.jpg",
+        "images/works/work027/still10.jpg",
+        "images/works/work027/still11.jpg",
+        "images/works/work027/still12.jpg",
+        "images/works/work027/still13.jpg",
+        "images/works/work027/still14.jpg",
+        "images/works/work027/still15.jpg",
+        "images/works/work027/still16.jpg",
+        "images/works/work027/still17.jpg",
+        "images/works/work027/still18.jpg",
+        "images/works/work027/still19.jpg",
+        "images/works/work027/still20.jpg",
+        "images/works/work027/still21.jpg",
+        "images/works/work027/still22.jpg",
+        "images/works/work027/still23.jpg",
+        "images/works/work027/still24.jpg",
+        "images/works/work027/still25.jpg",
+        "images/works/work027/still26.jpg",
+        "images/works/work027/still27.jpg",
+        "images/works/work027/still28.jpg",
+        "images/works/work027/still29.jpg",
+        "images/works/work027/still30.jpg"
+      ],
+      "credits": [
+        {
+          "role": "Gaffer",
+          "name": "Shin HyungJun"
+        }
+      ],
+      "_originalIndex": 0
+    },
+    {
+      "id": "work026",
+      "title": "결혼기념일",
+      "majorCategory": "lighting",
+      "minorCategory": "film",
+      "date": "2026-01",
+      "role": "Gaffer",
+      "featured": false,
+      "youtubeUrl": "",
+      "description": "Running Time : 15min 54sec \n\n출연 : 문승아, 이유하, 최우준, 한상조",
+      "thumbnail": "images/works/work026/thumb.jpg",
+      "stills": [
+        "images/works/work026/still1.jpg",
+        "images/works/work026/still2.jpg",
+        "images/works/work026/still3.jpg",
+        "images/works/work026/still4.jpg",
+        "images/works/work026/still5.jpg",
+        "images/works/work026/still6.jpg",
+        "images/works/work026/still7.jpg",
+        "images/works/work026/still8.jpg",
+        "images/works/work026/still9.jpg",
+        "images/works/work026/still10.jpg",
+        "images/works/work026/still11.jpg",
+        "images/works/work026/still12.jpg",
+        "images/works/work026/still13.jpg",
+        "images/works/work026/still14.jpg",
+        "images/works/work026/still15.jpg",
+        "images/works/work026/still16.jpg"
+      ],
+      "credits": [
+        {
+          "role": "Gaffer",
+          "name": "Shin HyungJun"
+        }
+      ],
+      "_originalIndex": 1
+    },
+    {
+      "id": "work025",
+      "title": "30번째 관객",
+      "majorCategory": "lighting",
+      "minorCategory": "film",
+      "date": "2025-09",
+      "role": "Gaffer",
+      "featured": false,
+      "youtubeUrl": "",
+      "description": "Running Time : 03min 30sec \n\n출연 : 한태은, 주하린, 나호숙, 윤서진\n\n[2025 커뮤니티비프 X 한예종 영상원 30주년 특별전]",
+      "thumbnail": "images/works/work025/thumb.jpg",
+      "stills": [
+        "images/works/work025/still1.jpg",
+        "images/works/work025/still2.jpg",
+        "images/works/work025/still3.jpg",
+        "images/works/work025/still4.jpg",
+        "images/works/work025/still5.jpg",
+        "images/works/work025/still6.jpg",
+        "images/works/work025/still7.jpg",
+        "images/works/work025/still8.jpg",
+        "images/works/work025/still9.jpg",
+        "images/works/work025/still10.jpg",
+        "images/works/work025/still11.jpg",
+        "images/works/work025/still12.jpg",
+        "images/works/work025/still13.jpg",
+        "images/works/work025/still14.jpg",
+        "images/works/work025/still15.jpg",
+        "images/works/work025/still16.jpg",
+        "images/works/work025/still17.jpg"
+      ],
+      "credits": [
+        {
+          "role": "Gaffer",
+          "name": "Shin HyungJun"
+        }
+      ],
+      "_originalIndex": 2
+    },
+    {
+      "id": "work024",
+      "title": "두번의 장례",
+      "majorCategory": "lighting",
+      "minorCategory": "film",
+      "date": "2025-04",
+      "role": "Gaffer",
+      "featured": false,
+      "youtubeUrl": "",
+      "description": "Running Time : 24min 20sec\n\n출연 : 임지호, 김금순, 김학선, 강지용, 김주안, 서석규\n\n[2024 충남영상위원회 제작지원작]\n[제 12회 춘천영화제 인디시네마단편 선정]\n[제 21회 제천국제음악영화제 메이드 인 제천]\n[제 8회 전주국제단편영화제 경쟁]\n[남도영화제 시즌2 경쟁]\n[제 25회 전북독립영화제 경쟁]\n[제 9회 충북세계가족영화제]\n[제 20회 파리한국영화제 - 심사위원특별언급]",
+      "thumbnail": "images/works/work024/thumb.jpg",
+      "stills": [
+        "images/works/work024/still1.jpg",
+        "images/works/work024/still2.jpg",
+        "images/works/work024/still3.jpg",
+        "images/works/work024/still4.jpg",
+        "images/works/work024/still5.jpg",
+        "images/works/work024/still6.jpg",
+        "images/works/work024/still7.jpg",
+        "images/works/work024/still8.jpg",
+        "images/works/work024/still9.jpg",
+        "images/works/work024/still10.jpg",
+        "images/works/work024/still11.jpg",
+        "images/works/work024/still12.jpg",
+        "images/works/work024/still13.jpg",
+        "images/works/work024/still14.jpg",
+        "images/works/work024/still15.jpg",
+        "images/works/work024/still16.jpg",
+        "images/works/work024/still17.jpg",
+        "images/works/work024/still18.jpg",
+        "images/works/work024/still19.jpg",
+        "images/works/work024/still20.jpg",
+        "images/works/work024/still21.jpg",
+        "images/works/work024/still22.jpg",
+        "images/works/work024/still23.jpg",
+        "images/works/work024/still24.jpg",
+        "images/works/work024/still25.jpg",
+        "images/works/work024/still26.jpg",
+        "images/works/work024/still27.jpg",
+        "images/works/work024/still28.jpg",
+        "images/works/work024/still29.jpg",
+        "images/works/work024/still30.jpg",
+        "images/works/work024/still31.jpg",
+        "images/works/work024/still32.jpg"
+      ],
+      "credits": [
+        {
+          "role": "Gaffer",
+          "name": "Shin HyungJun"
+        }
+      ],
+      "_originalIndex": 3
+    },
+    {
+      "id": "work023",
+      "title": "디어 마이 레드",
+      "majorCategory": "lighting",
+      "minorCategory": "film",
+      "date": "2025-04",
+      "role": "Gaffer",
+      "featured": false,
+      "youtubeUrl": "",
+      "description": "Running Time : 22min 37sec\n\n출연 : 육소하, 윤나경\n\n[2024 제이포엔터테인먼트 제작지원작]​​​​​​",
+      "thumbnail": "images/works/work023/thumb.jpg",
+      "stills": [
+        "images/works/work023/still1.jpg",
+        "images/works/work023/still2.jpg",
+        "images/works/work023/still3.jpg",
+        "images/works/work023/still4.jpg",
+        "images/works/work023/still5.jpg",
+        "images/works/work023/still6.jpg",
+        "images/works/work023/still7.jpg",
+        "images/works/work023/still8.jpg",
+        "images/works/work023/still9.jpg",
+        "images/works/work023/still10.jpg",
+        "images/works/work023/still11.jpg",
+        "images/works/work023/still12.jpg",
+        "images/works/work023/still13.jpg",
+        "images/works/work023/still14.jpg",
+        "images/works/work023/still15.jpg",
+        "images/works/work023/still16.jpg",
+        "images/works/work023/still17.jpg",
+        "images/works/work023/still18.jpg",
+        "images/works/work023/still19.jpg",
+        "images/works/work023/still20.jpg",
+        "images/works/work023/still21.jpg",
+        "images/works/work023/still22.jpg",
+        "images/works/work023/still23.jpg",
+        "images/works/work023/still24.jpg",
+        "images/works/work023/still25.jpg",
+        "images/works/work023/still26.jpg"
+      ],
+      "credits": [
+        {
+          "role": "Gaffer",
+          "name": "Shin HyungJun"
+        }
+      ],
+      "_originalIndex": 4
+    },
+    {
+      "id": "work022",
+      "title": "트로픽",
+      "majorCategory": "lighting",
+      "minorCategory": "film",
+      "date": "2025-04",
+      "role": "Gaffer",
+      "featured": false,
+      "youtubeUrl": "",
+      "description": "Running Time : 19min 35sec \n\n출연 : 배민수, 김도아\n\n[2024 VA Corp. 제작지원작]",
+      "thumbnail": "images/works/work022/thumb.jpg",
+      "stills": [
+        "images/works/work022/still1.jpg",
+        "images/works/work022/still2.jpg",
+        "images/works/work022/still3.jpg",
+        "images/works/work022/still4.jpg",
+        "images/works/work022/still5.jpg",
+        "images/works/work022/still6.jpg",
+        "images/works/work022/still7.jpg",
+        "images/works/work022/still8.jpg",
+        "images/works/work022/still9.jpg",
+        "images/works/work022/still10.jpg",
+        "images/works/work022/still11.jpg",
+        "images/works/work022/still12.jpg",
+        "images/works/work022/still13.jpg",
+        "images/works/work022/still14.jpg",
+        "images/works/work022/still15.jpg",
+        "images/works/work022/still16.jpg",
+        "images/works/work022/still17.jpg",
+        "images/works/work022/still18.jpg",
+        "images/works/work022/still19.jpg",
+        "images/works/work022/still20.jpg",
+        "images/works/work022/still21.jpg",
+        "images/works/work022/still22.jpg",
+        "images/works/work022/still23.jpg",
+        "images/works/work022/still24.jpg",
+        "images/works/work022/still25.jpg",
+        "images/works/work022/still26.jpg",
+        "images/works/work022/still27.jpg",
+        "images/works/work022/still28.jpg",
+        "images/works/work022/still29.jpg",
+        "images/works/work022/still30.jpg",
+        "images/works/work022/still31.jpg",
+        "images/works/work022/still32.jpg",
+        "images/works/work022/still33.jpg",
+        "images/works/work022/still34.jpg"
+      ],
+      "credits": [
+        {
+          "role": "Gaffer",
+          "name": "Shin HyungJun"
+        }
+      ],
+      "_originalIndex": 5
+    },
+    {
+      "id": "work021",
+      "title": "시적허용",
+      "majorCategory": "lighting",
+      "minorCategory": "film",
+      "date": "2025-04",
+      "role": "Gaffer",
+      "featured": false,
+      "youtubeUrl": "",
+      "description": "Running Time : 10min 30sec\n\n출연 : 송원철, 안채은, 권민채\n\n[제 30회 부산국제영화제 와이드앵글 경쟁]\n[제 5회 2030 청년영화제 초청]\n[제 1회 럭키비디오스토어 영화제 초청]",
+      "thumbnail": "images/works/work021/thumb.jpg",
+      "stills": [
+        "images/works/work021/still1.jpg",
+        "images/works/work021/still2.jpg",
+        "images/works/work021/still3.jpg",
+        "images/works/work021/still4.jpg",
+        "images/works/work021/still5.jpg",
+        "images/works/work021/still6.jpg",
+        "images/works/work021/still7.jpg",
+        "images/works/work021/still8.jpg",
+        "images/works/work021/still9.jpg",
+        "images/works/work021/still10.jpg",
+        "images/works/work021/still11.jpg",
+        "images/works/work021/still12.jpg",
+        "images/works/work021/still13.jpg",
+        "images/works/work021/still14.jpg"
+      ],
+      "credits": [
+        {
+          "role": "Gaffer",
+          "name": "Shin HyungJun"
+        }
+      ],
+      "_originalIndex": 6
+    },
+    {
+      "id": "work018",
+      "title": "실종알림",
+      "majorCategory": "lighting",
+      "minorCategory": "film",
+      "date": "2025-03",
+      "role": "Gaffer",
+      "featured": false,
+      "youtubeUrl": "",
+      "description": "Running Time : 32min 35sec \n\n출연 : 라윤, 송다영, 최지운",
+      "thumbnail": "images/works/work018/thumb.jpg",
+      "stills": [
+        "images/works/work018/still1.jpg",
+        "images/works/work018/still2.jpg",
+        "images/works/work018/still3.jpg",
+        "images/works/work018/still4.jpg",
+        "images/works/work018/still5.jpg",
+        "images/works/work018/still6.jpg",
+        "images/works/work018/still7.jpg",
+        "images/works/work018/still8.jpg",
+        "images/works/work018/still9.jpg",
+        "images/works/work018/still10.jpg",
+        "images/works/work018/still11.jpg",
+        "images/works/work018/still12.jpg",
+        "images/works/work018/still13.jpg",
+        "images/works/work018/still14.jpg",
+        "images/works/work018/still15.jpg",
+        "images/works/work018/still16.jpg",
+        "images/works/work018/still17.jpg",
+        "images/works/work018/still18.jpg",
+        "images/works/work018/still19.jpg",
+        "images/works/work018/still20.jpg",
+        "images/works/work018/still21.jpg"
+      ],
+      "credits": [
+        {
+          "role": "Gaffer",
+          "name": "Shin HyungJun"
+        }
+      ],
+      "_originalIndex": 7
+    },
+    {
+      "id": "work020",
+      "title": "영로",
+      "majorCategory": "lighting",
+      "minorCategory": "film",
+      "date": "2025-01",
+      "role": "Gaffer",
+      "featured": false,
+      "youtubeUrl": "",
+      "description": "Running Time : 37min 52sec\n\n출연 : 서석규, 박유밀, 임영우, 이상희, 강혜원, 하민\n\n[2023 영화진흥위원회 독립예술영화 단편부문 제작지원작]\n[2024 제이포엔터테인먼트 단편영화 제작지원작]\n",
+      "thumbnail": "images/works/work020/thumb.jpg",
+      "stills": [
+        "images/works/work020/still1.jpg",
+        "images/works/work020/still2.jpg",
+        "images/works/work020/still3.jpg",
+        "images/works/work020/still4.jpg",
+        "images/works/work020/still5.jpg",
+        "images/works/work020/still6.jpg",
+        "images/works/work020/still7.jpg",
+        "images/works/work020/still8.jpg",
+        "images/works/work020/still9.jpg",
+        "images/works/work020/still10.jpg",
+        "images/works/work020/still11.jpg",
+        "images/works/work020/still12.jpg",
+        "images/works/work020/still13.jpg",
+        "images/works/work020/still14.jpg",
+        "images/works/work020/still15.jpg",
+        "images/works/work020/still16.jpg",
+        "images/works/work020/still17.jpg",
+        "images/works/work020/still18.jpg",
+        "images/works/work020/still19.jpg",
+        "images/works/work020/still20.jpg",
+        "images/works/work020/still21.jpg",
+        "images/works/work020/still22.jpg",
+        "images/works/work020/still23.jpg",
+        "images/works/work020/still24.jpg",
+        "images/works/work020/still25.jpg",
+        "images/works/work020/still26.jpg",
+        "images/works/work020/still27.jpg",
+        "images/works/work020/still28.jpg"
+      ],
+      "credits": [
+        {
+          "role": "Gaffer",
+          "name": "Shin HyungJun"
+        }
+      ],
+      "_originalIndex": 8
+    },
+    {
+      "id": "work019",
+      "title": "점 위에 점 위에 점",
+      "majorCategory": "lighting",
+      "minorCategory": "film",
+      "date": "2025-01",
+      "role": "Gaffer",
+      "featured": false,
+      "youtubeUrl": "",
+      "description": "Running Time : 29min 26sec\n\n출연 : 송원철, 김다예, 왕휘진, 문하늬\n\n[제 3회 통영영화제]",
+      "thumbnail": "images/works/work019/thumb.jpeg",
+      "stills": [
+        "images/works/work019/still1.jpeg",
+        "images/works/work019/still2.jpeg",
+        "images/works/work019/still3.jpeg",
+        "images/works/work019/still4.jpeg",
+        "images/works/work019/still5.jpeg",
+        "images/works/work019/still6.jpeg",
+        "images/works/work019/still7.jpeg",
+        "images/works/work019/still8.jpeg",
+        "images/works/work019/still9.jpeg",
+        "images/works/work019/still10.jpeg",
+        "images/works/work019/still11.jpeg",
+        "images/works/work019/still12.jpeg",
+        "images/works/work019/still13.jpeg",
+        "images/works/work019/still14.jpeg",
+        "images/works/work019/still15.jpeg",
+        "images/works/work019/still16.jpeg",
+        "images/works/work019/still17.jpeg",
+        "images/works/work019/still18.jpeg",
+        "images/works/work019/still19.jpeg",
+        "images/works/work019/still20.jpeg",
+        "images/works/work019/still21.jpeg",
+        "images/works/work019/still22.jpeg",
+        "images/works/work019/still23.jpeg",
+        "images/works/work019/still24.jpeg",
+        "images/works/work019/still25.jpeg",
+        "images/works/work019/still26.jpeg"
+      ],
+      "credits": [
+        {
+          "role": "Gaffer",
+          "name": "Shin HyungJun"
+        }
+      ],
+      "_originalIndex": 9
+    },
+    {
+      "id": "work017",
+      "title": "콜록콜록 컬러",
+      "majorCategory": "lighting",
+      "minorCategory": "film",
+      "date": "2024-06",
+      "role": "Gaffer",
+      "featured": false,
+      "youtubeUrl": "",
+      "description": "Running Time : 12min 56sec \n\n출연 : 장하은, 이승연, 오원\n\n[2024 제이포엔터테인먼트 제작지원작]\n[2025 한국퀴어영화제 KQFF 공식 초청]\n[제 17회 대단한단편영화제]\n[제 5회 금천패션영화제 경쟁]\n[제 28회 도시영화제]\n[제 15회 서울국제프라이드영화제]\n[제 15회 서강청년영화제]",
+      "thumbnail": "images/works/work017/thumb.jpeg",
+      "stills": [
+        "images/works/work017/still1.jpeg",
+        "images/works/work017/still2.jpeg",
+        "images/works/work017/still3.jpeg",
+        "images/works/work017/still4.jpeg",
+        "images/works/work017/still5.jpeg",
+        "images/works/work017/still6.jpeg",
+        "images/works/work017/still7.jpeg",
+        "images/works/work017/still8.jpeg",
+        "images/works/work017/still9.jpeg",
+        "images/works/work017/still10.jpeg",
+        "images/works/work017/still11.jpeg",
+        "images/works/work017/still12.jpeg",
+        "images/works/work017/still13.jpeg"
+      ],
+      "credits": [
+        {
+          "role": "Gaffer",
+          "name": "Shin HyungJun"
+        }
+      ],
+      "_originalIndex": 10
+    },
+    {
+      "id": "work016",
+      "title": "친절한 희진씨",
+      "majorCategory": "lighting",
+      "minorCategory": "film",
+      "date": "2024-02",
+      "role": "Gaffer",
+      "featured": false,
+      "youtubeUrl": "",
+      "description": "Running Time : 19min 25sec\n\n출연 : 윤서하, 심연화, 강재민, 양우혁",
+      "thumbnail": "images/works/work016/thumb.jpeg",
+      "stills": [
+        "images/works/work016/still1.jpeg",
+        "images/works/work016/still2.jpeg",
+        "images/works/work016/still3.jpeg",
+        "images/works/work016/still4.jpeg",
+        "images/works/work016/still5.jpeg",
+        "images/works/work016/still6.jpeg",
+        "images/works/work016/still7.jpeg",
+        "images/works/work016/still8.jpeg",
+        "images/works/work016/still9.jpeg",
+        "images/works/work016/still10.jpeg",
+        "images/works/work016/still11.jpeg",
+        "images/works/work016/still12.jpeg",
+        "images/works/work016/still13.jpeg",
+        "images/works/work016/still14.jpeg",
+        "images/works/work016/still15.jpeg"
+      ],
+      "credits": [
+        {
+          "role": "Gaffer",
+          "name": "Shin HyungJun"
+        }
+      ],
+      "_originalIndex": 11
+    },
+    {
+      "id": "work015",
+      "title": "감시",
+      "majorCategory": "lighting",
+      "minorCategory": "film",
+      "date": "2024-02",
+      "role": "Gaffer",
+      "featured": false,
+      "youtubeUrl": "",
+      "description": "Running Time : 29min 50sec\n\n출연 : 양승호, 문태갑, 임채영, 이재우, 김하율\n\n[2025 부천국제판타스틱영화제]",
+      "thumbnail": "images/works/work015/thumb.png",
+      "stills": [
+        "images/works/work015/still1.png",
+        "images/works/work015/still2.png",
+        "images/works/work015/still3.png",
+        "images/works/work015/still4.png",
+        "images/works/work015/still5.png",
+        "images/works/work015/still6.png",
+        "images/works/work015/still7.png",
+        "images/works/work015/still8.png",
+        "images/works/work015/still9.png"
+      ],
+      "credits": [
+        {
+          "role": "Gaffer",
+          "name": "Shin HyungJun (LOOKUP MEDIA)"
+        }
+      ],
+      "_originalIndex": 12
+    },
+    {
+      "id": "work013",
+      "title": "찌질주의",
+      "majorCategory": "lighting",
+      "minorCategory": "film",
+      "date": "2020",
+      "role": "Gaffer",
+      "featured": false,
+      "youtubeUrl": "",
+      "description": "Running Time : 36min 38sec \n\n출연 : 안두형, 임다혜, 남우찬, 임채영",
+      "thumbnail": "images/works/work013/thumb.jpg",
+      "stills": [
+        "images/works/work013/still1.jpg",
+        "images/works/work013/still2.jpg",
+        "images/works/work013/still3.jpg",
+        "images/works/work013/still4.jpg",
+        "images/works/work013/still5.jpg",
+        "images/works/work013/still6.jpg",
+        "images/works/work013/still7.jpg",
+        "images/works/work013/still8.jpg",
+        "images/works/work013/still9.jpg"
+      ],
+      "credits": [
+        {
+          "role": "Director",
+          "name": "Jung DaBin"
+        },
+        {
+          "role": "DOP",
+          "name": "Jung DaBin"
+        },
+        {
+          "role": "Gaffer",
+          "name": "Shin HyungJun"
+        }
+      ],
+      "_originalIndex": 13
+    },
+    {
+      "id": "work014",
+      "title": "Coin Laundry",
+      "majorCategory": "lighting",
+      "minorCategory": "film",
+      "date": "2019-06",
+      "role": "Gaffer",
+      "featured": false,
+      "youtubeUrl": "",
+      "description": "Running Time : 17min 59sec\n\n출연 : 임휘진, 김세림, 오유진, 김진섭, 김미영, 김현명",
+      "thumbnail": "images/works/work014/thumb.jpg",
+      "stills": [
+        "images/works/work014/still1.jpeg",
+        "images/works/work014/still2.jpeg",
+        "images/works/work014/still3.jpeg",
+        "images/works/work014/still4.jpeg",
+        "images/works/work014/still5.jpeg",
+        "images/works/work014/still6.jpeg",
+        "images/works/work014/still7.jpeg",
+        "images/works/work014/still8.jpeg",
+        "images/works/work014/still9.jpeg",
+        "images/works/work014/still10.jpeg",
+        "images/works/work014/still11.jpeg"
+      ],
+      "credits": [
+        {
+          "role": "Director",
+          "name": "Jung DaBin"
+        },
+        {
+          "role": "DOP",
+          "name": "Jung DaBin "
+        },
+        {
+          "role": "Gaffer",
+          "name": "Shin HyungJun"
+        }
+      ],
+      "_originalIndex": 14
+    },
+    {
       "id": "work012",
       "title": "SMTECH",
       "majorCategory": "lighting",
@@ -48,13 +680,13 @@ window.portfolioData = {
           "name": "SHIN HYUNG JUN (LOOKUP MEDIA)"
         }
       ],
-      "_originalIndex": 0
+      "_originalIndex": 15
     },
     {
       "id": "work011",
       "title": "Arte",
       "majorCategory": "lighting",
-      "minorCategory": "musicvideo",
+      "minorCategory": "commercial",
       "date": "2024-06",
       "role": "Gaffer",
       "featured": false,
@@ -96,7 +728,7 @@ window.portfolioData = {
           "name": "SHIN HYEONG JUN"
         }
       ],
-      "_originalIndex": 1
+      "_originalIndex": 16
     },
     {
       "id": "work010",
@@ -110,21 +742,21 @@ window.portfolioData = {
       "description": "",
       "thumbnail": "images/works/work010/thumb.png",
       "stills": [
-        "images/works/work010/still1.png",
-        "images/works/work010/still2.png",
-        "images/works/work010/still3.png",
-        "images/works/work010/still4.png",
-        "images/works/work010/still5.png",
-        "images/works/work010/still6.png",
-        "images/works/work010/still7.png",
-        "images/works/work010/still8.png",
-        "images/works/work010/still9.png",
-        "images/works/work010/still10.png",
-        "images/works/work010/still11.png",
-        "images/works/work010/still12.png",
-        "images/works/work010/still13.png",
-        "images/works/work010/still14.png",
-        "images/works/work010/still15.png"
+        "images/works/work010/still1.jpeg",
+        "images/works/work010/still2.jpeg",
+        "images/works/work010/still3.jpeg",
+        "images/works/work010/still4.jpeg",
+        "images/works/work010/still5.jpeg",
+        "images/works/work010/still6.jpeg",
+        "images/works/work010/still7.jpeg",
+        "images/works/work010/still8.jpeg",
+        "images/works/work010/still9.jpeg",
+        "images/works/work010/still10.jpeg",
+        "images/works/work010/still11.jpeg",
+        "images/works/work010/still12.jpeg",
+        "images/works/work010/still13.jpeg",
+        "images/works/work010/still14.jpeg",
+        "images/works/work010/still15.jpeg"
       ],
       "credits": [
         {
@@ -144,7 +776,7 @@ window.portfolioData = {
           "name": "Shin Hyung Jun"
         }
       ],
-      "_originalIndex": 2
+      "_originalIndex": 17
     },
     {
       "id": "work009",
@@ -158,19 +790,19 @@ window.portfolioData = {
       "description": "",
       "thumbnail": "images/works/work009/thumb.png",
       "stills": [
-        "images/works/work009/still1.png",
-        "images/works/work009/still2.png",
-        "images/works/work009/still3.png",
-        "images/works/work009/still4.png",
-        "images/works/work009/still5.png",
-        "images/works/work009/still6.png",
-        "images/works/work009/still7.png",
-        "images/works/work009/still8.png",
-        "images/works/work009/still9.png",
-        "images/works/work009/still10.png",
-        "images/works/work009/still11.png",
-        "images/works/work009/still12.png",
-        "images/works/work009/still13.png"
+        "images/works/work009/still1.jpeg",
+        "images/works/work009/still2.jpeg",
+        "images/works/work009/still3.jpeg",
+        "images/works/work009/still4.jpeg",
+        "images/works/work009/still5.jpeg",
+        "images/works/work009/still6.jpeg",
+        "images/works/work009/still7.jpeg",
+        "images/works/work009/still8.jpeg",
+        "images/works/work009/still9.jpeg",
+        "images/works/work009/still10.jpeg",
+        "images/works/work009/still11.jpeg",
+        "images/works/work009/still12.jpeg",
+        "images/works/work009/still13.jpeg"
       ],
       "credits": [
         {
@@ -190,7 +822,7 @@ window.portfolioData = {
           "name": "Shin Hyung Jun"
         }
       ],
-      "_originalIndex": 3
+      "_originalIndex": 18
     },
     {
       "id": "work008",
@@ -204,19 +836,19 @@ window.portfolioData = {
       "description": "",
       "thumbnail": "images/works/work008/thumb.png",
       "stills": [
-        "images/works/work008/still1.png",
-        "images/works/work008/still2.png",
-        "images/works/work008/still3.png",
-        "images/works/work008/still4.png",
-        "images/works/work008/still5.png",
-        "images/works/work008/still6.png",
-        "images/works/work008/still7.png",
-        "images/works/work008/still8.png",
-        "images/works/work008/still9.png",
-        "images/works/work008/still10.png",
-        "images/works/work008/still11.png",
-        "images/works/work008/still12.png",
-        "images/works/work008/still13.png"
+        "images/works/work008/still1.jpeg",
+        "images/works/work008/still2.jpeg",
+        "images/works/work008/still3.jpeg",
+        "images/works/work008/still4.jpeg",
+        "images/works/work008/still5.jpeg",
+        "images/works/work008/still6.jpeg",
+        "images/works/work008/still7.jpeg",
+        "images/works/work008/still8.jpeg",
+        "images/works/work008/still9.jpeg",
+        "images/works/work008/still10.jpeg",
+        "images/works/work008/still11.jpeg",
+        "images/works/work008/still12.jpeg",
+        "images/works/work008/still13.jpeg"
       ],
       "credits": [
         {
@@ -236,7 +868,7 @@ window.portfolioData = {
           "name": "Shin Hyung Jun"
         }
       ],
-      "_originalIndex": 4
+      "_originalIndex": 19
     },
     {
       "id": "work007",
@@ -250,18 +882,18 @@ window.portfolioData = {
       "description": "",
       "thumbnail": "images/works/work007/thumb.png",
       "stills": [
-        "images/works/work007/still1.png",
-        "images/works/work007/still2.png",
-        "images/works/work007/still3.png",
-        "images/works/work007/still4.png",
-        "images/works/work007/still5.png",
-        "images/works/work007/still6.png",
-        "images/works/work007/still7.png",
-        "images/works/work007/still8.png",
-        "images/works/work007/still9.png",
-        "images/works/work007/still10.png",
-        "images/works/work007/still11.png",
-        "images/works/work007/still12.png"
+        "images/works/work007/still1.jpeg",
+        "images/works/work007/still2.jpeg",
+        "images/works/work007/still3.jpeg",
+        "images/works/work007/still4.jpeg",
+        "images/works/work007/still5.jpeg",
+        "images/works/work007/still6.jpeg",
+        "images/works/work007/still7.jpeg",
+        "images/works/work007/still8.jpeg",
+        "images/works/work007/still9.jpeg",
+        "images/works/work007/still10.jpeg",
+        "images/works/work007/still11.jpeg",
+        "images/works/work007/still12.jpeg"
       ],
       "credits": [
         {
@@ -281,7 +913,7 @@ window.portfolioData = {
           "name": "Shin Hyung Jun"
         }
       ],
-      "_originalIndex": 5
+      "_originalIndex": 20
     },
     {
       "id": "work006",
@@ -305,7 +937,7 @@ window.portfolioData = {
           "name": "LOOKUP MEDIA"
         }
       ],
-      "_originalIndex": 6
+      "_originalIndex": 21
     },
     {
       "id": "work004",
@@ -325,7 +957,7 @@ window.portfolioData = {
           "name": "LOOKUP MEDIA"
         }
       ],
-      "_originalIndex": 7
+      "_originalIndex": 22
     },
     {
       "id": "work003",
@@ -388,7 +1020,7 @@ window.portfolioData = {
           "name": "Shin HyungJun"
         }
       ],
-      "_originalIndex": 8
+      "_originalIndex": 23
     },
     {
       "id": "work002",
@@ -402,24 +1034,24 @@ window.portfolioData = {
       "description": "",
       "thumbnail": "images/works/work002/thumb.png",
       "stills": [
-        "images/works/work002/still1.png",
-        "images/works/work002/still2.png",
-        "images/works/work002/still3.png",
-        "images/works/work002/still4.png",
-        "images/works/work002/still5.png",
-        "images/works/work002/still6.png",
-        "images/works/work002/still7.png",
-        "images/works/work002/still8.png",
-        "images/works/work002/still9.png",
-        "images/works/work002/still10.png",
-        "images/works/work002/still11.png",
-        "images/works/work002/still12.png",
-        "images/works/work002/still13.png",
-        "images/works/work002/still14.png",
-        "images/works/work002/still15.png",
-        "images/works/work002/still16.png",
-        "images/works/work002/still17.png",
-        "images/works/work002/still18.png"
+        "images/works/work002/still1.jpeg",
+        "images/works/work002/still2.jpeg",
+        "images/works/work002/still3.jpeg",
+        "images/works/work002/still4.jpeg",
+        "images/works/work002/still5.jpeg",
+        "images/works/work002/still6.jpeg",
+        "images/works/work002/still7.jpeg",
+        "images/works/work002/still8.jpeg",
+        "images/works/work002/still9.jpeg",
+        "images/works/work002/still10.jpeg",
+        "images/works/work002/still11.jpeg",
+        "images/works/work002/still12.jpeg",
+        "images/works/work002/still13.jpeg",
+        "images/works/work002/still14.jpeg",
+        "images/works/work002/still15.jpeg",
+        "images/works/work002/still16.jpeg",
+        "images/works/work002/still17.jpeg",
+        "images/works/work002/still18.jpeg"
       ],
       "credits": [
         {
@@ -455,7 +1087,7 @@ window.portfolioData = {
           "name": "TPY_system"
         }
       ],
-      "_originalIndex": 9
+      "_originalIndex": 24
     },
     {
       "id": "work005",
@@ -469,28 +1101,28 @@ window.portfolioData = {
       "description": "",
       "thumbnail": "images/works/work005/thumb.png",
       "stills": [
-        "images/works/work005/still1.png",
-        "images/works/work005/still2.png",
-        "images/works/work005/still3.png",
-        "images/works/work005/still4.png",
-        "images/works/work005/still5.png",
-        "images/works/work005/still6.png",
-        "images/works/work005/still7.png",
-        "images/works/work005/still8.png",
-        "images/works/work005/still9.png",
-        "images/works/work005/still10.png",
-        "images/works/work005/still11.png",
-        "images/works/work005/still12.png",
-        "images/works/work005/still13.png",
-        "images/works/work005/still14.png",
-        "images/works/work005/still15.png",
-        "images/works/work005/still16.png",
-        "images/works/work005/still17.png",
-        "images/works/work005/still18.png",
-        "images/works/work005/still19.png",
-        "images/works/work005/still20.png",
-        "images/works/work005/still21.png",
-        "images/works/work005/still22.png"
+        "images/works/work005/still1.jpeg",
+        "images/works/work005/still2.jpeg",
+        "images/works/work005/still3.jpeg",
+        "images/works/work005/still4.jpeg",
+        "images/works/work005/still5.jpeg",
+        "images/works/work005/still6.jpeg",
+        "images/works/work005/still7.jpeg",
+        "images/works/work005/still8.jpeg",
+        "images/works/work005/still9.jpeg",
+        "images/works/work005/still10.jpeg",
+        "images/works/work005/still11.jpeg",
+        "images/works/work005/still12.jpeg",
+        "images/works/work005/still13.jpeg",
+        "images/works/work005/still14.jpeg",
+        "images/works/work005/still15.jpeg",
+        "images/works/work005/still16.jpeg",
+        "images/works/work005/still17.jpeg",
+        "images/works/work005/still18.jpeg",
+        "images/works/work005/still19.jpeg",
+        "images/works/work005/still20.jpeg",
+        "images/works/work005/still21.jpeg",
+        "images/works/work005/still22.jpeg"
       ],
       "credits": [
         {
@@ -498,7 +1130,7 @@ window.portfolioData = {
           "name": "LOOKUP MEDIA"
         }
       ],
-      "_originalIndex": 10
+      "_originalIndex": 25
     },
     {
       "id": "work001",
@@ -506,35 +1138,50 @@ window.portfolioData = {
       "majorCategory": "production",
       "minorCategory": "commercial",
       "date": "2024-05",
+      "role": "Director, Editor",
       "featured": false,
       "youtubeUrl": "https://youtu.be/hQyXen5-dY8?si=nKO-JnbAWWBS6A3I",
       "description": "",
       "thumbnail": "images/works/work001/thumb.jpg",
       "stills": [
-        "images/works/work001/still1.png",
-        "images/works/work001/still2.png",
-        "images/works/work001/still3.png",
-        "images/works/work001/still4.png",
-        "images/works/work001/still5.png",
-        "images/works/work001/still6.png",
-        "images/works/work001/still7.png",
-        "images/works/work001/still8.png",
-        "images/works/work001/still9.png",
-        "images/works/work001/still10.png",
-        "images/works/work001/still11.png",
-        "images/works/work001/still12.png",
-        "images/works/work001/still13.png",
-        "images/works/work001/still14.png"
+        "images/works/work001/still1.jpeg",
+        "images/works/work001/still2.jpeg",
+        "images/works/work001/still3.jpeg",
+        "images/works/work001/still4.jpeg",
+        "images/works/work001/still5.jpeg",
+        "images/works/work001/still6.jpeg",
+        "images/works/work001/still7.jpeg",
+        "images/works/work001/still8.jpeg",
+        "images/works/work001/still9.jpeg",
+        "images/works/work001/still10.jpeg",
+        "images/works/work001/still11.jpeg",
+        "images/works/work001/still12.jpeg",
+        "images/works/work001/still13.jpeg",
+        "images/works/work001/still14.jpeg"
       ],
-      "credits": {
-        "client": "다농바이오",
-        "director": "신형준",
-        "cinematographer": "정다빈",
-        "lighting": "임진우",
-        "editor": "신형준"
-      },
-      "_originalIndex": 11,
-      "role": "Director, Editor"
+      "credits": [
+        {
+          "role": "Client",
+          "name": "다농바이오"
+        },
+        {
+          "role": "Director",
+          "name": "신형준"
+        },
+        {
+          "role": "DOP",
+          "name": "정다빈"
+        },
+        {
+          "role": "Lighting Director",
+          "name": "임진우"
+        },
+        {
+          "role": "Editor",
+          "name": "신형준"
+        }
+      ],
+      "_originalIndex": 26
     }
   ]
 };

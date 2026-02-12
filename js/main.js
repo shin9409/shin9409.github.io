@@ -296,19 +296,29 @@ function renderWorkDetail() {
         </section>
 
         <section class="container detail-info">
-            <div class="detail-header">
-                <div class="detail-meta">${work.majorCategory} / ${work.minorCategory} &nbsp;|&nbsp; ${work.date}</div>
-                <h1 class="section-title">${work.title}</h1>
+            <div class="detail-content-wrapper">
+                <!-- Left Column: Info -->
+                <div class="detail-left">
+                    <div class="detail-header">
+                        <div class="detail-meta">${work.majorCategory} / ${work.minorCategory} &nbsp;|&nbsp; ${work.date}</div>
+                        <h1 class="section-title">${work.title}</h1>
+                    </div>
+
+                    <div class="detail-desc">
+                        <p>${work.description}</p>
+                    </div>
+                </div>
+
+                <!-- Right Column: Credits -->
+                <div class="detail-right">
+                    <div class="credits-title">CREDITS</div>
+                    <div class="detail-credits">
+                        ${creditsHtml}
+                    </div>
+                </div>
             </div>
 
-            <div class="detail-desc">
-                <p>${work.description}</p>
-            </div>
-
-            <div class="detail-credits">
-                ${creditsHtml}
-            </div>
-
+            <!-- Stills Gallery -->
             <div class="stills-gallery">
                 ${stillsHtml}
             </div>

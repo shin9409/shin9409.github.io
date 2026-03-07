@@ -565,6 +565,52 @@ async function uploadToGitHub(path, contentBase64, message) {
     }
 }
 
+// GitHub API Delete Helper
+async function deleteFromGitHub(path, message) {
+    const token = document.getElementById('github-token').value.trim();
+    if (!token) return;
+
+    const repo = 'shin9409/shin9409.github.io';
+    const apiUrl = `https://api.github.com/repos/${repo}/contents/${path}`;
+
+    try {
+        // 1. Get SHA
+        const getRes = await fetch(apiUrl, {
+            headers: { 'Authorization': `token ${token}` }
+        });
+
+        if (!getRes.ok) {
+            console.warn(`File not found for deletion, skipping: ${path}`);
+            return; // 파일이 이미 없으면 무시
+        }
+
+        const data = await getRes.json();
+        const sha = data.sha;
+
+        // 2. Delete
+        const body = {
+            message: message,
+            sha: sha,
+            branch: 'main'
+        };
+
+        const delRes = await fetch(apiUrl, {
+            method: 'DELETE',
+            headers: {
+                'Authorization': `token ${token}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(body)
+        });
+
+        if (!delRes.ok) {
+            console.warn(`Failed to delete ${path}`);
+        }
+    } catch (e) {
+        console.warn(`Error during deleteFromGitHub for ${path}:`, e);
+    }
+}
+
 function handleThumbSelect(file) {
     if (!file) return;
     pendingThumbFile = file; // Store File object
@@ -793,6 +839,20 @@ async function handleDelete() {
             // 원본 백업 (실패 시 복구용)
             const backupWorksData = [...worksData];
 
+            const workToDelete = worksData[currentEditIndex];
+            if (workToDelete) {
+                // Delete Thumbnail
+                if (workToDelete.thumbnail) {
+                    await deleteFromGitHub(workToDelete.thumbnail, `Delete thumbnail for ${workToDelete.id}`);
+                }
+                // Delete Stills
+                if (workToDelete.stills && workToDelete.stills.length > 0) {
+                    for (let path of workToDelete.stills) {
+                        await deleteFromGitHub(path, `Delete still for ${workToDelete.id}`);
+                    }
+                }
+            }
+
             worksData.splice(currentEditIndex, 1);
 
             const jsonContent = JSON.stringify(worksData, null, 2);
@@ -888,6 +948,20 @@ async function handleBulkDelete() {
         const backupWorksData = [...worksData];
 
         try {
+            const worksToDelete = worksData.filter(w => selectedIds.has(w.id));
+
+            // Delete associated images
+            for (let work of worksToDelete) {
+                if (work.thumbnail) {
+                    await deleteFromGitHub(work.thumbnail, `Bulk delete thumbnail for ${work.id}`);
+                }
+                if (work.stills && work.stills.length > 0) {
+                    for (let path of work.stills) {
+                        await deleteFromGitHub(path, `Bulk delete still for ${work.id}`);
+                    }
+                }
+            }
+
             worksData = worksData.filter(w => !selectedIds.has(w.id));
 
             const jsonContent = JSON.stringify(worksData, null, 2);

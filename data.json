@@ -1,22 +1,22 @@
 [
   {
-    "id": "work028",
+    "id": "work029",
     "title": "테스트",
     "majorCategory": "production",
     "minorCategory": "musicvideo",
     "date": "2026",
     "role": "",
     "featured": false,
-    "youtubeUrl": "https://www.youtube.com/watch?v=609DF4SFwQs",
+    "youtubeUrl": "",
     "description": "",
-    "thumbnail": "images/works/work028/thumb.jpg",
+    "thumbnail": "images/works/work029/thumb.png",
     "stills": [
-      "images/works/work028/still1.png",
-      "images/works/work028/still2.png",
-      "images/works/work028/still3.png",
-      "images/works/work028/still4.png",
-      "images/works/work028/still5.png",
-      "images/works/work028/still6.png"
+      "images/works/work029/still1.png",
+      "images/works/work029/still2.png",
+      "images/works/work029/still3.png",
+      "images/works/work029/still4.png",
+      "images/works/work029/still5.png",
+      "images/works/work029/still6.png"
     ],
     "credits": [],
     "_originalIndex": 0
@@ -1203,5 +1203,27 @@
       }
     ],
     "_originalIndex": 27
+  },
+  {
+    "id": "work028",
+    "title": "테스트",
+    "majorCategory": "production",
+    "minorCategory": "musicvideo",
+    "date": "2026",
+    "role": "",
+    "featured": false,
+    "youtubeUrl": "https://www.youtube.com/watch?v=609DF4SFwQs",
+    "description": "",
+    "thumbnail": "images/works/work028/thumb.jpg",
+    "stills": [
+      "images/works/work028/still1.png",
+      "images/works/work028/still2.png",
+      "images/works/work028/still3.png",
+      "images/works/work028/still4.png",
+      "images/works/work028/still5.png",
+      "images/works/work028/still6.png"
+    ],
+    "credits": [],
+    "_originalIndex": 28
   }
 ]

@@ -1,28 +1,6 @@
 window.portfolioData = {
   "works": [
   {
-    "id": "work029",
-    "title": "테스트",
-    "majorCategory": "production",
-    "minorCategory": "musicvideo",
-    "date": "2026",
-    "role": "",
-    "featured": false,
-    "youtubeUrl": "",
-    "description": "",
-    "thumbnail": "images/works/work029/thumb.png",
-    "stills": [
-      "images/works/work029/still1.png",
-      "images/works/work029/still2.png",
-      "images/works/work029/still3.png",
-      "images/works/work029/still4.png",
-      "images/works/work029/still5.png",
-      "images/works/work029/still6.png"
-    ],
-    "credits": [],
-    "_originalIndex": 0
-  },
-  {
     "id": "work002",
     "title": "유명한아이 - Master card",
     "majorCategory": "production",
@@ -87,7 +65,7 @@ window.portfolioData = {
         "name": "TPY_system"
       }
     ],
-    "_originalIndex": 1
+    "_originalIndex": 0
   },
   {
     "id": "work003",
@@ -150,7 +128,7 @@ window.portfolioData = {
         "name": "Shin HyungJun"
       }
     ],
-    "_originalIndex": 2
+    "_originalIndex": 1
   },
   {
     "id": "work027",
@@ -201,7 +179,7 @@ window.portfolioData = {
         "name": "Shin HyungJun"
       }
     ],
-    "_originalIndex": 3
+    "_originalIndex": 2
   },
   {
     "id": "work026",
@@ -238,7 +216,7 @@ window.portfolioData = {
         "name": "Shin HyungJun"
       }
     ],
-    "_originalIndex": 4
+    "_originalIndex": 3
   },
   {
     "id": "work025",
@@ -276,7 +254,7 @@ window.portfolioData = {
         "name": "Shin HyungJun"
       }
     ],
-    "_originalIndex": 5
+    "_originalIndex": 4
   },
   {
     "id": "work024",
@@ -329,7 +307,7 @@ window.portfolioData = {
         "name": "Shin HyungJun"
       }
     ],
-    "_originalIndex": 6
+    "_originalIndex": 5
   },
   {
     "id": "work023",
@@ -376,7 +354,7 @@ window.portfolioData = {
         "name": "Shin HyungJun"
       }
     ],
-    "_originalIndex": 7
+    "_originalIndex": 6
   },
   {
     "id": "work022",
@@ -431,7 +409,7 @@ window.portfolioData = {
         "name": "Shin HyungJun"
       }
     ],
-    "_originalIndex": 8
+    "_originalIndex": 7
   },
   {
     "id": "work021",
@@ -466,7 +444,7 @@ window.portfolioData = {
         "name": "Shin HyungJun"
       }
     ],
-    "_originalIndex": 9
+    "_originalIndex": 8
   },
   {
     "id": "work018",
@@ -508,7 +486,7 @@ window.portfolioData = {
         "name": "Shin HyungJun"
       }
     ],
-    "_originalIndex": 10
+    "_originalIndex": 9
   },
   {
     "id": "work020",
@@ -557,7 +535,7 @@ window.portfolioData = {
         "name": "Shin HyungJun"
       }
     ],
-    "_originalIndex": 11
+    "_originalIndex": 10
   },
   {
     "id": "work019",
@@ -604,7 +582,7 @@ window.portfolioData = {
         "name": "Shin HyungJun"
       }
     ],
-    "_originalIndex": 12
+    "_originalIndex": 11
   },
   {
     "id": "work017",
@@ -638,7 +616,7 @@ window.portfolioData = {
         "name": "Shin HyungJun"
       }
     ],
-    "_originalIndex": 13
+    "_originalIndex": 12
   },
   {
     "id": "work016",
@@ -674,7 +652,7 @@ window.portfolioData = {
         "name": "Shin HyungJun"
       }
     ],
-    "_originalIndex": 14
+    "_originalIndex": 13
   },
   {
     "id": "work015",
@@ -704,7 +682,7 @@ window.portfolioData = {
         "name": "Shin HyungJun (LOOKUP MEDIA)"
       }
     ],
-    "_originalIndex": 15
+    "_originalIndex": 14
   },
   {
     "id": "work013",
@@ -742,7 +720,7 @@ window.portfolioData = {
         "name": "Shin HyungJun"
       }
     ],
-    "_originalIndex": 16
+    "_originalIndex": 15
   },
   {
     "id": "work014",
@@ -782,7 +760,7 @@ window.portfolioData = {
         "name": "Shin HyungJun"
       }
     ],
-    "_originalIndex": 17
+    "_originalIndex": 16
   },
   {
     "id": "work012",
@@ -832,7 +810,7 @@ window.portfolioData = {
         "name": "SHIN HYUNG JUN (LOOKUP MEDIA)"
       }
     ],
-    "_originalIndex": 18
+    "_originalIndex": 17
   },
   {
     "id": "work011",
@@ -880,7 +858,7 @@ window.portfolioData = {
         "name": "SHIN HYEONG JUN"
       }
     ],
-    "_originalIndex": 19
+    "_originalIndex": 18
   },
   {
     "id": "work010",
@@ -928,7 +906,7 @@ window.portfolioData = {
         "name": "Shin Hyung Jun"
       }
     ],
-    "_originalIndex": 20
+    "_originalIndex": 19
   },
   {
     "id": "work009",
@@ -974,7 +952,7 @@ window.portfolioData = {
         "name": "Shin Hyung Jun"
       }
     ],
-    "_originalIndex": 21
+    "_originalIndex": 20
   },
   {
     "id": "work008",
@@ -1020,7 +998,7 @@ window.portfolioData = {
         "name": "Shin Hyung Jun"
       }
     ],
-    "_originalIndex": 22
+    "_originalIndex": 21
   },
   {
     "id": "work007",
@@ -1065,7 +1043,7 @@ window.portfolioData = {
         "name": "Shin Hyung Jun"
       }
     ],
-    "_originalIndex": 23
+    "_originalIndex": 22
   },
   {
     "id": "work006",
@@ -1089,7 +1067,7 @@ window.portfolioData = {
         "name": "LOOKUP MEDIA"
       }
     ],
-    "_originalIndex": 24
+    "_originalIndex": 23
   },
   {
     "id": "work004",
@@ -1109,7 +1087,7 @@ window.portfolioData = {
         "name": "LOOKUP MEDIA"
       }
     ],
-    "_originalIndex": 25
+    "_originalIndex": 24
   },
   {
     "id": "work005",
@@ -1152,7 +1130,7 @@ window.portfolioData = {
         "name": "LOOKUP MEDIA"
       }
     ],
-    "_originalIndex": 26
+    "_originalIndex": 25
   },
   {
     "id": "work001",
@@ -1203,26 +1181,26 @@ window.portfolioData = {
         "name": "신형준"
       }
     ],
-    "_originalIndex": 27
+    "_originalIndex": 26
   },
   {
-    "id": "work028",
+    "id": "work029",
     "title": "테스트",
     "majorCategory": "production",
     "minorCategory": "musicvideo",
     "date": "2026",
     "role": "",
     "featured": false,
-    "youtubeUrl": "https://www.youtube.com/watch?v=609DF4SFwQs",
+    "youtubeUrl": "",
     "description": "",
-    "thumbnail": "images/works/work028/thumb.jpg",
+    "thumbnail": "images/works/work029/thumb.png",
     "stills": [
-      "images/works/work028/still1.png",
-      "images/works/work028/still2.png",
-      "images/works/work028/still3.png",
-      "images/works/work028/still4.png",
-      "images/works/work028/still5.png",
-      "images/works/work028/still6.png"
+      "images/works/work029/still1.png",
+      "images/works/work029/still2.png",
+      "images/works/work029/still3.png",
+      "images/works/work029/still4.png",
+      "images/works/work029/still5.png",
+      "images/works/work029/still6.png"
     ],
     "credits": [],
     "_originalIndex": 28

@@ -14,7 +14,10 @@ window.portfolioData = {
     "stills": [
       "images/works/work028/still1.png",
       "images/works/work028/still2.png",
-      "images/works/work028/still3.png"
+      "images/works/work028/still3.png",
+      "images/works/work028/still4.png",
+      "images/works/work028/still5.png",
+      "images/works/work028/still6.png"
     ],
     "credits": [],
     "_originalIndex": 0

@@ -1182,28 +1182,6 @@ window.portfolioData = {
       }
     ],
     "_originalIndex": 26
-  },
-  {
-    "id": "work029",
-    "title": "테스트",
-    "majorCategory": "production",
-    "minorCategory": "musicvideo",
-    "date": "2026",
-    "role": "",
-    "featured": false,
-    "youtubeUrl": "",
-    "description": "",
-    "thumbnail": "images/works/work029/thumb.png",
-    "stills": [
-      "images/works/work029/still1.png",
-      "images/works/work029/still2.png",
-      "images/works/work029/still3.png",
-      "images/works/work029/still4.png",
-      "images/works/work029/still5.png",
-      "images/works/work029/still6.png"
-    ],
-    "credits": [],
-    "_originalIndex": 28
   }
 ]
 };

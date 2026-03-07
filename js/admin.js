@@ -776,13 +776,52 @@ function clearAllStills() {
 }
 // ... rest of logic ...
 
-function handleDelete() {
+async function handleDelete() {
     if (confirm('정말 삭제하시겠습니까?')) {
-        worksData.splice(currentEditIndex, 1);
-        renderTable();
-        closeEditor();
-        updateStats();
-        syncToLocalStorage();
+        const token = document.getElementById('github-token').value.trim();
+        if (!token) {
+            alert('GitHub 토큰을 먼저 입력하세요.');
+            return;
+        }
+
+        const deleteBtn = document.getElementById('delete-btn');
+        const originalText = deleteBtn.textContent;
+        deleteBtn.textContent = '삭제 중...';
+        deleteBtn.disabled = true;
+
+        try {
+            // 원본 백업 (실패 시 복구용)
+            const backupWorksData = [...worksData];
+
+            worksData.splice(currentEditIndex, 1);
+
+            const jsonContent = JSON.stringify(worksData, null, 2);
+            const jsContent = `window.portfolioData = {\n  "works": ${jsonContent}\n};`;
+
+            const utf8Encoder = new TextEncoder();
+            const b64EncodeUnicode = (bytes) => {
+                const binString = Array.from(bytes, (byte) => String.fromCodePoint(byte)).join("");
+                return btoa(binString);
+            };
+
+            await uploadToGitHub('data.json', b64EncodeUnicode(utf8Encoder.encode(jsonContent)), 'Delete work from data.json');
+            await uploadToGitHub('js/data.js', b64EncodeUnicode(utf8Encoder.encode(jsContent)), 'Delete work from data.js');
+
+            renderTable();
+            closeEditor();
+            updateStats();
+            syncToLocalStorage();
+            showToast('삭제 완료!');
+
+        } catch (err) {
+            console.error(err);
+            alert('삭제 오류: ' + err.message);
+            // 실패 시 되돌리기
+            worksData.splice(currentEditIndex, 0, worksData[currentEditIndex]);
+        } finally {
+            deleteBtn.textContent = originalText;
+            deleteBtn.disabled = false;
+        }
     }
 }
 
@@ -832,13 +871,51 @@ function handleImport(e) {
 
 // --- Bulk Actions ---
 
-function handleBulkDelete() {
+async function handleBulkDelete() {
     if (confirm(`선택한 ${selectedIds.size}개 항목을 삭제하시겠습니까?`)) {
-        worksData = worksData.filter(w => !selectedIds.has(w.id));
-        selectedIds.clear();
-        updateStats();
-        renderTable();
-        syncToLocalStorage();
+        const token = document.getElementById('github-token').value.trim();
+        if (!token) {
+            alert('GitHub 토큰을 먼저 입력하세요.');
+            return;
+        }
+
+        const btn = document.getElementById('bulk-delete-btn');
+        const originalText = btn.textContent;
+        btn.textContent = '삭제 중...';
+        btn.disabled = true;
+
+        // 원본 백업
+        const backupWorksData = [...worksData];
+
+        try {
+            worksData = worksData.filter(w => !selectedIds.has(w.id));
+
+            const jsonContent = JSON.stringify(worksData, null, 2);
+            const jsContent = `window.portfolioData = {\n  "works": ${jsonContent}\n};`;
+
+            const utf8Encoder = new TextEncoder();
+            const b64EncodeUnicode = (bytes) => {
+                const binString = Array.from(bytes, (byte) => String.fromCodePoint(byte)).join("");
+                return btoa(binString);
+            };
+
+            await uploadToGitHub('data.json', b64EncodeUnicode(utf8Encoder.encode(jsonContent)), 'Bulk delete works from data.json');
+            await uploadToGitHub('js/data.js', b64EncodeUnicode(utf8Encoder.encode(jsContent)), 'Bulk delete works from data.js');
+
+            selectedIds.clear();
+            updateStats();
+            renderTable();
+            syncToLocalStorage();
+            showToast('일괄 삭제 완료!');
+
+        } catch (err) {
+            console.error(err);
+            alert('삭제 오류: ' + err.message);
+            worksData = backupWorksData; // 롤백
+        } finally {
+            btn.textContent = originalText;
+            btn.disabled = false;
+        }
     }
 }
 
@@ -1061,4 +1138,21 @@ function handleDrop(e) {
         syncToLocalStorage();
     }
     return false;
+}
+
+// --- Utilities ---
+function showToast(message) {
+    let toast = document.getElementById('generic-toast');
+    if (!toast) {
+        toast = document.createElement('div');
+        toast.id = 'generic-toast';
+        toast.className = 'toast hidden';
+        document.body.appendChild(toast);
+    }
+    toast.innerHTML = `<span>${message}</span>`;
+    toast.classList.remove('hidden');
+
+    setTimeout(() => {
+        toast.classList.add('hidden');
+    }, 3000);
 }

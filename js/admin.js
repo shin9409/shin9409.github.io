@@ -72,6 +72,13 @@ document.addEventListener('DOMContentLoaded', () => {
     renderTable();
     setupEventListeners();
     setupAutoSave();
+
+    // Prefill GitHub Token
+    const savedToken = localStorage.getItem('github_pat');
+    if (savedToken) {
+        const tokenInput = document.getElementById('github-token');
+        if (tokenInput) tokenInput.value = savedToken;
+    }
 });
 
 // --- Rendering & Stats ---
@@ -301,12 +308,10 @@ function setupEventListeners() {
     document.getElementById('bulk-category-change').addEventListener('change', handleBulkCategoryChange);
 
     // Import/Export
-    document.getElementById('export-json-btn').addEventListener('click', () => downloadData('json'));
-    document.getElementById('export-js-btn').addEventListener('click', () => downloadData('js'));
     const importBtn = document.getElementById('import-btn');
     const importFile = document.getElementById('import-file');
-    importBtn.addEventListener('click', () => importFile.click());
-    importFile.addEventListener('change', handleImport); // **Added Function Definition Below**
+    if (importBtn) importBtn.addEventListener('click', () => importFile.click());
+    if (importFile) importFile.addEventListener('change', handleImport);
 
     // Auto ID & Path Auto-gen
     const idInput = document.getElementById('work-id');
@@ -501,15 +506,74 @@ function updateStillsPath() {
     updateStillsTextDisplay();
 }
 
+// ... previous logic remains unchanged until `// --- Form Handling ---` ...
+let pendingThumbFile = null;
+let pendingStillsFiles = [];
+
+// Helper function to read file as Base64 for GitHub API
+function fileToBase64(file) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => resolve(reader.result.split(',')[1]);
+        reader.onerror = error => reject(error);
+    });
+}
+
+// GitHub API Upload Helper
+async function uploadToGitHub(path, contentBase64, message) {
+    const token = document.getElementById('github-token').value.trim();
+    if (!token) throw new Error('GitHub 토큰이 필요합니다.');
+
+    const repo = 'shin9409/shin9409.github.io';
+    const apiUrl = `https://api.github.com/repos/${repo}/contents/${path}`;
+
+    // 가져오기 (sha 확인)
+    let sha = null;
+    try {
+        const getRes = await fetch(apiUrl, {
+            headers: { 'Authorization': `token ${token}` }
+        });
+        if (getRes.ok) {
+            const data = await getRes.json();
+            sha = data.sha;
+        }
+    } catch (e) {
+        console.warn('File might not exist yet:', e);
+    }
+
+    // 업로드
+    const body = {
+        message: message,
+        content: contentBase64,
+        branch: 'main'
+    };
+    if (sha) body.sha = sha;
+
+    const putRes = await fetch(apiUrl, {
+        method: 'PUT',
+        headers: {
+            'Authorization': `token ${token}`,
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(body)
+    });
+
+    if (!putRes.ok) {
+        const errorData = await putRes.json();
+        throw new Error(`GitHub Upload Failed: ${errorData.message}`);
+    }
+}
+
 function handleThumbSelect(file) {
     if (!file) return;
+    pendingThumbFile = file; // Store File object
     const reader = new FileReader();
     reader.onload = e => {
         document.getElementById('thumb-preview').innerHTML = `<img src="${e.target.result}">`;
     };
     reader.readAsDataURL(file);
 
-    // **Immediate Path Update with Correct Extension**
     const id = document.getElementById('work-id').value || '{id}';
     const ext = file.name.split('.').pop().toLowerCase();
     const fileName = `thumb.${ext}`;
@@ -527,59 +591,113 @@ function syncToLocalStorage() {
 
 // --- Form Handling ---
 
-function handleFormSubmit(e) {
+async function handleFormSubmit(e) {
     e.preventDefault();
-    const formData = new FormData(e.target);
-    const id = formData.get('id');
-
-    // 썸네일 경로
-    const thumbnailPath = document.getElementById('thumb-path-display').value;
-
-    // ** DEBUG LOG **
-    console.log('Saving stills for', id, ':', currentStills);
-
-    // Collect dynamic credits
-    const creditRows = document.querySelectorAll('.credit-row');
-    const credits = Array.from(creditRows).map(row => {
-        const select = row.querySelector('.role-select');
-        const customRoleInput = row.querySelector('.custom-role-input');
-        const name = row.querySelector('.credit-name-input').value;
-        const role = select.value === 'custom' ? customRoleInput.value : select.value;
-        return { role, name };
-    }).filter(c => c.role || c.name); // Filter empty rows
-
-    const newWork = {
-        id: id,
-        title: formData.get('title'),
-        majorCategory: formData.get('majorCategory'),
-        minorCategory: formData.get('minorCategory'),
-        date: formData.get('date'),
-        role: formData.get('role'),
-        featured: formData.get('featured') === 'on',
-        youtubeUrl: formData.get('youtubeUrl'),
-        description: formData.get('description'),
-        thumbnail: thumbnailPath || `images/works/${id}/thumb.jpg`,
-        stills: (currentStills.length === 0 && getStillsFromDOM().length > 0)
-            ? getStillsFromDOM()
-            : currentStills,
-        credits: credits
-    };
-
-    if (currentEditIndex === -1) {
-        worksData.unshift(newWork);
-    } else {
-        worksData[currentEditIndex] = newWork;
+    const token = document.getElementById('github-token').value.trim();
+    if (!token) {
+        alert('저장하려면 GitHub 토큰을 상단에 입력하세요.');
+        document.getElementById('github-token').focus();
+        return;
     }
 
-    updateStats();
-    renderTable();
-    closeEditor();
-    syncToLocalStorage();
-    localStorage.removeItem('admin_autosave');
-    showToast('저장되었습니다.');
+    // Save token for next time
+    localStorage.setItem('github_pat', token);
+
+    const submitBtn = e.target.querySelector('button[type="submit"]');
+    const originalText = submitBtn.textContent;
+    submitBtn.textContent = '업로드 중...';
+    submitBtn.disabled = true;
+
+    try {
+        const formData = new FormData(e.target);
+        const id = formData.get('id');
+        const thumbnailPath = document.getElementById('thumb-path-display').value || `images/works/${id}/thumb.jpg`;
+
+        // Upload Thumbnail if newly selected
+        if (pendingThumbFile) {
+            const base64 = await fileToBase64(pendingThumbFile);
+            await uploadToGitHub(thumbnailPath, base64, `Upload thumbnail for ${id}`);
+        }
+
+        // Upload Stills if newly selected
+        if (pendingStillsFiles.length > 0) {
+            for (let i = 0; i < pendingStillsFiles.length; i++) {
+                const fileObj = pendingStillsFiles[i];
+                const base64 = await fileToBase64(fileObj.file);
+                await uploadToGitHub(fileObj.path, base64, `Upload still ${i + 1} for ${id}`);
+            }
+        }
+
+        const creditRows = document.querySelectorAll('.credit-row');
+        const credits = Array.from(creditRows).map(row => {
+            const select = row.querySelector('.role-select');
+            const customRoleInput = row.querySelector('.custom-role-input');
+            const name = row.querySelector('.credit-name-input').value;
+            const role = select.value === 'custom' ? customRoleInput.value : select.value;
+            return { role, name };
+        }).filter(c => c.role || c.name);
+
+        const newWork = {
+            id: id,
+            title: formData.get('title'),
+            majorCategory: formData.get('majorCategory'),
+            minorCategory: formData.get('minorCategory'),
+            date: formData.get('date'),
+            role: formData.get('role'),
+            featured: formData.get('featured') === 'on',
+            youtubeUrl: formData.get('youtubeUrl'),
+            description: formData.get('description'),
+            thumbnail: thumbnailPath,
+            stills: (currentStills.length === 0 && getStillsFromDOM().length > 0) ? getStillsFromDOM() : currentStills,
+            credits: credits
+        };
+
+        if (currentEditIndex === -1) {
+            worksData.unshift(newWork);
+        } else {
+            worksData[currentEditIndex] = newWork;
+        }
+
+        updateStats();
+        renderTable();
+        closeEditor();
+        syncToLocalStorage();
+        localStorage.removeItem('admin_autosave');
+
+        // Upload data.json and data.js
+        const jsonContent = JSON.stringify(worksData, null, 2);
+        const jsContent = `window.portfolioData = {\n  "works": ${jsonContent}\n};`;
+
+        // Convert string to base64 with UTF-8 support
+        const utf8Encoder = new TextEncoder();
+
+        const jsonBytes = utf8Encoder.encode(jsonContent);
+        const jsBytes = utf8Encoder.encode(jsContent);
+
+        const b64EncodeUnicode = (bytes) => {
+            const binString = Array.from(bytes, (byte) => String.fromCodePoint(byte)).join("");
+            return btoa(binString);
+        };
+
+        submitBtn.textContent = '데이터 커밋 중...';
+        await uploadToGitHub('data.json', b64EncodeUnicode(jsonBytes), `Update data.json for ${id}`);
+        await uploadToGitHub('js/data.js', b64EncodeUnicode(jsBytes), `Update data.js for ${id}`);
+
+        showToast('GitHub 업로드 완료!');
+
+        // Reset pending files
+        pendingThumbFile = null;
+        pendingStillsFiles = [];
+
+    } catch (err) {
+        console.error(err);
+        alert('오류 발생: ' + err.message);
+    } finally {
+        submitBtn.textContent = originalText;
+        submitBtn.disabled = false;
+    }
 }
 
-// Helper to get stills from DOM order (Fallback usage)
 function getStillsFromDOM() {
     const items = document.querySelectorAll('.still-preview-item');
     const paths = [];
@@ -591,41 +709,36 @@ function getStillsFromDOM() {
     return paths;
 }
 
-// Updated Stills Selector with currentStills Sync
-// Updated Stills Selector with Append/Replace Mode
 function handleStillsSelect(files) {
     if (!files.length) return;
 
     const id = document.getElementById('work-id').value || '{id}';
     const container = document.getElementById('stills-preview');
-
-    // Check mode
     const mode = document.querySelector('input[name="stills-mode"]:checked').value;
 
-    // If replace mode, clear existing
     if (mode === 'replace') {
         currentStills = [];
+        pendingStillsFiles = []; // Clear pending
         container.innerHTML = '';
     }
 
-    // 계속 이어서 번호 매기기 (Total length 기준)
     const startIdx = currentStills.length;
 
     files.forEach((file, index) => {
         const ext = file.name.split('.').pop().toLowerCase();
-        // Naming convention: still{N}.ext
-        // startIdx + 1 + index
         const fileName = `still${startIdx + 1 + index}.${ext}`;
         const finalPath = `images/works/${id}/${fileName}`;
 
-        // Add to Array
         currentStills.push(finalPath);
+
+        // Store File object with its target path
+        pendingStillsFiles.push({ path: finalPath, file: file });
 
         const reader = new FileReader();
         reader.onload = e => {
             const div = document.createElement('div');
             div.className = 'still-preview-item';
-            div.dataset.path = finalPath; // Store path in DOM
+            div.dataset.path = finalPath;
             div.innerHTML = `
                 <img src="${e.target.result}">
                 <button type="button" class="btn-remove-still" onclick="removeStill(this)">×</button>
@@ -635,10 +748,7 @@ function handleStillsSelect(files) {
         reader.readAsDataURL(file);
     });
     updateStillsTextDisplay();
-
-    // Reset file input so we can select the same file again if needed
     document.getElementById('stills-file').value = '';
-    // Reset mode to append for safety? Or keep it? keeping it is probably better UX.
 }
 
 function updateStillsTextDisplay() {
@@ -646,12 +756,11 @@ function updateStillsTextDisplay() {
 }
 
 window.removeStill = function (btnElement) {
-    // btnElement is now the X button, not the image
     const div = btnElement.parentElement;
     const pathToRemove = div.dataset.path;
 
-    // Remove from Array immediately
     currentStills = currentStills.filter(p => p !== pathToRemove);
+    pendingStillsFiles = pendingStillsFiles.filter(item => item.path !== pathToRemove);
 
     div.remove();
     updateStillsTextDisplay();
@@ -660,10 +769,12 @@ window.removeStill = function (btnElement) {
 function clearAllStills() {
     if (confirm('모든 스틸컷을 목록에서 제거하시겠습니까?')) {
         currentStills = [];
+        pendingStillsFiles = [];
         document.getElementById('stills-preview').innerHTML = '';
         updateStillsTextDisplay();
     }
 }
+// ... rest of logic ...
 
 function handleDelete() {
     if (confirm('정말 삭제하시겠습니까?')) {

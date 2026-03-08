@@ -1,6 +1,27 @@
 window.portfolioData = {
   "works": [
   {
+    "id": "work028",
+    "title": "테스트",
+    "majorCategory": "production",
+    "minorCategory": "musicvideo",
+    "date": "2026",
+    "role": "",
+    "featured": false,
+    "youtubeUrl": "",
+    "description": "",
+    "thumbnail": "images/works/work028/thumb.png",
+    "stills": [
+      "images/works/work028/still1.png",
+      "images/works/work028/still2.png",
+      "images/works/work028/still3.png",
+      "images/works/work028/still4.png",
+      "images/works/work028/still5.png"
+    ],
+    "credits": [],
+    "_originalIndex": 0
+  },
+  {
     "id": "work002",
     "title": "유명한아이 - Master card",
     "majorCategory": "production",

@@ -4,6 +4,7 @@
   "type": "module",
   "scripts": {
     "generate:d1-seed": "node scripts/generate-d1-seed.mjs",
+    "migrate:assets": "node scripts/migrate-assets-to-r2.mjs",
     "check": "node --check js/main.js && node --check js/admin.js && node --check js/page.js"
   }
 }

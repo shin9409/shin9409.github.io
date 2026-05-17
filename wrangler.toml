@@ -1,0 +1,16 @@
+name = "lookupmedia-portfolio"
+compatibility_date = "2026-05-17"
+pages_build_output_dir = "."
+
+[[d1_databases]]
+binding = "DB"
+database_name = "lookupmedia-db"
+database_id = "replace-with-cloudflare-d1-database-id"
+
+[[r2_buckets]]
+binding = "MEDIA"
+bucket_name = "lookupmedia-assets"
+
+[vars]
+# Optional: set this after connecting a public R2 custom domain, for example:
+# ASSETS_PUBLIC_URL = "https://assets.lookupmedia.co.kr"

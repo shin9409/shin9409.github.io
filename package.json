@@ -1,0 +1,9 @@
+{
+  "name": "lookupmedia-portfolio",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "generate:d1-seed": "node scripts/generate-d1-seed.mjs",
+    "check": "node --check js/main.js && node --check js/admin.js && node --check js/page.js"
+  }
+}

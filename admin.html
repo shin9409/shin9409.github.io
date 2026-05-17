@@ -14,15 +14,32 @@
         <header class="admin-header">
             <h1>LOOKUP MEDIA ADMIN</h1>
             <div class="header-actions">
-                <input type="password" id="github-token" placeholder="GitHub Personal Access Token" class="btn"
-                    style="width: 250px; text-align: left; background: #2a2a2a; color: #fff; border: 1px solid var(--border);">
-                <input type="file" id="import-file" accept=".json,.js" class="hidden">
-                <button type="button" id="import-btn" class="btn btn-outline">Import JSON</button>
+                <span id="admin-session-label" class="session-label">Checking session...</span>
+                <button type="button" id="logout-btn" class="btn btn-outline hidden">Logout</button>
                 <a href="index.html" class="btn btn-secondary" target="_blank">View Site ↗</a>
             </div>
         </header>
 
+        <section id="login-panel" class="notice-box hidden">
+            <h3>관리자 로그인</h3>
+            <p>Cloudflare Worker secret에 설정한 관리자 비밀번호를 입력하세요.</p>
+            <form id="login-form" class="login-form">
+                <input type="password" id="admin-password" placeholder="Admin password" required>
+                <button type="submit" class="btn btn-primary">Login</button>
+            </form>
+        </section>
+
+        <section class="notice-box">
+            <h3>Cloudflare 운영 구조</h3>
+            <ul>
+                <li>작품/페이지 데이터는 D1에서 읽고 씁니다.</li>
+                <li>새 이미지는 브라우저에서 WebP로 최적화된 뒤 R2에 저장됩니다.</li>
+                <li>GitHub 토큰은 더 이상 관리자 화면에 입력하지 않습니다.</li>
+            </ul>
+        </section>
+
         <!-- Dashboard -->
+        <div id="admin-app" class="hidden">
         <div class="dashboard-section">
             <div class="stat-card">
                 <h3>Total Works</h3>
@@ -42,9 +59,14 @@
             </div>
         </div>
 
+        <div class="admin-tabs">
+            <button type="button" class="tab-btn active" data-tab="works-panel">Works</button>
+            <button type="button" class="tab-btn" data-tab="pages-panel">Pages</button>
+        </div>
+
         <div class="content-wrapper">
             <!-- List Section -->
-            <div class="list-section">
+            <div id="works-panel" class="list-section tab-panel active">
                 <div class="section-top">
                     <h2>Work List</h2>
                     <div class="search-filters">
@@ -91,6 +113,27 @@
                         <tbody id="works-tbody">
                             <!-- JS Injected -->
                         </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="pages-panel" class="list-section tab-panel hidden">
+                <div class="section-top">
+                    <h2>Page List</h2>
+                    <button type="button" id="add-page-btn" class="btn btn-primary">+ New Page</button>
+                </div>
+
+                <div class="list-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Slug</th>
+                                <th>Title</th>
+                                <th width="100">Status</th>
+                                <th width="160">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="pages-tbody"></tbody>
                     </table>
                 </div>
             </div>
@@ -199,8 +242,8 @@
 
                             <input type="file" id="stills-file" accept="image/*" multiple>
                             <div class="notice-text">
-                                * 파일을 선택하면 경로가 자동으로 입력됩니다.<br>
-                                * 주의: 선택한 이미지 파일은 반드시 images/works/{ID}/ 폴더로 직접 복사해야 합니다.
+                                * 새 이미지는 WebP로 자동 최적화되어 R2에 업로드됩니다.<br>
+                                * 썸네일은 최대 800px, 스틸컷은 최대 1800px로 저장됩니다.
                             </div>
                             <p id="stills-path-display" class="path-display"
                                 style="white-space: pre-wrap; margin-top:5px;"></p>
@@ -220,6 +263,38 @@
                     </div>
                 </form>
             </div>
+
+            <div id="page-editor-section" class="editor-section hidden">
+                <div class="editor-header">
+                    <h2 id="page-editor-title">Add Page</h2>
+                    <button type="button" id="close-page-editor-btn" class="close-btn">×</button>
+                </div>
+
+                <form id="page-form">
+                    <div class="form-group">
+                        <label>Slug</label>
+                        <input type="text" id="page-slug" name="slug" required placeholder="about">
+                        <small>주소는 page.html?slug=about 형태로 열립니다.</small>
+                    </div>
+                    <div class="form-group">
+                        <label>Title</label>
+                        <input type="text" id="page-title" name="title" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Body</label>
+                        <textarea id="page-body" name="body" rows="14" placeholder="페이지 내용을 입력하세요. 줄바꿈은 그대로 표시됩니다."></textarea>
+                    </div>
+                    <div class="form-group" style="display:flex; align-items:center;">
+                        <label style="margin-bottom:0; margin-right:10px;">Published</label>
+                        <input type="checkbox" id="page-published" name="published" checked>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" id="delete-page-btn" class="btn btn-danger hidden">Delete Page</button>
+                        <button type="submit" class="btn btn-success">Save Page</button>
+                    </div>
+                </form>
+            </div>
+        </div>
         </div>
     </div>
 
@@ -238,7 +313,6 @@
         <button type="button" id="discard-btn" class="btn btn-text">Discard</button>
     </div>
 
-    <script src="js/data.js"></script>
     <script src="js/admin.js"></script>
 </body>
 

@@ -1,60 +1,17 @@
 // Main JavaScript Logic
 
-document.addEventListener('DOMContentLoaded', () => {
-    loadData();
+document.addEventListener('DOMContentLoaded', async () => {
+    await loadData();
     setupMobileMenu();
 });
 
 // Global Data Storage
 let allWorks = [];
 
-// 1. 데이터 로드 (data.js 기본 + localStorage 병합)
-function loadData() {
+// 1. 데이터 로드 (Cloudflare API 우선 + js/data.js fallback)
+async function loadData() {
     try {
-        // data.js에서 기본 데이터 로드
-        const baseWorks = (window.portfolioData && window.portfolioData.works)
-            ? window.portfolioData.works : [];
-
-        // localStorage에서 관리자 저장 데이터 로드
-        const savedData = localStorage.getItem('portfolioWorksData');
-
-        if (savedData) {
-            try {
-                const savedWorks = JSON.parse(savedData);
-
-                // data.js와 localStorage를 병합:
-                // localStorage의 stills가 비어있는데 data.js에는 있으면 data.js 우선 사용
-                allWorks = savedWorks.map(savedWork => {
-                    const baseWork = baseWorks.find(bw => bw.id === savedWork.id);
-                    if (baseWork) {
-                        const mergedWork = { ...savedWork };
-                        // stills 보충
-                        if ((!savedWork.stills || savedWork.stills.length === 0) && baseWork.stills && baseWork.stills.length > 0) {
-                            mergedWork.stills = baseWork.stills;
-                        }
-                        // role 보충 (새롭게 추가된 필드 대응)
-                        if (!savedWork.role && baseWork.role) {
-                            mergedWork.role = baseWork.role;
-                        }
-                        return mergedWork;
-                    }
-                    return savedWork;
-                });
-
-                // data.js에만 있고 localStorage에 없는 새 작업도 추가
-                baseWorks.forEach(bw => {
-                    if (!allWorks.find(w => w.id === bw.id)) {
-                        allWorks.push(bw);
-                    }
-                });
-
-            } catch (parseErr) {
-                console.warn('localStorage 파싱 실패, data.js 사용:', parseErr);
-                allWorks = baseWorks;
-            }
-        } else {
-            allWorks = baseWorks;
-        }
+        allWorks = await fetchWorks();
 
         // 현재 페이지에 맞는 렌더링 실행
         if (document.getElementById('featured-works-grid')) {
@@ -80,10 +37,28 @@ function loadData() {
     }
 }
 
+async function fetchWorks() {
+    try {
+        const response = await fetch('/api/works', { headers: { accept: 'application/json' } });
+        if (!response.ok) throw new Error(`API returned ${response.status}`);
+        const data = await response.json();
+        if (!Array.isArray(data.works)) throw new Error('Invalid works API response');
+        return data.works;
+    } catch (error) {
+        console.warn('API 데이터 로드 실패, js/data.js fallback 사용:', error);
+        return (window.portfolioData && window.portfolioData.works) ? window.portfolioData.works : [];
+    }
+}
+
 // 2. Render Featured Works (Index Page)
 function renderFeaturedWorks() {
     const grid = document.getElementById('featured-works-grid');
     const featuredWorks = allWorks.filter(work => work.featured).slice(0, 4); // Show max 4
+
+    if (featuredWorks.length === 0) {
+        grid.innerHTML = '<p style="color: #666;">No featured works selected yet.</p>';
+        return;
+    }
 
     grid.innerHTML = featuredWorks.map(work => createWorkCard(work)).join('');
 }
@@ -105,13 +80,13 @@ function createWorkCard(work) {
     return `
         <div class="work-card ${categoryClass}" onclick="location.href='work-detail.html?id=${work.id}'">
             ${tagHtml}
-            <img src="${work.thumbnail}" alt="${work.title}" class="work-thumb" onerror="this.src='https://via.placeholder.com/640x360/1a1a1a/888?text=No+Image'">
+            <img src="${work.thumbnail}" alt="${escapeHtml(work.title)}" class="work-thumb" loading="lazy" onerror="this.src='https://via.placeholder.com/640x360/1a1a1a/888?text=No+Image'">
             <div class="work-overlay">
                 <div class="work-info">
-                    <h3 class="work-title">${work.title}</h3>
+                    <h3 class="work-title">${escapeHtml(work.title)}</h3>
                     <div class="work-meta">
-                        <span class="work-date">${work.date}</span>
-                        <span class="work-role">${work.role || ''}</span>
+                        <span class="work-date">${escapeHtml(work.date || '')}</span>
+                        <span class="work-role">${escapeHtml(work.role || '')}</span>
                     </div>
                 </div>
             </div>
@@ -270,23 +245,24 @@ function renderWorkDetail() {
         if (Array.isArray(work.credits)) {
             creditsHtml = work.credits.map(c => `
                 <div class="credit-item">
-                    <h4>${c.role}</h4>
-                    <p>${c.name}</p>
+                    <h4>${escapeHtml(c.role || '')}</h4>
+                    <p>${escapeHtml(c.name || '')}</p>
                 </div>
             `).join('');
         } else {
             creditsHtml = Object.entries(work.credits).map(([role, name]) => `
                 <div class="credit-item">
-                    <h4>${role}</h4>
-                    <p>${name}</p>
+                    <h4>${escapeHtml(role)}</h4>
+                    <p>${escapeHtml(name)}</p>
                 </div>
             `).join('');
         }
     }
 
     // 스틸 HTML - 클릭 시 라이트박스 열기
-    const stillsHtml = work.stills.map((src, idx) => `
-        <img src="${src}" alt="Still from ${work.title}" data-index="${idx}" class="still-clickable" onerror="this.src='https://via.placeholder.com/1280x720/1a1a1a/888?text=Image+Not+Found'">
+    const stills = Array.isArray(work.stills) ? work.stills : [];
+    const stillsHtml = stills.map((src, idx) => `
+        <img src="${src}" alt="Still from ${escapeHtml(work.title)}" data-index="${idx}" class="still-clickable" loading="lazy" onerror="this.src='https://via.placeholder.com/1280x720/1a1a1a/888?text=Image+Not+Found'">
     `).join('');
 
     container.innerHTML = `
@@ -300,12 +276,12 @@ function renderWorkDetail() {
                 <!-- Left Column: Info -->
                 <div class="detail-left">
                     <div class="detail-header">
-                        <div class="detail-meta">${work.majorCategory} / ${work.minorCategory} &nbsp;|&nbsp; ${work.date}</div>
-                        <h1 class="section-title">${work.title}</h1>
+                        <div class="detail-meta">${escapeHtml(work.majorCategory)} / ${escapeHtml(work.minorCategory)} &nbsp;|&nbsp; ${escapeHtml(work.date || '')}</div>
+                        <h1 class="section-title">${escapeHtml(work.title)}</h1>
                     </div>
 
                     <div class="detail-desc">
-                        <p>${work.description}</p>
+                        <p>${escapeHtml(work.description || '')}</p>
                     </div>
                 </div>
 
@@ -330,7 +306,7 @@ function renderWorkDetail() {
     `;
 
     // 라이트박스 갤러리 초기화
-    setupLightbox(work.stills);
+    setupLightbox(stills);
 }
 
 // 라이트박스 갤러리 기능
@@ -454,6 +430,15 @@ function setupLightbox(stills) {
 
     // 이미지 전환 시 부드러운 애니메이션
     lightboxImg.style.transition = 'opacity 0.15s ease, transform 0.15s ease';
+}
+
+function escapeHtml(value) {
+    return String(value)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
 }
 
 // Mobile Menu

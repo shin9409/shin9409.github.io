@@ -28,8 +28,12 @@ export function requireBindings(env, bindings) {
 
 export function assetUrl(env, key) {
     if (!key) return "";
-    if (/^(https?:)?\/\//.test(key) || key.startsWith("images/") || key.startsWith("/")) {
+    if (/^(https?:)?\/\//.test(key) || key.startsWith("/")) {
         return key;
+    }
+    if (key.startsWith("images/")) {
+        const legacyBase = (env.LEGACY_ASSET_ORIGIN || "").replace(/\/$/, "");
+        return legacyBase ? `${legacyBase}/${key}` : key;
     }
     const base = (env.ASSETS_PUBLIC_URL || "").replace(/\/$/, "");
     return base ? `${base}/${key}` : `/api/assets/${key}`;

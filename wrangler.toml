@@ -5,7 +5,7 @@ pages_build_output_dir = "."
 [[d1_databases]]
 binding = "DB"
 database_name = "lookupmedia-db"
-database_id = "replace-with-cloudflare-d1-database-id"
+database_id = "7ea5a2ef-c030-4501-95c4-b8df53423c9e"
 
 [[r2_buckets]]
 binding = "MEDIA"
@@ -14,3 +14,4 @@ bucket_name = "lookupmedia-assets"
 [vars]
 # Optional: set this after connecting a public R2 custom domain, for example:
 # ASSETS_PUBLIC_URL = "https://assets.lookupmedia.co.kr"
+LEGACY_ASSET_ORIGIN = "https://shin9409.github.io"

@@ -148,9 +148,9 @@
                 <form id="work-form">
                     <div class="form-row">
                         <div class="form-group">
-                            <label>ID (필수)</label>
-                            <input type="text" id="work-id" name="id" required placeholder="work001">
-                            <small>고유한 ID를 입력하세요.</small>
+                            <label>관리 ID (자동 생성)</label>
+                            <input type="text" id="work-id" name="id" required placeholder="work001" readonly>
+                            <small>새 작품을 만들 때 자동으로 정해집니다. 폴더명이나 파일명은 따로 맞추지 않아도 됩니다.</small>
                         </div>
                         <div class="form-group" style="display:flex; align-items:center;">
                             <label style="margin-bottom:0; margin-right:10px;">메인 페이지 노출 (Featured)</label>
@@ -222,6 +222,7 @@
                             <input type="file" id="thumb-file" accept="image/*">
                             <input type="text" id="thumb-path-display" readonly class="path-display text-muted"
                                 style="margin-top:5px; background:transparent; border:none; padding:0;">
+                            <div class="notice-text">선택한 이미지는 자동으로 `thumb.webp`로 변환되어 저장됩니다.</div>
                             <div id="thumb-preview" class="image-preview-box">
                                 <span class="text-muted">No image selected</span>
                             </div>
@@ -243,7 +244,8 @@
                             <input type="file" id="stills-file" accept="image/*" multiple>
                             <div class="notice-text">
                                 * 새 이미지는 WebP로 자동 최적화되어 R2에 업로드됩니다.<br>
-                                * 썸네일은 최대 800px, 스틸컷은 최대 1800px로 저장됩니다.
+                                * 썸네일은 최대 800px, 스틸컷은 최대 1800px로 저장됩니다.<br>
+                                * 스틸컷 파일명과 순서는 드래그로 정리한 순서에 맞춰 자동 관리됩니다.
                             </div>
                             <p id="stills-path-display" class="path-display"
                                 style="white-space: pre-wrap; margin-top:5px;"></p>

@@ -229,9 +229,10 @@ function openWorkEditor(index) {
     if (index === -1) {
         $('#editor-title').textContent = 'Add New Work';
         $('#delete-btn').classList.add('hidden');
-        $('#work-id').readOnly = false;
+        $('#work-id').readOnly = true;
         $('#work-id').value = generateNextId();
         $('#work-date').value = new Date().getFullYear();
+        updateUploadPathDisplays();
         addCreditRow();
         return;
     }
@@ -257,6 +258,7 @@ function openWorkEditor(index) {
 
     state.currentStills = [...(work.stillKeys || work.stills || [])];
     renderStillsPreview(work.stills || state.currentStills);
+    updateUploadPathDisplays();
 }
 
 function closeWorkEditor() {
@@ -292,8 +294,8 @@ async function handleSaveWork(event) {
 
     try {
         const formData = new FormData(elements.workForm);
-        const id = slugify(formData.get('id'));
-        let thumbnailKey = $('#thumb-path-display').value;
+        const id = getCurrentWorkId();
+        let thumbnailKey = savedAssetKey($('#thumb-path-display').value);
 
         if (state.pendingThumbFile) {
             const upload = await uploadOptimizedImage(state.pendingThumbFile, { workId: id, kind: 'thumb', maxSize: 800, index: 0 });
@@ -414,7 +416,7 @@ function collectCredits() {
 function handleThumbSelect(file) {
     if (!file) return;
     state.pendingThumbFile = file;
-    $('#thumb-path-display').value = `works/${slugify($('#work-id').value || 'new-work')}/thumb.webp`;
+    $('#thumb-path-display').value = thumbKeyFor(getCurrentWorkId());
     previewImage(file, $('#thumb-preview'));
 }
 
@@ -428,7 +430,7 @@ function handleStillsSelect(files) {
 
     files.forEach((file) => {
         const index = state.currentStills.length;
-        const key = `works/${slugify($('#work-id').value || 'new-work')}/stills/${String(index + 1).padStart(3, '0')}.webp`;
+        const key = stillKeyFor(getCurrentWorkId(), index);
         state.currentStills.push(key);
         state.pendingStillFiles.push({ index, file });
     });
@@ -528,6 +530,39 @@ function generateNextId() {
         return match ? Math.max(max, Number(match[1])) : max;
     }, 0);
     return `work${String(maxNum + 1).padStart(3, '0')}`;
+}
+
+function getCurrentWorkId() {
+    const currentId = slugify($('#work-id').value);
+    if (currentId) return currentId;
+    const nextId = generateNextId();
+    $('#work-id').value = nextId;
+    return nextId;
+}
+
+function thumbKeyFor(workId) {
+    return `works/${workId}/thumb.webp`;
+}
+
+function stillKeyFor(workId, index) {
+    return `works/${workId}/stills/${String(index + 1).padStart(3, '0')}.webp`;
+}
+
+function updateUploadPathDisplays() {
+    const workId = getCurrentWorkId();
+    if (state.pendingThumbFile) {
+        $('#thumb-path-display').value = thumbKeyFor(workId);
+    } else if (!$('#thumb-path-display').value) {
+        $('#thumb-path-display').value = `자동 저장 위치: ${thumbKeyFor(workId)}`;
+    }
+    if (!state.currentStills.length) {
+        $('#stills-path-display').textContent = `자동 저장 위치: ${stillKeyFor(workId, 0)}`;
+    }
+}
+
+function savedAssetKey(value) {
+    const key = String(value || '').trim();
+    return key.startsWith('자동 저장 위치:') ? '' : key;
 }
 
 function showPreview() {

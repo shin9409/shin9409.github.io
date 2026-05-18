@@ -12,6 +12,12 @@ const state = {
 
 const $ = (selector) => document.querySelector(selector);
 
+const IMAGE_UPLOAD_SETTINGS = {
+    thumbMaxSize: 1920,
+    stillMaxSize: 3840,
+    webpQuality: 0.96
+};
+
 const elements = {
     app: $('#admin-app'),
     loginPanel: $('#login-panel'),
@@ -298,7 +304,12 @@ async function handleSaveWork(event) {
         let thumbnailKey = savedAssetKey($('#thumb-path-display').value);
 
         if (state.pendingThumbFile) {
-            const upload = await uploadOptimizedImage(state.pendingThumbFile, { workId: id, kind: 'thumb', maxSize: 800, index: 0 });
+            const upload = await uploadOptimizedImage(state.pendingThumbFile, {
+                workId: id,
+                kind: 'thumb',
+                maxSize: IMAGE_UPLOAD_SETTINGS.thumbMaxSize,
+                index: 0
+            });
             thumbnailKey = upload.key;
         }
 
@@ -307,7 +318,7 @@ async function handleSaveWork(event) {
             const upload = await uploadOptimizedImage(pending.file, {
                 workId: id,
                 kind: 'still',
-                maxSize: 1800,
+                maxSize: IMAGE_UPLOAD_SETTINGS.stillMaxSize,
                 index: pending.index
             });
             state.currentStills[pending.index] = upload.key;
@@ -483,12 +494,14 @@ function resizeToWebp(file, maxSize) {
             canvas.width = Math.round(image.width * scale);
             canvas.height = Math.round(image.height * scale);
             const context = canvas.getContext('2d');
+            context.imageSmoothingEnabled = true;
+            context.imageSmoothingQuality = 'high';
             context.drawImage(image, 0, 0, canvas.width, canvas.height);
             canvas.toBlob((blob) => {
                 URL.revokeObjectURL(image.src);
                 if (!blob) reject(new Error('이미지 최적화에 실패했습니다.'));
                 else resolve(blob);
-            }, 'image/webp', 0.86);
+            }, 'image/webp', IMAGE_UPLOAD_SETTINGS.webpQuality);
         };
         image.onerror = reject;
         image.src = URL.createObjectURL(file);

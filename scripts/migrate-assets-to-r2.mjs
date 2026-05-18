@@ -13,6 +13,11 @@ const apply = process.argv.includes("--apply");
 const limitArg = process.argv.find((arg) => arg.startsWith("--limit="));
 const limit = limitArg ? Number(limitArg.split("=")[1]) : Infinity;
 const outputSqlPath = resolve(rootDir, "migrations/0003_migrate_assets_to_r2.sql");
+const IMAGE_SETTINGS = {
+    thumbMaxSize: 1920,
+    stillMaxSize: 3840,
+    webpQuality: 96
+};
 
 if (!password && apply) {
     throw new Error("ADMIN_PASSWORD 환경 변수가 필요합니다.");
@@ -46,7 +51,11 @@ for (let index = 0; index < jobs.length; index += 1) {
     const outputPath = join(tempDir, `${job.workId}-${job.kind}-${job.index + 1}-${basename(job.sourceKey)}.webp`);
 
     try {
-        await convertToWebp(sourcePath, outputPath, job.kind === "thumb" ? 800 : 1800);
+        await convertToWebp(
+            sourcePath,
+            outputPath,
+            job.kind === "thumb" ? IMAGE_SETTINGS.thumbMaxSize : IMAGE_SETTINGS.stillMaxSize
+        );
     } catch (error) {
         report.missing.push({ key: job.sourceKey, reason: error.message });
         console.warn(`Missing or failed: ${job.sourceKey}`);
@@ -139,7 +148,8 @@ async function convertToWebp(sourcePath, outputPath, maxSize) {
     await execFileAsync("cwebp", [
         "-quiet",
         "-q",
-        "86",
+        String(IMAGE_SETTINGS.webpQuality),
+        "-sharp_yuv",
         "-resize",
         String(targetWidth),
         String(targetHeight),

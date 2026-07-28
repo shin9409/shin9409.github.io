@@ -3,12 +3,14 @@ import {
     deletePage,
     deleteWork,
     getPage,
+    getSiteSettings,
     json,
     listPages,
     listWorks,
     notFound,
     requireBindings,
     upsertPage,
+    upsertSiteSettings,
     upsertWork
 } from "../_lib.js";
 
@@ -34,6 +36,9 @@ export async function onRequest({ request, env, params }) {
     if (path === "/works" && method === "POST") return saveWork(request, env);
     if (path.startsWith("/works/") && method === "PUT") return saveWork(request, env, decodeURIComponent(path.slice("/works/".length)));
     if (path.startsWith("/works/") && method === "DELETE") return removeWork(env, decodeURIComponent(path.slice("/works/".length)));
+
+    if (path === "/site" && method === "GET") return json({ settings: await getSiteSettings(env) });
+    if (path === "/site" && method === "PUT") return saveSite(request, env);
 
     if (path === "/pages" && method === "GET") return json({ pages: await listPages(env) });
     if (path === "/pages" && method === "POST") return savePage(request, env);
@@ -108,21 +113,48 @@ async function removePage(env, slug) {
     return deleted ? json({ ok: true }) : notFound("Page not found");
 }
 
+async function saveSite(request, env) {
+    const payload = await request.json().catch(() => null);
+    if (!payload) return badRequest("Invalid JSON body");
+    const settings = {
+        heroEyebrow: String(payload.heroEyebrow || "").trim(),
+        heroTitle: String(payload.heroTitle || "").trim(),
+        heroSubtitle: String(payload.heroSubtitle || "").trim(),
+        heroWorkIds: Array.isArray(payload.heroWorkIds)
+            ? [...new Set(payload.heroWorkIds.map((id) => slugify(id)).filter(Boolean))].slice(0, 5)
+            : [],
+        introTitle: String(payload.introTitle || "").trim(),
+        introBody: String(payload.introBody || ""),
+        contactEmail: String(payload.contactEmail || "").trim(),
+        contactPhone: String(payload.contactPhone || "").trim(),
+        contactAddress: String(payload.contactAddress || "").trim(),
+        instagramUrl: String(payload.instagramUrl || "").trim()
+    };
+    if (!settings.heroTitle || !settings.introTitle) {
+        return badRequest("Hero title and intro title are required");
+    }
+    return json({ settings: await upsertSiteSettings(env, settings) });
+}
+
 async function uploadAsset(request, env) {
     const missing = requireBindings(env, ["MEDIA"]);
     if (missing) return json({ error: missing }, { status: 503 });
 
     const formData = await request.formData();
     const file = formData.get("file");
+    const requestedKind = formData.get("kind");
     const workId = slugify(formData.get("workId") || "misc");
-    const kind = formData.get("kind") === "thumb" ? "thumb" : "still";
+    const pageSlug = slugify(formData.get("pageSlug") || "page");
+    const kind = requestedKind === "thumb" ? "thumb" : requestedKind === "page" ? "page" : "still";
     const index = Number(formData.get("index") || 0);
 
     if (!file || typeof file.arrayBuffer !== "function") return badRequest("Image file is required");
 
-    const key = kind === "thumb"
-        ? `works/${workId}/thumb.webp`
-        : `works/${workId}/stills/${String(index + 1).padStart(3, "0")}.webp`;
+    const key = kind === "page"
+        ? `pages/${pageSlug}/${crypto.randomUUID()}.webp`
+        : kind === "thumb"
+            ? `works/${workId}/thumb.webp`
+            : `works/${workId}/stills/${String(index + 1).padStart(3, "0")}.webp`;
 
     await env.MEDIA.put(key, await file.arrayBuffer(), {
         httpMetadata: {

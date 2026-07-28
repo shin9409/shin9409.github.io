@@ -3,6 +3,19 @@ const JSON_HEADERS = {
     "cache-control": "no-store"
 };
 
+export const DEFAULT_SITE_SETTINGS = {
+    heroEyebrow: "LOOKUP MEDIA / SEOUL",
+    heroTitle: "PRODUCTION\n& LIGHTING",
+    heroSubtitle: "FILM · MUSIC VIDEO · COMMERCIAL",
+    heroWorkIds: ["work002", "work003"],
+    introTitle: "EVERY FRAME BEGINS WITH A CLEAR POINT OF VIEW.",
+    introBody: "LOOKUP MEDIA는 아이디어에서 현장, 마지막 프레임까지 하나의 시선으로 연결합니다. 프로덕션과 조명을 통해 이야기의 가장 정확한 분위기를 만듭니다.",
+    contactEmail: "lookupmedia@naver.com",
+    contactPhone: "010-2433-0583",
+    contactAddress: "경기도 고양시 덕양구 지축4로 45 101,102호",
+    instagramUrl: "https://www.instagram.com/lookupmedia_"
+};
+
 export function json(data, init = {}) {
     return new Response(JSON.stringify(data), {
         ...init,
@@ -235,6 +248,53 @@ export async function deletePage(env, slug) {
     return result.meta.changes > 0;
 }
 
+export async function getSiteSettings(env) {
+    try {
+        const row = await env.DB.prepare("SELECT * FROM site_settings WHERE id = 1").first();
+        return row ? mapSiteSettings(row) : { ...DEFAULT_SITE_SETTINGS };
+    } catch (error) {
+        console.warn("site_settings is not ready; using defaults", error);
+        return { ...DEFAULT_SITE_SETTINGS };
+    }
+}
+
+export async function upsertSiteSettings(env, settings) {
+    const next = { ...DEFAULT_SITE_SETTINGS, ...settings };
+    const now = new Date().toISOString();
+    await env.DB.prepare(`
+        INSERT INTO site_settings (
+            id, hero_eyebrow, hero_title, hero_subtitle, hero_work_ids,
+            intro_title, intro_body, contact_email, contact_phone,
+            contact_address, instagram_url, updated_at
+        ) VALUES (1, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ON CONFLICT(id) DO UPDATE SET
+            hero_eyebrow = excluded.hero_eyebrow,
+            hero_title = excluded.hero_title,
+            hero_subtitle = excluded.hero_subtitle,
+            hero_work_ids = excluded.hero_work_ids,
+            intro_title = excluded.intro_title,
+            intro_body = excluded.intro_body,
+            contact_email = excluded.contact_email,
+            contact_phone = excluded.contact_phone,
+            contact_address = excluded.contact_address,
+            instagram_url = excluded.instagram_url,
+            updated_at = excluded.updated_at
+    `).bind(
+        next.heroEyebrow,
+        next.heroTitle,
+        next.heroSubtitle,
+        JSON.stringify(next.heroWorkIds || []),
+        next.introTitle,
+        next.introBody,
+        next.contactEmail,
+        next.contactPhone,
+        next.contactAddress,
+        next.instagramUrl,
+        now
+    ).run();
+    return getSiteSettings(env);
+}
+
 function groupBy(items, key) {
     return items.reduce((acc, item) => {
         const value = item[key];
@@ -253,5 +313,28 @@ function mapPage(row) {
         sortOrder: row.sort_order || 0,
         createdAt: row.created_at,
         updatedAt: row.updated_at
+    };
+}
+
+function mapSiteSettings(row) {
+    let heroWorkIds = [];
+    try {
+        const parsed = JSON.parse(row.hero_work_ids || "[]");
+        heroWorkIds = Array.isArray(parsed) ? parsed.map(String).filter(Boolean).slice(0, 5) : [];
+    } catch {
+        heroWorkIds = [];
+    }
+    return {
+        heroEyebrow: row.hero_eyebrow || DEFAULT_SITE_SETTINGS.heroEyebrow,
+        heroTitle: row.hero_title || DEFAULT_SITE_SETTINGS.heroTitle,
+        heroSubtitle: row.hero_subtitle || DEFAULT_SITE_SETTINGS.heroSubtitle,
+        heroWorkIds,
+        introTitle: row.intro_title || DEFAULT_SITE_SETTINGS.introTitle,
+        introBody: row.intro_body || DEFAULT_SITE_SETTINGS.introBody,
+        contactEmail: row.contact_email || DEFAULT_SITE_SETTINGS.contactEmail,
+        contactPhone: row.contact_phone || DEFAULT_SITE_SETTINGS.contactPhone,
+        contactAddress: row.contact_address || DEFAULT_SITE_SETTINGS.contactAddress,
+        instagramUrl: row.instagram_url || DEFAULT_SITE_SETTINGS.instagramUrl,
+        updatedAt: row.updated_at || ""
     };
 }

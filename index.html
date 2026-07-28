@@ -1,74 +1,90 @@
 <!DOCTYPE html>
 <html lang="ko">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LOOKUP MEDIA - Video Production</title>
-    <link rel="stylesheet" href="css/style.css">
-    <meta name="description" content="Cinematic video production and lighting design.">
+    <title>LOOKUP MEDIA — Production & Lighting</title>
+    <meta name="description" content="LOOKUP MEDIA는 프로덕션과 조명을 통해 오래 남는 이미지를 만듭니다.">
+    <meta property="og:title" content="LOOKUP MEDIA — Production & Lighting">
+    <meta property="og:description" content="Creative production and lighting for film, music, and brands.">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="https://lookupmedia.co.kr/images/logo.png">
+    <link rel="icon" href="images/logo.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..125,100..900&display=swap" media="print" onload="this.media='all'">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap" media="print" onload="this.media='all'">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" media="print" onload="this.media='all'">
+    <link rel="stylesheet" href="css/style.css?v=20260728-2">
 </head>
-
-<body>
-    <!-- Header -->
-    <header>
-        <div class="container">
-            <a href="index.html" class="logo">LOOK<span class="logo-highlight">UP</span> MEDIA</a>
-            <ul class="nav-links">
-                <li><a href="index.html" class="active">Main</a></li>
-                <li class="dropdown">
-                    <a href="works.html">Works</a>
-                    <ul class="dropdown-content">
-                        <li><a href="works.html?filter=production">Production</a></li>
-                        <li><a href="works.html?filter=lighting">Lighting</a></li>
-                    </ul>
-                </li>
-                <li><a href="contact.html">Contact</a></li>
-            </ul>
-            <div class="menu-toggle">☰</div>
+<body data-page="home">
+    <a class="skip-link" href="#main-content">Skip to content</a>
+    <header class="site-header" id="site-header">
+        <div class="site-header__inner">
+            <a href="index.html" class="wordmark" aria-label="LOOKUP MEDIA home">LOOK<span>UP</span> MEDIA</a>
+            <nav class="site-nav" id="primary-nav" aria-label="Primary navigation">
+                <a href="index.html" aria-current="page">Home</a>
+                <a href="works.html">Works</a>
+                <span id="dynamic-nav"></span>
+                <a href="contact.html">Contact</a>
+            </nav>
+            <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="primary-nav">
+                <span class="menu-toggle__label">Menu</span>
+                <span class="menu-toggle__lines" aria-hidden="true"></span>
+            </button>
         </div>
     </header>
 
-    <!-- Hero Section -->
-    <section class="hero">
-        <div class="hero-content">
-            <div class="hero-logo-wrapper">
-                <img src="images/logo.png" alt="LOOKUP MEDIA" class="hero-logo-img">
+    <main id="main-content">
+        <section class="hero-sequence" id="hero-sequence" aria-label="Featured projects">
+            <div class="hero-sequence__media" id="hero-media" aria-hidden="true"></div>
+            <div class="hero-sequence__shade"></div>
+            <div class="hero-sequence__content">
+                <p class="eyebrow" id="hero-eyebrow">LOOKUP MEDIA / SEOUL</p>
+                <h1 id="hero-title">PRODUCTION<br>&amp; LIGHTING</h1>
+                <p class="hero-sequence__subtitle" id="hero-subtitle">FILM · MUSIC VIDEO · COMMERCIAL</p>
+                <div class="hero-sequence__actions">
+                    <a class="text-link text-link--light" href="works.html">Explore all works <span>↗</span></a>
+                    <a class="hero-project-link" id="hero-project-link" href="works.html">
+                        <span id="hero-project-meta">Selected project</span>
+                        <strong id="hero-project-title">LOOKUP MEDIA</strong>
+                    </a>
+                </div>
             </div>
-            <p class="hero-subtitle">Creative Video Production</p>
-            <a href="works.html" class="btn">View Portfolio</a>
-        </div>
-    </section>
+            <div class="hero-progress" id="hero-progress" aria-hidden="true"></div>
+            <button class="hero-toggle" id="hero-toggle" type="button" aria-pressed="false">Pause sequence</button>
+            <span class="scroll-cue" aria-hidden="true">Scroll</span>
+        </section>
 
-    <!-- Featured Works Section -->
-    <section class="featured-works">
-        <div class="container">
-            <div class="section-header">
-                <h2 class="section-title">Latest Works</h2>
-                <a href="works.html" class="view-all">View All Works →</a>
+        <section class="section section--works" aria-labelledby="selected-title">
+            <div class="section-heading shell reveal">
+                <div>
+                    <p class="eyebrow">CURATED PROJECTS</p>
+                    <h2 id="selected-title">Selected Works</h2>
+                </div>
             </div>
+            <div class="editorial-grid shell" id="featured-works-grid" aria-live="polite">
+                <div class="skeleton-card skeleton-card--wide"></div>
+                <div class="skeleton-card"></div>
+                <div class="skeleton-card"></div>
+            </div>
+            <a class="featured-archive-cta shell reveal" href="works.html">
+                <span class="featured-archive-cta__meta">FULL ARCHIVE / <b id="featured-archive-count">00</b> PROJECTS</span>
+                <strong>View all projects</strong>
+                <span class="featured-archive-cta__arrow" aria-hidden="true">↗</span>
+            </a>
+        </section>
+    </main>
 
-            <!-- Works container dependent on main.js to populate -->
-            <div class="works-grid" id="featured-works-grid">
-                <!-- Loading State or JS injected content -->
-                <p style="color: #666;">Loading works...</p>
-            </div>
-        </div>
-    </section>
-
-    <!-- Footer -->
-    <footer>
-        <div class="container">
-            <a href="index.html" class="footer-logo">LOOK<span class="logo-highlight">UP</span> MEDIA</a>
-            <p>&copy; 2025 LOOKUP MEDIA. All Rights Reserved.</p>
-            <div class="social-links" style="margin-top: 20px;">
-                <a href="https://www.instagram.com/lookupmedia_?igsh=aDZvbzg3czVyOTMz" target="_blank">Instagram</a>
-            </div>
+    <footer class="site-footer">
+        <div class="shell site-footer__grid">
+            <a href="index.html" class="wordmark">LOOK<span>UP</span> MEDIA</a>
+            <div><p>Production & Lighting</p><p>Seoul / Goyang, Korea</p></div>
+            <div><a id="footer-email" href="#">Email</a><br><a id="footer-instagram" href="#" target="_blank" rel="noreferrer">Instagram ↗</a></div>
+            <p>© <span id="footer-year"></span> LOOKUP MEDIA</p>
         </div>
     </footer>
 
-    <script src="js/data.js"></script>
-    <script src="js/main.js"></script>
+    <script src="js/main.js?v=20260728-2" defer></script>
 </body>
-
 </html>

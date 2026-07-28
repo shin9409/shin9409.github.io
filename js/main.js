@@ -1,439 +1,505 @@
-// Main JavaScript Logic
+const DEFAULT_SITE_SETTINGS = {
+    heroEyebrow: 'LOOKUP MEDIA / SEOUL',
+    heroTitle: 'PRODUCTION\n& LIGHTING',
+    heroSubtitle: 'FILM · MUSIC VIDEO · COMMERCIAL',
+    heroWorkIds: ['work002', 'work003'],
+    introTitle: 'EVERY FRAME BEGINS WITH A CLEAR POINT OF VIEW.',
+    introBody: 'LOOKUP MEDIA는 아이디어에서 현장, 마지막 프레임까지 하나의 시선으로 연결합니다. 프로덕션과 조명을 통해 이야기의 가장 정확한 분위기를 만듭니다.',
+    contactEmail: 'lookupmedia@naver.com',
+    contactPhone: '010-2433-0583',
+    contactAddress: '경기도 고양시 덕양구 지축4로 45 101,102호',
+    instagramUrl: 'https://www.instagram.com/lookupmedia_'
+};
+
+let allWorks = [];
+let siteSettings = { ...DEFAULT_SITE_SETTINGS };
+let siteNavigation = [];
 
 document.addEventListener('DOMContentLoaded', async () => {
-    await loadData();
-    setupMobileMenu();
-});
+    setupShell();
 
-// Global Data Storage
-let allWorks = [];
+    const [works, site] = await Promise.all([fetchWorks(), fetchSite()]);
+    allWorks = works;
+    siteSettings = { ...DEFAULT_SITE_SETTINGS, ...(site.settings || {}) };
+    siteNavigation = site.navigation || [];
+    updateSharedContent();
 
-// 1. 데이터 로드 (Cloudflare API 우선 + js/data.js fallback)
-async function loadData() {
-    try {
-        allWorks = await fetchWorks();
-
-        // 현재 페이지에 맞는 렌더링 실행
-        if (document.getElementById('featured-works-grid')) {
-            renderFeaturedWorks();
-        } else if (document.getElementById('all-works-grid')) {
-            renderAllWorks();
-        } else if (document.getElementById('work-detail-container')) {
+    switch (document.body.dataset.page) {
+        case 'home':
+            renderHome();
+            break;
+        case 'works':
+            renderWorksArchive();
+            break;
+        case 'detail':
             renderWorkDetail();
-        }
-
-    } catch (error) {
-        console.error('Error loading data:', error);
-        // Show user friendly error on the page
-        const grids = document.querySelectorAll('.works-grid');
-        grids.forEach(grid => {
-            grid.innerHTML = '<p style="color: #fff; text-align: center;">Failed to load works. Please try again later.</p>';
-        });
-
-        const detail = document.getElementById('work-detail-container');
-        if (detail) {
-            detail.innerHTML = '<p style="color: #fff; text-align: center;">Failed to load project details. Please try again later.</p>';
-        }
+            break;
+        default:
+            break;
     }
-}
+
+    setupRevealObserver();
+});
 
 async function fetchWorks() {
     try {
         const response = await fetch('/api/works', { headers: { accept: 'application/json' } });
         if (!response.ok) throw new Error(`API returned ${response.status}`);
         const data = await response.json();
-        if (!Array.isArray(data.works)) throw new Error('Invalid works API response');
+        if (!Array.isArray(data.works)) throw new Error('Invalid works response');
         return data.works;
     } catch (error) {
-        console.warn('API 데이터 로드 실패, js/data.js fallback 사용:', error);
-        return (window.portfolioData && window.portfolioData.works) ? window.portfolioData.works : [];
+        console.warn('Works API unavailable; using static fallback', error);
+        return loadStaticWorksFallback();
     }
 }
 
-// 2. Render Featured Works (Index Page)
-function renderFeaturedWorks() {
-    const grid = document.getElementById('featured-works-grid');
-    const featuredWorks = allWorks.filter(work => work.featured).slice(0, 4); // Show max 4
+async function loadStaticWorksFallback() {
+    if (window.portfolioData?.works) return window.portfolioData.works;
+    await new Promise((resolve) => {
+        const script = document.createElement('script');
+        script.src = 'js/data.js';
+        script.onload = resolve;
+        script.onerror = resolve;
+        document.head.appendChild(script);
+    });
+    return window.portfolioData?.works || [];
+}
 
-    if (featuredWorks.length === 0) {
-        grid.innerHTML = '<p style="color: #666;">No featured works selected yet.</p>';
-        return;
+async function fetchSite() {
+    try {
+        const response = await fetch('/api/site', { headers: { accept: 'application/json' } });
+        if (!response.ok) throw new Error(`API returned ${response.status}`);
+        return response.json();
+    } catch (error) {
+        console.warn('Site settings unavailable; using defaults', error);
+        return { settings: DEFAULT_SITE_SETTINGS, navigation: [] };
+    }
+}
+
+function setupShell() {
+    const header = document.getElementById('site-header');
+    const menuButton = document.querySelector('.menu-toggle');
+    const nav = document.getElementById('primary-nav');
+    const mobileMenu = window.matchMedia('(max-width: 760px)');
+
+    const updateHeader = () => header?.classList.toggle('is-scrolled', window.scrollY > 24);
+    const syncMenuAccessibility = () => {
+        if (!nav || !menuButton) return;
+        const open = menuButton.getAttribute('aria-expanded') === 'true';
+        if (mobileMenu.matches) {
+            nav.inert = !open;
+            nav.setAttribute('aria-hidden', String(!open));
+        } else {
+            nav.inert = false;
+            nav.removeAttribute('aria-hidden');
+        }
+    };
+    updateHeader();
+    syncMenuAccessibility();
+    window.addEventListener('scroll', updateHeader, { passive: true });
+    window.addEventListener('resize', syncMenuAccessibility, { passive: true });
+
+    menuButton?.addEventListener('click', () => {
+        const open = menuButton.getAttribute('aria-expanded') !== 'true';
+        menuButton.setAttribute('aria-expanded', String(open));
+        nav?.classList.toggle('is-open', open);
+        document.body.classList.toggle('menu-open', open);
+        menuButton.querySelector('.menu-toggle__label').textContent = open ? 'Close' : 'Menu';
+        syncMenuAccessibility();
+        if (open) nav?.querySelector('a')?.focus();
+        else menuButton.focus();
+    });
+
+    nav?.addEventListener('click', (event) => {
+        if (!event.target.closest('a')) return;
+        menuButton?.setAttribute('aria-expanded', 'false');
+        nav.classList.remove('is-open');
+        document.body.classList.remove('menu-open');
+        syncMenuAccessibility();
+    });
+
+    document.addEventListener('keydown', (event) => {
+        if (event.key !== 'Escape' || !nav?.classList.contains('is-open')) return;
+        menuButton?.click();
+        menuButton?.focus();
+    });
+
+    const year = document.getElementById('footer-year');
+    if (year) year.textContent = new Date().getFullYear();
+}
+
+function updateSharedContent() {
+    const dynamicNav = document.getElementById('dynamic-nav');
+    if (dynamicNav) {
+        dynamicNav.innerHTML = siteNavigation.map((item) => (
+            `<a href="page.html?slug=${encodeURIComponent(item.slug)}">${escapeHtml(item.title)}</a>`
+        )).join('');
     }
 
-    grid.innerHTML = featuredWorks.map(work => createWorkCard(work)).join('');
+    setLink('footer-email', `mailto:${siteSettings.contactEmail}`, siteSettings.contactEmail);
+    setLink('footer-instagram', siteSettings.instagramUrl, 'Instagram ↗');
+    setLink('contact-email', `mailto:${siteSettings.contactEmail}`, siteSettings.contactEmail);
+    setLink('contact-phone', `tel:${siteSettings.contactPhone.replace(/[^\d+]/g, '')}`, siteSettings.contactPhone);
+    const instagramHandle = siteSettings.instagramUrl.match(/instagram\.com\/([^/?#]+)/i)?.[1];
+    setLink('contact-instagram', siteSettings.instagramUrl, instagramHandle ? `@${instagramHandle} ↗` : 'Instagram ↗');
+    setText('contact-address', siteSettings.contactAddress);
 }
 
-// Helper: Create Work Card HTML
-// Helper: Create Work Card HTML
-function createWorkCard(work) {
-    let categoryClass = '';
-    let tagHtml = '';
+function renderHome() {
+    setText('hero-eyebrow', siteSettings.heroEyebrow);
+    setText('hero-title', siteSettings.heroTitle);
+    setText('hero-subtitle', siteSettings.heroSubtitle);
+    setText('featured-archive-count', String(allWorks.length).padStart(2, '0'));
 
-    if (work.majorCategory === 'production') {
-        categoryClass = 'category-production';
-        tagHtml = '<span class="work-tag">PRODUCTION</span>';
-    } else if (work.majorCategory === 'lighting') {
-        categoryClass = 'category-lighting';
-        tagHtml = '<span class="work-tag">LIGHT</span>';
-    }
-
-    return `
-        <div class="work-card ${categoryClass}" onclick="location.href='work-detail.html?id=${work.id}'">
-            ${tagHtml}
-            <img src="${work.thumbnail}" alt="${escapeHtml(work.title)}" class="work-thumb" loading="lazy" onerror="this.src='https://via.placeholder.com/640x360/1a1a1a/888?text=No+Image'">
-            <div class="work-overlay">
-                <div class="work-info">
-                    <h3 class="work-title">${escapeHtml(work.title)}</h3>
-                    <div class="work-meta">
-                        <span class="work-date">${escapeHtml(work.date || '')}</span>
-                        <span class="work-role">${escapeHtml(work.role || '')}</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    `;
+    const selected = allWorks.filter((work) => work.featured);
+    renderWorkGrid('featured-works-grid', (selected.length ? selected : allWorks).slice(0, 6));
+    setupHeroSequence(resolveHeroWorks());
 }
 
-// 3. Render All Works with Filtering (Works Page) - Placeholder for next step
-function renderAllWorks() {
-    const grid = document.getElementById('all-works-grid');
-
-    // Check for URL parameters
-    const params = new URLSearchParams(window.location.search);
-    const filter = params.get('filter'); // 'production' or 'lighting'
-
-    // Initial Filter Setup
-    let initialMajor = 'all';
-    if (filter === 'production') initialMajor = 'production';
-    if (filter === 'lighting') initialMajor = 'lighting';
-
-    setupFilters(initialMajor);
-
-    // Filter data based on initial state
-    filterWorks(initialMajor, 'all');
+function resolveHeroWorks() {
+    const configured = (siteSettings.heroWorkIds || [])
+        .map((id) => allWorks.find((work) => work.id === id))
+        .filter(Boolean);
+    return (configured.length ? configured : allWorks.slice(0, 3)).slice(0, 5);
 }
 
-function renderFilteredGrid(works) {
-    const grid = document.getElementById('all-works-grid');
-    if (works.length === 0) {
-        grid.innerHTML = '<p style="color: #666; text-align: center; grid-column: 1/-1;">No works found for this category.</p>';
-        return;
-    }
-    grid.innerHTML = works.map(work => createWorkCard(work)).join('');
-}
+function setupHeroSequence(works) {
+    const media = document.getElementById('hero-media');
+    const progress = document.getElementById('hero-progress');
+    const hero = document.getElementById('hero-sequence');
+    const toggle = document.getElementById('hero-toggle');
+    const projectTitle = document.getElementById('hero-project-title');
+    const projectMeta = document.getElementById('hero-project-meta');
+    const projectLink = document.getElementById('hero-project-link');
+    if (!media || !works.length) return;
 
-function setupFilters(initialMajor = 'all') {
-    const filtersContainer = document.querySelector('.filters');
-    const majorFilters = document.querySelectorAll('.filter-btn');
-    const subFilters = document.querySelectorAll('.sub-filter-btn');
+    media.innerHTML = works.map((work, index) => {
+        const image = sequenceImage(work);
+        return `<div class="hero-frame${index === 0 ? ' is-active' : ''}" data-src="${escapeAttribute(image)}">${index === 0 ? `<img src="${escapeAttribute(image)}" alt="" fetchpriority="high">` : ''}</div>`;
+    }).join('');
+    progress.innerHTML = works.map((_, index) => `<span class="${index === 0 ? 'is-active' : ''}"></span>`).join('');
 
-    let currentMajor = initialMajor;
-    let currentMinor = 'all';
+    const frames = [...media.querySelectorAll('.hero-frame')];
+    const bars = [...progress.querySelectorAll('span')];
+    let current = 0;
+    let paused = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-    // Helper to update mode class
-    const updateFilterMode = (mode) => {
-        if (!filtersContainer) return;
-        filtersContainer.classList.remove('mode-production', 'mode-lighting');
-        if (mode === 'production') filtersContainer.classList.add('mode-production');
-        if (mode === 'lighting') filtersContainer.classList.add('mode-lighting');
+    const ensureLoaded = (index) => {
+        const frame = frames[index];
+        if (!frame || frame.querySelector('img')) return;
+        const image = document.createElement('img');
+        image.src = frame.dataset.src;
+        image.alt = '';
+        image.decoding = 'async';
+        frame.appendChild(image);
     };
 
-    // Set initial active state for Major Filters
-    majorFilters.forEach(btn => {
-        btn.classList.remove('active');
-        if (btn.dataset.filter === initialMajor) {
-            btn.classList.add('active');
-            updateFilterMode(initialMajor);
-        }
-    });
-
-    // Major Category Filter
-    majorFilters.forEach(btn => {
-        btn.addEventListener('click', () => {
-            // Update UI
-            majorFilters.forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-
-            currentMajor = btn.dataset.filter;
-            updateFilterMode(currentMajor);
-
-            filterWorks(currentMajor, currentMinor);
+    const show = (index) => {
+        current = index;
+        ensureLoaded(index);
+        frames.forEach((frame, frameIndex) => frame.classList.toggle('is-active', frameIndex === index));
+        bars.forEach((bar, barIndex) => {
+            bar.classList.remove('is-active');
+            if (barIndex === index) requestAnimationFrame(() => bar.classList.add('is-active'));
         });
-    });
+        const work = works[index];
+        projectTitle.textContent = work.title;
+        projectMeta.textContent = `${labelFor(work.majorCategory)} / ${work.role || work.date || ''}`;
+        projectLink.href = `work-detail.html?id=${encodeURIComponent(work.id)}`;
+        if (works.length > 1) window.setTimeout(() => ensureLoaded((index + 1) % works.length), 3800);
+    };
 
-    // Sub Category Filter
-    subFilters.forEach(btn => {
-        btn.addEventListener('click', () => {
-            subFilters.forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
+    const updateToggle = () => {
+        if (!toggle) return;
+        const canCycle = works.length > 1 && !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        toggle.hidden = !canCycle;
+        toggle.setAttribute('aria-pressed', String(paused));
+        toggle.textContent = paused ? 'Play sequence' : 'Pause sequence';
+        hero?.classList.toggle('is-paused', paused);
+    };
 
-            currentMinor = btn.dataset.filter;
-            filterWorks(currentMajor, currentMinor);
-        });
+    show(0);
+    updateToggle();
+    toggle?.addEventListener('click', () => {
+        paused = !paused;
+        updateToggle();
     });
+    if (works.length > 1 && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        window.setInterval(() => {
+            if (!paused) show((current + 1) % works.length);
+        }, 6000);
+    }
 }
 
-function filterWorks(major, minor) {
-    let filtered = allWorks;
-
-    if (major !== 'all') {
-        filtered = filtered.filter(work => work.majorCategory === major);
-    }
-
-    if (minor !== 'all') {
-        filtered = filtered.filter(work => work.minorCategory === minor);
-    }
-
-    renderFilteredGrid(filtered);
-}
-
-
-// 4. Render Work Detail (Detail Page) - Placeholder for next step
-function renderWorkDetail() {
+function renderWorksArchive() {
+    setText('archive-total', String(allWorks.length).padStart(2, '0'));
     const params = new URLSearchParams(window.location.search);
-    const id = params.get('id');
-    const work = allWorks.find(w => w.id === id);
-    const container = document.getElementById('work-detail-container');
+    const initialMajor = ['production', 'lighting'].includes(params.get('filter')) ? params.get('filter') : 'all';
+    const initialMinor = ['musicvideo', 'film', 'commercial', 'etc'].includes(params.get('type')) ? params.get('type') : 'all';
+    setupFilters(initialMajor, initialMinor);
+}
 
-    if (!work) {
-        container.innerHTML = '<p style="color: #fff; text-align: center;">Project not found.</p>';
+function setupFilters(initialMajor, initialMinor) {
+    const majorButtons = [...document.querySelectorAll('.filter-btn')];
+    const minorButtons = [...document.querySelectorAll('.sub-filter-btn')];
+    let currentMajor = initialMajor;
+    let currentMinor = initialMinor;
+
+    const apply = () => {
+        majorButtons.forEach((button) => {
+            const active = button.dataset.filter === currentMajor;
+            button.classList.toggle('active', active);
+            button.setAttribute('aria-pressed', String(active));
+        });
+        minorButtons.forEach((button) => {
+            const active = button.dataset.filter === currentMinor;
+            button.classList.toggle('active', active);
+            button.setAttribute('aria-pressed', String(active));
+        });
+        const filtered = allWorks.filter((work) => (
+            (currentMajor === 'all' || work.majorCategory === currentMajor)
+            && (currentMinor === 'all' || work.minorCategory === currentMinor)
+        ));
+        setText('filter-count', filtered.length);
+        renderWorkGrid('all-works-grid', filtered);
+
+        const url = new URL(window.location.href);
+        currentMajor === 'all' ? url.searchParams.delete('filter') : url.searchParams.set('filter', currentMajor);
+        currentMinor === 'all' ? url.searchParams.delete('type') : url.searchParams.set('type', currentMinor);
+        window.history.replaceState({}, '', url);
+    };
+
+    majorButtons.forEach((button) => button.addEventListener('click', () => {
+        currentMajor = button.dataset.filter;
+        apply();
+    }));
+    minorButtons.forEach((button) => button.addEventListener('click', () => {
+        currentMinor = button.dataset.filter;
+        apply();
+    }));
+    apply();
+}
+
+function renderWorkGrid(containerId, works) {
+    const grid = document.getElementById(containerId);
+    if (!grid) return;
+    if (!works.length) {
+        grid.innerHTML = '<p class="empty-state">No projects match this selection.</p>';
+        return;
+    }
+    grid.innerHTML = works.map(createWorkCard).join('');
+    grid.querySelectorAll('.work-card').forEach((card, index) => {
+        card.style.setProperty('--delay', `${Math.min(index * 55, 330)}ms`);
+        card.classList.add('reveal');
+    });
+    setupRevealObserver();
+}
+
+function createWorkCard(work, index) {
+    return `
+        <a class="work-card" href="work-detail.html?id=${encodeURIComponent(work.id)}" aria-label="View ${escapeAttribute(work.title)}">
+            <div class="work-card__media">
+                <img src="${escapeAttribute(work.thumbnail)}" alt="${escapeAttribute(work.title)}" loading="lazy" decoding="async">
+                <span class="work-card__index">${String(index + 1).padStart(2, '0')}</span>
+                <span class="work-card__arrow" aria-hidden="true">↗</span>
+            </div>
+            <div class="work-card__info">
+                <h3>${escapeHtml(work.title)}</h3>
+                <p>${escapeHtml(labelFor(work.majorCategory))}<br>${escapeHtml(work.date || '')} / ${escapeHtml(work.role || '')}</p>
+            </div>
+        </a>
+    `;
+}
+
+function renderWorkDetail() {
+    const id = new URLSearchParams(window.location.search).get('id');
+    const index = allWorks.findIndex((work) => work.id === id);
+    const work = allWorks[index];
+    const container = document.getElementById('work-detail-container');
+    if (!container || !work) {
+        if (container) container.innerHTML = '<div class="detail-skeleton"><p>Project not found.</p><a class="text-link" href="works.html">Back to works</a></div>';
         return;
     }
 
-    // Embed Youtube if exists, otherwise show thumbnail (Hero Image)
-    let videoHtml = '';
-    if (work.youtubeUrl) {
-        // Robust YouTube URL parser
-        let videoId = '';
-        const url = work.youtubeUrl;
+    document.title = `${work.title} — LOOKUP MEDIA`;
+    document.querySelector('meta[name="description"]')?.setAttribute('content', `${work.title}, ${work.role || labelFor(work.majorCategory)} — LOOKUP MEDIA`);
 
-        // Handle various formats:
-        // 1. https://www.youtube.com/watch?v=ID
-        // 2. https://youtu.be/ID
-        // 3. https://www.youtube.com/embed/ID
-
-        const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
-        const match = url.match(regExp);
-
-        if (match && match[2]) {
-            videoId = match[2];
-        } else {
-            // Fallback if already an embed URL or just ID
-            videoId = url;
-        }
-
-        // Minimal valid params for local/web compatibility
-        const embedUrl = `https://www.youtube.com/embed/${videoId}?rel=0&playsinline=1&modestbranding=1`;
-
-        videoHtml = `
-            <div class="video-container">
-                <iframe src="${embedUrl}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-            </div>
-        `;
-    } else {
-        // Fallback to thumbnail as Hero Image (Using same container size as video)
-        videoHtml = `
-            <div class="video-container">
-                <img src="${work.thumbnail}" alt="${work.title}" style="width: 100%; height: 100%; object-fit: cover;">
-            </div>
-        `;
-    }
-
-    // Credits HTML (Array or Old Object Support)
-    let creditsHtml = '';
-    if (work.credits) {
-        if (Array.isArray(work.credits)) {
-            creditsHtml = work.credits.map(c => `
-                <div class="credit-item">
-                    <h4>${escapeHtml(c.role || '')}</h4>
-                    <p>${escapeHtml(c.name || '')}</p>
-                </div>
-            `).join('');
-        } else {
-            creditsHtml = Object.entries(work.credits).map(([role, name]) => `
-                <div class="credit-item">
-                    <h4>${escapeHtml(role)}</h4>
-                    <p>${escapeHtml(name)}</p>
-                </div>
-            `).join('');
-        }
-    }
-
-    // 스틸 HTML - 클릭 시 라이트박스 열기
+    const previous = allWorks[(index - 1 + allWorks.length) % allWorks.length];
+    const next = allWorks[(index + 1) % allWorks.length];
+    const videoId = getYouTubeId(work.youtubeUrl);
+    const credits = Array.isArray(work.credits) ? work.credits : [];
     const stills = Array.isArray(work.stills) ? work.stills : [];
-    const stillsHtml = stills.map((src, idx) => `
-        <img src="${src}" alt="Still from ${escapeHtml(work.title)}" data-index="${idx}" class="still-clickable" loading="lazy" onerror="this.src='https://via.placeholder.com/1280x720/1a1a1a/888?text=Image+Not+Found'">
-    `).join('');
 
     container.innerHTML = `
-        <!-- Hero / Video -->
-        <section class="detail-hero">
-            ${videoHtml}
-        </section>
-
-        <section class="container detail-info">
-            <div class="detail-content-wrapper">
-                <!-- Left Column: Info -->
-                <div class="detail-left">
-                    <div class="detail-header">
-                        <div class="detail-meta">${escapeHtml(work.majorCategory)} / ${escapeHtml(work.minorCategory)} &nbsp;|&nbsp; ${escapeHtml(work.date || '')}</div>
-                        <h1 class="section-title">${escapeHtml(work.title)}</h1>
-                    </div>
-
-                    <div class="detail-desc">
-                        <p>${escapeHtml(work.description || '')}</p>
-                    </div>
-                </div>
-
-                <!-- Right Column: Credits -->
-                <div class="detail-right">
-                    <div class="credits-title">CREDITS</div>
-                    <div class="detail-credits">
-                        ${creditsHtml}
-                    </div>
+        <section class="project-hero">
+            <div class="project-hero__media" id="project-media"><img src="${escapeAttribute(heroImage(work))}" alt="${escapeAttribute(work.title)}"></div>
+            <div class="project-hero__shade"></div>
+            <div class="project-hero__content">
+                <div class="project-hero__topline"><a class="project-hero__back" href="works.html">← All works</a><p class="eyebrow">${escapeHtml(labelFor(work.majorCategory))} / ${escapeHtml(work.minorCategory || '')}</p></div>
+                <h1>${escapeHtml(work.title)}</h1>
+                <div class="project-hero__bottom">
+                    <div class="project-hero__meta"><span>${escapeHtml(work.date || 'Undated')}</span><span>${escapeHtml(work.role || '')}</span></div>
+                    ${videoId ? '<button type="button" class="play-button" id="play-film"><span>▶</span> Play film</button>' : ''}
                 </div>
             </div>
-
-            <!-- Stills Gallery -->
-            <div class="stills-gallery">
-                ${stillsHtml}
-            </div>
-            
-            <div style="margin-top: 80px; text-align: center;">
-                 <a href="works.html" class="btn">Back to Works</a>
+        </section>
+        <section class="project-info shell">
+            <div class="project-info__sticky reveal"><p class="eyebrow">ABOUT THE PROJECT</p><p>${escapeHtml(work.description || 'Project information will be updated soon.')}</p></div>
+            <div class="project-credits reveal">
+                ${credits.length ? credits.map((credit) => `<div class="credit-item"><span class="credit-item__role">${escapeHtml(credit.role || '')}</span><p>${escapeHtml(credit.name || '')}</p></div>`).join('') : '<div class="credit-item"><span class="credit-item__role">Role</span><p>' + escapeHtml(work.role || 'LOOKUP MEDIA') + '</p></div>'}
             </div>
         </section>
+        ${stills.length ? `<section aria-label="Project stills"><div class="stills-heading"><span>Project stills</span><span>${String(stills.length).padStart(2, '0')} images</span></div><div class="stills-gallery">${stills.map((src, stillIndex) => `<button type="button" class="still-button reveal" data-index="${stillIndex}" aria-label="Open still ${stillIndex + 1} of ${stills.length}"><img src="${escapeAttribute(src)}" alt="Still ${stillIndex + 1} from ${escapeAttribute(work.title)}" loading="lazy" decoding="async"></button>`).join('')}</div></section>` : ''}
+        <nav class="project-pagination" aria-label="Adjacent projects">
+            <a href="work-detail.html?id=${encodeURIComponent(previous.id)}"><span>Previous project</span><strong>← ${escapeHtml(previous.title)}</strong></a>
+            <a href="work-detail.html?id=${encodeURIComponent(next.id)}"><span>Next project</span><strong>${escapeHtml(next.title)} →</strong></a>
+        </nav>
+        <section class="contact-cta section"><div class="shell"><p class="eyebrow">WORK WITH LOOKUP MEDIA</p><a href="contact.html" class="contact-cta__link">Start a project.<span>↗</span></a></div></section>
     `;
 
-    // 라이트박스 갤러리 초기화
-    setupLightbox(stills);
+    if (videoId) setupVideoModal(videoId, work.title);
+    if (stills.length) setupLightbox(stills, work.title);
 }
 
-// 라이트박스 갤러리 기능
-function setupLightbox(stills) {
-    if (!stills || stills.length === 0) return;
+function setupVideoModal(videoId, title) {
+    const modal = document.getElementById('video-modal');
+    const frame = document.getElementById('video-modal-frame');
+    const closeButton = modal?.querySelector('.video-modal__close');
+    const trigger = document.getElementById('play-film');
+    if (!modal || !frame || !closeButton || !trigger) return;
 
+    const close = () => {
+        modal.classList.add('hidden');
+        frame.innerHTML = '';
+        document.body.style.overflow = '';
+        trigger.focus();
+    };
+    const open = () => {
+        frame.innerHTML = `<iframe src="https://www.youtube.com/embed/${encodeURIComponent(videoId)}?autoplay=1&rel=0&playsinline=1&modestbranding=1" title="${escapeAttribute(title)} video" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>`;
+        modal.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+        closeButton.focus();
+    };
+
+    trigger.addEventListener('click', open);
+    closeButton.addEventListener('click', close);
+    modal.addEventListener('click', (event) => { if (event.target === modal) close(); });
+    modal.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape') close();
+        if (event.key === 'Tab') {
+            event.preventDefault();
+            closeButton.focus();
+        }
+    });
+}
+
+function setupLightbox(stills, title) {
     const lightbox = document.getElementById('lightbox');
-    const lightboxImg = document.getElementById('lightbox-img');
-    const lightboxCurrent = document.getElementById('lightbox-current');
-    const lightboxTotal = document.getElementById('lightbox-total');
-    let currentIndex = 0;
+    const image = document.getElementById('lightbox-img');
+    const currentLabel = document.getElementById('lightbox-current');
+    const totalLabel = document.getElementById('lightbox-total');
+    const closeButton = lightbox.querySelector('.lightbox-close');
+    const focusable = [...lightbox.querySelectorAll('button')];
+    let current = 0;
+    let previousFocus = null;
+    totalLabel.textContent = stills.length;
 
-    // 총 개수 표시
-    lightboxTotal.textContent = stills.length;
-
-    // 이미지 업데이트 함수
-    function showImage(index) {
-        currentIndex = index;
-        lightboxImg.style.opacity = '0';
-        lightboxImg.style.transform = 'scale(0.95)';
-
-        setTimeout(() => {
-            lightboxImg.src = stills[currentIndex];
-            lightboxCurrent.textContent = currentIndex + 1;
-            lightboxImg.style.opacity = '1';
-            lightboxImg.style.transform = 'scale(1)';
-        }, 150);
-    }
-
-    // 라이트박스 열기
-    function openLightbox(index) {
-        currentIndex = index;
-        lightboxImg.src = stills[currentIndex];
-        lightboxCurrent.textContent = currentIndex + 1;
+    const show = (index) => {
+        current = (index + stills.length) % stills.length;
+        image.src = stills[current];
+        image.alt = `Still ${current + 1} from ${title}`;
+        currentLabel.textContent = current + 1;
+    };
+    const open = (index, trigger) => {
+        previousFocus = trigger;
+        show(index);
         lightbox.classList.remove('hidden');
         document.body.style.overflow = 'hidden';
-    }
-
-    // 라이트박스 닫기
-    function closeLightbox() {
+        closeButton.focus();
+    };
+    const close = () => {
         lightbox.classList.add('hidden');
         document.body.style.overflow = '';
-    }
+        previousFocus?.focus();
+    };
 
-    // 이전/다음 이동
-    function prevImage() {
-        const newIndex = currentIndex <= 0 ? stills.length - 1 : currentIndex - 1;
-        showImage(newIndex);
-    }
+    document.querySelectorAll('.still-button').forEach((button) => button.addEventListener('click', () => open(Number(button.dataset.index), button)));
+    closeButton.addEventListener('click', close);
+    lightbox.querySelector('.lightbox-prev').addEventListener('click', () => show(current - 1));
+    lightbox.querySelector('.lightbox-next').addEventListener('click', () => show(current + 1));
+    lightbox.addEventListener('click', (event) => { if (event.target === lightbox) close(); });
+    lightbox.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape') close();
+        if (event.key === 'ArrowLeft') show(current - 1);
+        if (event.key === 'ArrowRight') show(current + 1);
+        if (event.key === 'Tab') {
+            const first = focusable[0];
+            const last = focusable[focusable.length - 1];
+            if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
+            if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
+        }
+    });
 
-    function nextImage() {
-        const newIndex = currentIndex >= stills.length - 1 ? 0 : currentIndex + 1;
-        showImage(newIndex);
-    }
+    let startX = 0;
+    lightbox.addEventListener('touchstart', (event) => { startX = event.changedTouches[0].screenX; }, { passive: true });
+    lightbox.addEventListener('touchend', (event) => {
+        const distance = startX - event.changedTouches[0].screenX;
+        if (Math.abs(distance) > 50) show(current + (distance > 0 ? 1 : -1));
+    }, { passive: true });
+}
 
-    // 스틸 이미지 클릭 → 라이트박스 열기
-    document.querySelectorAll('.still-clickable').forEach(img => {
-        img.addEventListener('click', () => {
-            const idx = parseInt(img.dataset.index);
-            openLightbox(idx);
+function setupRevealObserver() {
+    const items = document.querySelectorAll('.reveal:not(.is-visible)');
+    if (!items.length) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches || !('IntersectionObserver' in window)) {
+        items.forEach((item) => item.classList.add('is-visible'));
+        return;
+    }
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+            if (!entry.isIntersecting) return;
+            entry.target.style.transitionDelay = entry.target.style.getPropertyValue('--delay');
+            entry.target.classList.add('is-visible');
+            observer.unobserve(entry.target);
         });
-    });
+    }, { threshold: .08, rootMargin: '0px 0px -4% 0px' });
+    items.forEach((item) => observer.observe(item));
+}
 
-    // 닫기 버튼
-    document.querySelector('.lightbox-close').addEventListener('click', closeLightbox);
+function heroImage(work) {
+    return work.stills?.[0] || work.thumbnail || '';
+}
 
-    // 이전/다음 버튼
-    document.querySelector('.lightbox-prev').addEventListener('click', (e) => {
-        e.stopPropagation();
-        prevImage();
-    });
-    document.querySelector('.lightbox-next').addEventListener('click', (e) => {
-        e.stopPropagation();
-        nextImage();
-    });
+function sequenceImage(work) {
+    return work.thumbnail || work.stills?.[0] || '';
+}
 
-    // 배경 클릭 시 닫기
-    lightbox.addEventListener('click', (e) => {
-        if (e.target === lightbox) {
-            closeLightbox();
-        }
-    });
+function labelFor(value) {
+    if (value === 'production') return 'Production';
+    if (value === 'lighting') return 'Lighting';
+    return String(value || 'Project');
+}
 
-    // 키보드 이벤트: ESC(닫기), ←(이전), →(다음)
-    document.addEventListener('keydown', (e) => {
-        if (lightbox.classList.contains('hidden')) return;
+function getYouTubeId(url = '') {
+    const match = String(url).match(/(?:youtu\.be\/|v\/|embed\/|watch\?v=|&v=)([^#&?]{6,})/);
+    return match?.[1] || '';
+}
 
-        switch (e.key) {
-            case 'Escape':
-                closeLightbox();
-                break;
-            case 'ArrowLeft':
-                prevImage();
-                break;
-            case 'ArrowRight':
-                nextImage();
-                break;
-        }
-    });
+function setText(id, value) {
+    const element = document.getElementById(id);
+    if (element) element.textContent = value ?? '';
+}
 
-    // 터치 스와이프 (모바일)
-    let touchStartX = 0;
-    let touchEndX = 0;
-
-    lightbox.addEventListener('touchstart', (e) => {
-        touchStartX = e.changedTouches[0].screenX;
-    }, { passive: true });
-
-    lightbox.addEventListener('touchend', (e) => {
-        touchEndX = e.changedTouches[0].screenX;
-        const diff = touchStartX - touchEndX;
-
-        if (Math.abs(diff) > 50) {
-            if (diff > 0) {
-                nextImage(); // 왼쪽 스와이프 → 다음
-            } else {
-                prevImage(); // 오른쪽 스와이프 → 이전
-            }
-        }
-    }, { passive: true });
-
-    // 이미지 전환 시 부드러운 애니메이션
-    lightboxImg.style.transition = 'opacity 0.15s ease, transform 0.15s ease';
+function setLink(id, href, label) {
+    const element = document.getElementById(id);
+    if (!element) return;
+    element.href = href || '#';
+    element.textContent = label || '';
 }
 
 function escapeHtml(value) {
-    return String(value)
+    return String(value ?? '')
         .replace(/&/g, '&amp;')
         .replace(/</g, '&lt;')
         .replace(/>/g, '&gt;')
@@ -441,31 +507,6 @@ function escapeHtml(value) {
         .replace(/'/g, '&#039;');
 }
 
-// Mobile Menu
-function setupMobileMenu() {
-    const menuToggle = document.querySelector('.menu-toggle');
-    const navLinks = document.querySelector('.nav-links');
-
-    if (menuToggle && navLinks) {
-        menuToggle.addEventListener('click', () => {
-            navLinks.classList.toggle('active');
-            menuToggle.classList.toggle('active'); // Optional: for animation
-
-            // Toggle body scroll
-            if (navLinks.classList.contains('active')) {
-                document.body.style.overflow = 'hidden';
-            } else {
-                document.body.style.overflow = '';
-            }
-        });
-
-        // Close menu when clicking a link
-        navLinks.querySelectorAll('a').forEach(link => {
-            link.addEventListener('click', () => {
-                navLinks.classList.remove('active');
-                menuToggle.classList.remove('active');
-                document.body.style.overflow = '';
-            });
-        });
-    }
+function escapeAttribute(value) {
+    return escapeHtml(value).replace(/`/g, '&#096;');
 }

@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin - LOOKUP MEDIA</title>
-    <link rel="stylesheet" href="css/admin.css">
+    <link rel="stylesheet" href="css/admin.css?v=20260710-2">
 </head>
 
 <body>
@@ -62,6 +62,7 @@
         <div class="admin-tabs">
             <button type="button" class="tab-btn active" data-tab="works-panel">Works</button>
             <button type="button" class="tab-btn" data-tab="pages-panel">Pages</button>
+            <button type="button" class="tab-btn" data-tab="site-panel">Site Settings</button>
         </div>
 
         <div class="content-wrapper">
@@ -136,6 +137,43 @@
                         <tbody id="pages-tbody"></tbody>
                     </table>
                 </div>
+            </div>
+
+            <div id="site-panel" class="list-section tab-panel site-settings-panel hidden">
+                <div class="section-top">
+                    <div>
+                        <h2>Site Settings</h2>
+                        <p class="text-muted">저장하면 GitHub 배포 없이 공개 사이트에 바로 반영됩니다.</p>
+                    </div>
+                </div>
+                <form id="site-form" class="site-settings-form">
+                    <section class="settings-card">
+                        <div class="settings-card__heading"><span>01</span><div><h3>Hero sequence</h3><p>첫 화면에 표시할 문구와 작품 순서를 설정합니다.</p></div></div>
+                        <div class="form-group"><label for="site-hero-eyebrow">Eyebrow</label><input type="text" id="site-hero-eyebrow" name="heroEyebrow" required></div>
+                        <div class="form-group"><label for="site-hero-title">Main title</label><textarea id="site-hero-title" name="heroTitle" rows="2" required></textarea></div>
+                        <div class="form-group"><label for="site-hero-subtitle">Subtitle</label><textarea id="site-hero-subtitle" name="heroSubtitle" rows="2"></textarea></div>
+                        <div class="form-group">
+                            <label>Hero works <span class="text-muted">(3~5개 권장, 드래그로 순서 변경)</span></label>
+                            <div id="hero-selection" class="hero-selection"></div>
+                            <div id="hero-candidates" class="hero-candidates"></div>
+                        </div>
+                    </section>
+
+                    <section class="settings-card">
+                        <div class="settings-card__heading"><span>02</span><div><h3>Studio introduction</h3><p>메인 중간의 스튜디오 소개 문구입니다.</p></div></div>
+                        <div class="form-group"><label for="site-intro-title">Title</label><textarea id="site-intro-title" name="introTitle" rows="3" required></textarea></div>
+                        <div class="form-group"><label for="site-intro-body">Body</label><textarea id="site-intro-body" name="introBody" rows="4"></textarea></div>
+                    </section>
+
+                    <section class="settings-card">
+                        <div class="settings-card__heading"><span>03</span><div><h3>Contact details</h3><p>Contact 페이지와 Footer에서 함께 사용됩니다.</p></div></div>
+                        <div class="form-row"><div class="form-group"><label for="site-contact-email">Email</label><input type="email" id="site-contact-email" name="contactEmail"></div><div class="form-group"><label for="site-contact-phone">Phone</label><input type="text" id="site-contact-phone" name="contactPhone"></div></div>
+                        <div class="form-group"><label for="site-contact-address">Address</label><input type="text" id="site-contact-address" name="contactAddress"></div>
+                        <div class="form-group"><label for="site-instagram-url">Instagram URL</label><input type="url" id="site-instagram-url" name="instagramUrl"></div>
+                    </section>
+
+                    <div class="site-settings-actions"><a href="index.html" target="_blank" class="btn btn-outline">Preview site ↗</a><button type="submit" class="btn btn-success">Save Site Settings</button></div>
+                </form>
             </div>
 
             <!-- Editor Section -->
@@ -244,7 +282,7 @@
                             <input type="file" id="stills-file" accept="image/*" multiple>
                             <div class="notice-text">
                                 * 새 이미지는 WebP로 자동 최적화되어 R2에 업로드됩니다.<br>
-                                * 썸네일은 최대 800px, 스틸컷은 최대 1800px로 저장됩니다.<br>
+                                * 썸네일은 최대 1920px, 스틸컷은 최대 3840px, WebP 품질 0.96으로 저장됩니다.<br>
                                 * 스틸컷 파일명과 순서는 드래그로 정리한 순서에 맞춰 자동 관리됩니다.
                             </div>
                             <p id="stills-path-display" class="path-display"
@@ -282,9 +320,17 @@
                         <label>Title</label>
                         <input type="text" id="page-title" name="title" required>
                     </div>
-                    <div class="form-group">
-                        <label>Body</label>
-                        <textarea id="page-body" name="body" rows="14" placeholder="페이지 내용을 입력하세요. 줄바꿈은 그대로 표시됩니다."></textarea>
+                    <div class="form-group page-blocks-group">
+                        <div class="page-blocks-heading"><label>Page blocks</label><span>제목, 본문, 이미지, 링크를 원하는 순서로 추가할 수 있습니다.</span></div>
+                        <div class="page-block-tools" role="toolbar" aria-label="Add page block">
+                            <button type="button" class="btn btn-outline" data-add-page-block="heading">+ Heading</button>
+                            <button type="button" class="btn btn-outline" data-add-page-block="text">+ Text</button>
+                            <button type="button" class="btn btn-outline" data-add-page-block="image">+ Image</button>
+                            <button type="button" class="btn btn-outline" data-add-page-block="link">+ Link</button>
+                            <button type="button" class="btn btn-outline" data-add-page-block="divider">+ Divider</button>
+                        </div>
+                        <div id="page-blocks" class="page-blocks"></div>
+                        <textarea id="page-body" name="body" hidden></textarea>
                     </div>
                     <div class="form-group" style="display:flex; align-items:center;">
                         <label style="margin-bottom:0; margin-right:10px;">Published</label>
@@ -315,7 +361,7 @@
         <button type="button" id="discard-btn" class="btn btn-text">Discard</button>
     </div>
 
-    <script src="js/admin.js"></script>
+    <script src="js/admin.js?v=20260710-2"></script>
 </body>
 
 </html>

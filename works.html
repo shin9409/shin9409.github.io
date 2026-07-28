@@ -1,78 +1,59 @@
 <!DOCTYPE html>
 <html lang="ko">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Works - LOOKUP MEDIA</title>
-    <link rel="stylesheet" href="css/style.css">
+    <title>Works — LOOKUP MEDIA</title>
+    <meta name="description" content="LOOKUP MEDIA의 Production 및 Lighting 포트폴리오.">
+    <meta property="og:title" content="Works — LOOKUP MEDIA">
+    <meta property="og:type" content="website">
+    <link rel="icon" href="images/logo.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..125,100..900&display=swap" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" media="print" onload="this.media='all'">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap" media="print" onload="this.media='all'">
+    <link rel="stylesheet" href="css/style.css?v=20260728-2">
 </head>
-
-<body>
-    <!-- Header -->
-    <header>
-        <div class="container">
-            <a href="index.html" class="logo">LOOK<span class="logo-highlight">UP</span> MEDIA</a>
-            <ul class="nav-links">
-                <li><a href="index.html">Main</a></li>
-                <li class="dropdown">
-                    <a href="works.html" class="active">Works</a>
-                    <ul class="dropdown-content">
-                        <li><a href="works.html?filter=production">Production</a></li>
-                        <li><a href="works.html?filter=lighting">Lighting</a></li>
-                    </ul>
-                </li>
-                <li><a href="contact.html">Contact</a></li>
-            </ul>
-            <div class="menu-toggle">☰</div>
+<body data-page="works">
+    <a class="skip-link" href="#main-content">Skip to content</a>
+    <header class="site-header site-header--solid" id="site-header">
+        <div class="site-header__inner">
+            <a href="index.html" class="wordmark" aria-label="LOOKUP MEDIA home">LOOK<span>UP</span> MEDIA</a>
+            <nav class="site-nav" id="primary-nav" aria-label="Primary navigation">
+                <a href="index.html">Home</a><a href="works.html" aria-current="page">Works</a><span id="dynamic-nav"></span><a href="contact.html">Contact</a>
+            </nav>
+            <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="primary-nav"><span class="menu-toggle__label">Menu</span><span class="menu-toggle__lines" aria-hidden="true"></span></button>
         </div>
     </header>
-
-    <div style="height: var(--header-height);"></div>
-
-    <section class="works-section">
-        <div class="container">
-
-
-            <!-- Filters -->
-            <div class="filters">
-                <!-- Major Category -->
-                <div class="filter-group">
-                    <button class="filter-btn active" data-filter="all">All</button>
-                    <button class="filter-btn" data-filter="production">Production</button>
-                    <button class="filter-btn" data-filter="lighting">Lighting</button>
+    <main id="main-content">
+        <section class="archive-header shell">
+            <p class="eyebrow">PROJECT ARCHIVE / <span id="archive-total">00</span></p>
+            <h1>Works</h1>
+            <p>Production / Lighting<br>Film · Music Video · Commercial</p>
+        </section>
+        <section class="archive-section">
+            <div class="filter-bar" id="filter-bar">
+                <div class="shell filter-bar__inner">
+                    <div class="filter-scroll" aria-label="Major category filters">
+                        <button class="filter-btn active" data-filter="all" type="button" aria-pressed="true">All</button>
+                        <button class="filter-btn" data-filter="production" type="button" aria-pressed="false">Production</button>
+                        <button class="filter-btn" data-filter="lighting" type="button" aria-pressed="false">Lighting</button>
+                    </div>
+                    <div class="filter-scroll filter-scroll--minor" aria-label="Project type filters">
+                        <button class="sub-filter-btn active" data-filter="all" type="button" aria-pressed="true">All types</button>
+                        <button class="sub-filter-btn" data-filter="musicvideo" type="button" aria-pressed="false">Music Video</button>
+                        <button class="sub-filter-btn" data-filter="film" type="button" aria-pressed="false">Film</button>
+                        <button class="sub-filter-btn" data-filter="commercial" type="button" aria-pressed="false">Commercial</button>
+                        <button class="sub-filter-btn" data-filter="etc" type="button" aria-pressed="false">Etc</button>
+                    </div>
+                    <p class="filter-count"><span id="filter-count">0</span> projects</p>
                 </div>
-
-                <!-- Minor Category -->
-                <div class="sub-filters">
-                    <button class="sub-filter-btn active" data-filter="all">All</button>
-                    <button class="sub-filter-btn" data-filter="musicvideo">Music Video</button>
-                    <button class="sub-filter-btn" data-filter="film">Film</button>
-                    <button class="sub-filter-btn" data-filter="commercial">Commercial</button>
-                    <button class="sub-filter-btn" data-filter="etc">Etc</button>
-                </div>
             </div>
-
-            <!-- Works Grid -->
-            <div class="works-grid" id="all-works-grid">
-                <p style="color: #666;">Loading works...</p>
+            <div class="editorial-grid editorial-grid--archive shell" id="all-works-grid" aria-live="polite">
+                <div class="skeleton-card skeleton-card--wide"></div><div class="skeleton-card"></div><div class="skeleton-card"></div>
             </div>
-        </div>
-    </section>
-
-    <!-- Footer -->
-    <footer>
-        <div class="container">
-            <a href="index.html" class="footer-logo">LOOK<span class="logo-highlight">UP</span> MEDIA</a>
-            <p>&copy; 2025 LOOKUP MEDIA. All Rights Reserved.</p>
-            <div class="social-links" style="margin-top: 20px;">
-                <a href="https://www.instagram.com/lookupmedia_?igsh=aDZvbzg3czVyOTMz" target="_blank">Instagram</a>
-            </div>
-        </div>
-    </footer>
-
-    <script src="js/data.js"></script>
-    <script src="js/main.js"></script>
+        </section>
+    </main>
+    <footer class="site-footer"><div class="shell site-footer__grid"><a href="index.html" class="wordmark">LOOK<span>UP</span> MEDIA</a><div><p>Production & Lighting</p><p>Seoul / Goyang, Korea</p></div><div><a id="footer-email" href="#">Email</a><br><a id="footer-instagram" href="#" target="_blank" rel="noreferrer">Instagram ↗</a></div><p>© <span id="footer-year"></span> LOOKUP MEDIA</p></div></footer>
+    <script src="js/main.js?v=20260728-2" defer></script>
 </body>
-
 </html>

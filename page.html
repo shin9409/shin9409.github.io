@@ -1,52 +1,20 @@
 <!DOCTYPE html>
 <html lang="ko">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LOOKUP MEDIA</title>
-    <link rel="stylesheet" href="css/style.css">
+    <meta name="description" content="LOOKUP MEDIA studio page.">
+    <link rel="icon" href="images/logo.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..125,100..900&display=swap" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" media="print" onload="this.media='all'">
+    <link rel="stylesheet" href="css/style.css?v=20260728-2">
 </head>
-
-<body>
-    <header>
-        <div class="container">
-            <a href="index.html" class="logo">LOOK<span class="logo-highlight">UP</span> MEDIA</a>
-            <ul class="nav-links">
-                <li><a href="index.html">Main</a></li>
-                <li class="dropdown">
-                    <a href="works.html">Works</a>
-                    <ul class="dropdown-content">
-                        <li><a href="works.html?filter=production">Production</a></li>
-                        <li><a href="works.html?filter=lighting">Lighting</a></li>
-                    </ul>
-                </li>
-                <li><a href="contact.html">Contact</a></li>
-            </ul>
-            <div class="menu-toggle">☰</div>
-        </div>
-    </header>
-
-    <div style="height: var(--header-height);"></div>
-
-    <main class="container detail-info">
-        <article id="page-content">
-            <p style="color: #666;">Loading page...</p>
-        </article>
-    </main>
-
-    <footer>
-        <div class="container">
-            <a href="index.html" class="footer-logo">LOOK<span class="logo-highlight">UP</span> MEDIA</a>
-            <p>&copy; 2025 LOOKUP MEDIA. All Rights Reserved.</p>
-            <div class="social-links" style="margin-top: 20px;">
-                <a href="https://www.instagram.com/lookupmedia_?igsh=aDZvbzg3czVyOTMz" target="_blank">Instagram</a>
-            </div>
-        </div>
-    </footer>
-
-    <script src="js/page.js"></script>
-    <script src="js/main.js"></script>
+<body data-page="page">
+    <a class="skip-link" href="#main-content">Skip to content</a>
+    <header class="site-header site-header--solid" id="site-header"><div class="site-header__inner"><a href="index.html" class="wordmark" aria-label="LOOKUP MEDIA home">LOOK<span>UP</span> MEDIA</a><nav class="site-nav" id="primary-nav" aria-label="Primary navigation"><a href="index.html">Home</a><a href="works.html">Works</a><span id="dynamic-nav"></span><a href="contact.html">Contact</a></nav><button class="menu-toggle" type="button" aria-expanded="false" aria-controls="primary-nav"><span class="menu-toggle__label">Menu</span><span class="menu-toggle__lines" aria-hidden="true"></span></button></div></header>
+    <main id="main-content" class="generic-page shell"><article id="page-content"><div class="detail-skeleton"><div></div><p>Loading page</p></div></article></main>
+    <footer class="site-footer"><div class="shell site-footer__grid"><a href="index.html" class="wordmark">LOOK<span>UP</span> MEDIA</a><div><p>Production & Lighting</p><p>Seoul / Goyang, Korea</p></div><div><a id="footer-email" href="#">Email</a><br><a id="footer-instagram" href="#" target="_blank" rel="noreferrer">Instagram ↗</a></div><p>© <span id="footer-year"></span> LOOKUP MEDIA</p></div></footer>
+    <script src="js/page.js?v=20260710-2" defer></script><script src="js/main.js?v=20260728-2" defer></script>
 </body>
-
 </html>

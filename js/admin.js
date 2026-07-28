@@ -2,6 +2,18 @@ const state = {
     authenticated: false,
     works: [],
     pages: [],
+    siteSettings: {
+        heroEyebrow: '',
+        heroTitle: '',
+        heroSubtitle: '',
+        heroWorkIds: [],
+        introTitle: '',
+        introBody: '',
+        contactEmail: '',
+        contactPhone: '',
+        contactAddress: '',
+        instagramUrl: ''
+    },
     selectedIds: new Set(),
     currentWorkIndex: -1,
     currentPageSlug: "",
@@ -40,6 +52,8 @@ const elements = {
     selectAll: $('#select-all'),
     workForm: $('#work-form'),
     pageForm: $('#page-form'),
+    pageBlocks: $('#page-blocks'),
+    siteForm: $('#site-form'),
     editorSection: $('#editor-section'),
     pageEditorSection: $('#page-editor-section'),
     modal: $('#preview-modal'),
@@ -73,6 +87,8 @@ function setupEventListeners() {
     elements.tbody.addEventListener('change', handleSelectionChange);
     elements.tbody.addEventListener('click', handleWorksTableClick);
     elements.pagesTbody.addEventListener('click', handlePagesTableClick);
+    $('#hero-selection').addEventListener('click', handleHeroSelectionClick);
+    $('#hero-candidates').addEventListener('click', handleHeroCandidateClick);
 
     $('#add-new-btn').addEventListener('click', () => openWorkEditor(-1));
     $('#add-page-btn').addEventListener('click', () => openPageEditor());
@@ -81,6 +97,10 @@ function setupEventListeners() {
     $('#add-credit-btn').addEventListener('click', () => addCreditRow());
     $('#delete-btn').addEventListener('click', handleDeleteWork);
     $('#delete-page-btn').addEventListener('click', handleDeletePage);
+    document.querySelectorAll('[data-add-page-block]').forEach((button) => {
+        button.addEventListener('click', () => addPageBlock(button.dataset.addPageBlock));
+    });
+    elements.pageBlocks.addEventListener('click', handlePageBlockClick);
     $('#preview-btn').addEventListener('click', showPreview);
     $('#bulk-delete-btn').addEventListener('click', handleBulkDelete);
     $('#bulk-category-change').addEventListener('change', handleBulkCategoryChange);
@@ -91,6 +111,7 @@ function setupEventListeners() {
 
     elements.workForm.addEventListener('submit', handleSaveWork);
     elements.pageForm.addEventListener('submit', handleSavePage);
+    elements.siteForm.addEventListener('submit', handleSaveSite);
 
     $('.close-modal').addEventListener('click', closePreview);
     elements.modal.addEventListener('click', (event) => {
@@ -133,15 +154,18 @@ function setAuthUI() {
 }
 
 async function loadAdminData() {
-    const [worksData, pagesData] = await Promise.all([
+    const [worksData, pagesData, siteData] = await Promise.all([
         api('/api/admin/works'),
-        api('/api/admin/pages')
+        api('/api/admin/pages'),
+        api('/api/admin/site')
     ]);
     state.works = worksData.works || [];
     state.pages = pagesData.pages || [];
+    state.siteSettings = siteData.settings || state.siteSettings;
     updateStats();
     renderWorksTable();
     renderPagesTable();
+    renderSiteSettings();
 }
 
 function updateStats() {
@@ -200,6 +224,84 @@ function renderPagesTable() {
             </td>
         </tr>
     `).join('');
+}
+
+function renderSiteSettings() {
+    const settings = state.siteSettings;
+    $('#site-hero-eyebrow').value = settings.heroEyebrow || '';
+    $('#site-hero-title').value = settings.heroTitle || '';
+    $('#site-hero-subtitle').value = settings.heroSubtitle || '';
+    $('#site-intro-title').value = settings.introTitle || '';
+    $('#site-intro-body').value = settings.introBody || '';
+    $('#site-contact-email').value = settings.contactEmail || '';
+    $('#site-contact-phone').value = settings.contactPhone || '';
+    $('#site-contact-address').value = settings.contactAddress || '';
+    $('#site-instagram-url').value = settings.instagramUrl || '';
+    renderHeroPicker();
+}
+
+function renderHeroPicker() {
+    const selectedIds = state.siteSettings.heroWorkIds || [];
+    const selectedWorks = selectedIds.map((id) => state.works.find((work) => work.id === id)).filter(Boolean);
+    $('#hero-selection').innerHTML = selectedWorks.length
+        ? selectedWorks.map((work, index) => `
+            <article class="hero-work-card" draggable="true" data-id="${escapeHtml(work.id)}">
+                <span class="hero-work-card__order">${index + 1}</span>
+                <img src="${escapeHtml(work.thumbnail)}" alt="">
+                <div><strong>${escapeHtml(work.title)}</strong><small>${escapeHtml(work.role || work.majorCategory)}</small></div>
+                <button type="button" class="hero-remove" data-id="${escapeHtml(work.id)}" aria-label="Remove ${escapeHtml(work.title)}">×</button>
+            </article>
+        `).join('')
+        : '<p class="hero-picker-empty">선택한 작품이 없으면 최신 작품 3개가 자동으로 표시됩니다.</p>';
+
+    const candidates = state.works.filter((work) => !selectedIds.includes(work.id));
+    $('#hero-candidates').innerHTML = candidates.map((work) => `
+        <button type="button" class="hero-candidate" data-id="${escapeHtml(work.id)}" ${selectedIds.length >= 5 ? 'disabled' : ''}>
+            <img src="${escapeHtml(work.thumbnail)}" alt=""><span><strong>${escapeHtml(work.title)}</strong><small>+ Add to hero</small></span>
+        </button>
+    `).join('');
+    setupHeroDrag();
+}
+
+function handleHeroSelectionClick(event) {
+    const button = event.target.closest('.hero-remove');
+    if (!button) return;
+    state.siteSettings.heroWorkIds = (state.siteSettings.heroWorkIds || []).filter((id) => id !== button.dataset.id);
+    renderHeroPicker();
+}
+
+function handleHeroCandidateClick(event) {
+    const button = event.target.closest('.hero-candidate');
+    if (!button || button.disabled) return;
+    const selected = state.siteSettings.heroWorkIds || [];
+    if (selected.length >= 5 || selected.includes(button.dataset.id)) return;
+    state.siteSettings.heroWorkIds = [...selected, button.dataset.id];
+    renderHeroPicker();
+}
+
+function setupHeroDrag() {
+    let draggedId = '';
+    document.querySelectorAll('.hero-work-card').forEach((card) => {
+        card.addEventListener('dragstart', () => {
+            draggedId = card.dataset.id;
+            card.classList.add('dragging');
+        });
+        card.addEventListener('dragover', (event) => event.preventDefault());
+        card.addEventListener('drop', () => {
+            const targetId = card.dataset.id;
+            if (!draggedId || draggedId === targetId) return;
+            const ids = [...state.siteSettings.heroWorkIds];
+            const from = ids.indexOf(draggedId);
+            const to = ids.indexOf(targetId);
+            ids.splice(to, 0, ids.splice(from, 1)[0]);
+            state.siteSettings.heroWorkIds = ids;
+            renderHeroPicker();
+        });
+        card.addEventListener('dragend', () => {
+            card.classList.remove('dragging');
+            draggedId = '';
+        });
+    });
 }
 
 function handleWorksTableClick(event) {
@@ -282,13 +384,95 @@ function openPageEditor(page = null) {
     $('#page-slug').disabled = Boolean(page);
     $('#page-slug').value = page ? page.slug : '';
     $('#page-title').value = page ? page.title : '';
-    $('#page-body').value = page ? page.body : '';
+    renderPageBlocks(parsePageBlocks(page?.body || ''));
     $('#page-published').checked = page ? page.published : true;
 }
 
 function closePageEditor() {
     elements.pageEditorSection.classList.add('hidden');
     state.currentPageSlug = "";
+}
+
+function parsePageBlocks(body) {
+    const value = String(body || '').trim();
+    if (!value) return [{ type: 'text', text: '' }];
+    try {
+        const blocks = JSON.parse(value);
+        if (Array.isArray(blocks)) {
+            return blocks.filter((block) => ['heading', 'text', 'image', 'link', 'divider'].includes(block?.type));
+        }
+    } catch {
+        // Existing plain-text pages remain editable as one text block.
+    }
+    return [{ type: 'text', text: value }];
+}
+
+function renderPageBlocks(blocks) {
+    elements.pageBlocks.innerHTML = '';
+    (blocks.length ? blocks : [{ type: 'text', text: '' }]).forEach((block) => addPageBlock(block.type, block));
+}
+
+function addPageBlock(type, block = {}) {
+    const labels = { heading: 'Heading', text: 'Text', image: 'Image', link: 'Link', divider: 'Divider' };
+    const content = pageBlockFields(type, block);
+    elements.pageBlocks.insertAdjacentHTML('beforeend', `
+        <section class="page-block" data-type="${type}">
+            <div class="page-block__bar"><strong>${labels[type]}</strong><div><button type="button" class="btn btn-text" data-page-block-action="up" aria-label="Move block up">↑</button><button type="button" class="btn btn-text" data-page-block-action="down" aria-label="Move block down">↓</button><button type="button" class="btn btn-text page-block__remove" data-page-block-action="remove">Remove</button></div></div>
+            ${content}
+        </section>
+    `);
+}
+
+function pageBlockFields(type, block) {
+    if (type === 'heading') return `<label>Heading text<input class="page-block-text" type="text" value="${escapeHtml(block.text || '')}" placeholder="Section heading"></label>`;
+    if (type === 'text') return `<label>Text<textarea class="page-block-text" rows="5" placeholder="본문을 입력하세요.">${escapeHtml(block.text || '')}</textarea></label>`;
+    if (type === 'image') return `
+        <label>Upload image<input class="page-image-file" type="file" accept="image/*"></label>
+        <label>Image URL<input class="page-block-image-src" type="url" value="${escapeHtml(block.src || '')}" placeholder="업로드하면 자동으로 입력됩니다."></label>
+        <label>Alt text<input class="page-block-image-alt" type="text" value="${escapeHtml(block.alt || '')}" placeholder="이미지 설명"></label>`;
+    if (type === 'link') return `
+        <label>Link label<input class="page-block-link-label" type="text" value="${escapeHtml(block.label || '')}" placeholder="View project"></label>
+        <label>URL<input class="page-block-link-url" type="url" value="${escapeHtml(block.url || '')}" placeholder="https://..."></label>`;
+    return '<p class="text-muted">섹션 사이에 구분선을 넣습니다.</p>';
+}
+
+function handlePageBlockClick(event) {
+    const action = event.target.closest('[data-page-block-action]');
+    if (!action) return;
+    const block = action.closest('.page-block');
+    if (!block) return;
+    if (action.dataset.pageBlockAction === 'remove') block.remove();
+    if (action.dataset.pageBlockAction === 'up' && block.previousElementSibling) {
+        elements.pageBlocks.insertBefore(block, block.previousElementSibling);
+    }
+    if (action.dataset.pageBlockAction === 'down' && block.nextElementSibling) {
+        elements.pageBlocks.insertBefore(block.nextElementSibling, block);
+    }
+}
+
+function collectPageBlocks() {
+    return Array.from(elements.pageBlocks.querySelectorAll('.page-block')).map((element) => {
+        const type = element.dataset.type;
+        if (type === 'heading' || type === 'text') {
+            return { type, text: element.querySelector('.page-block-text')?.value.trim() || '' };
+        }
+        if (type === 'image') {
+            return {
+                type,
+                src: element.querySelector('.page-block-image-src')?.value.trim() || '',
+                alt: element.querySelector('.page-block-image-alt')?.value.trim() || '',
+                file: element.querySelector('.page-image-file')?.files?.[0] || null
+            };
+        }
+        if (type === 'link') {
+            return {
+                type,
+                label: element.querySelector('.page-block-link-label')?.value.trim() || '',
+                url: element.querySelector('.page-block-link-url')?.value.trim() || ''
+            };
+        }
+        return { type: 'divider' };
+    }).filter((block) => block.type === 'divider' || block.file || block.text || block.src || (block.label && block.url));
 }
 
 async function handleSaveWork(event) {
@@ -365,19 +549,43 @@ async function handleDeleteWork() {
 async function handleSavePage(event) {
     event.preventDefault();
     const formData = new FormData(elements.pageForm);
-    const slug = slugify(formData.get('slug'));
-    const payload = {
-        slug,
-        title: formData.get('title'),
-        body: formData.get('body'),
-        published: formData.get('published') === 'on'
-    };
-    const endpoint = state.currentPageSlug ? `/api/admin/pages/${encodeURIComponent(state.currentPageSlug)}` : '/api/admin/pages';
-    const method = state.currentPageSlug ? 'PUT' : 'POST';
-    await api(endpoint, { method, body: JSON.stringify(payload) });
-    await loadAdminData();
-    closePageEditor();
-    showToast('페이지가 저장되었습니다.');
+    const slug = slugify(formData.get('slug') || state.currentPageSlug);
+    if (!slug) throw new Error('페이지 주소를 입력해 주세요.');
+    const blocks = collectPageBlocks();
+    const submitButton = elements.pageForm.querySelector('button[type="submit"]');
+    const originalText = submitButton.textContent;
+    submitButton.disabled = true;
+    submitButton.textContent = 'Saving...';
+    try {
+        for (const block of blocks) {
+            if (block.type !== 'image' || !block.file) continue;
+            const upload = await uploadOptimizedImage(block.file, {
+                kind: 'page',
+                pageSlug: slug,
+                maxSize: IMAGE_UPLOAD_SETTINGS.stillMaxSize,
+                index: 0
+            });
+            block.src = upload.url;
+            delete block.file;
+        }
+        const body = JSON.stringify(blocks.filter((block) => block.type !== 'image' || block.src));
+        $('#page-body').value = body;
+        const payload = {
+            slug,
+            title: formData.get('title'),
+            body,
+            published: formData.get('published') === 'on'
+        };
+        const endpoint = state.currentPageSlug ? `/api/admin/pages/${encodeURIComponent(state.currentPageSlug)}` : '/api/admin/pages';
+        const method = state.currentPageSlug ? 'PUT' : 'POST';
+        await api(endpoint, { method, body: JSON.stringify(payload) });
+        await loadAdminData();
+        closePageEditor();
+        showToast('페이지가 저장되었습니다.');
+    } finally {
+        submitButton.disabled = false;
+        submitButton.textContent = originalText;
+    }
 }
 
 async function handleDeletePage() {
@@ -386,6 +594,36 @@ async function handleDeletePage() {
     await loadAdminData();
     closePageEditor();
     showToast('페이지가 삭제되었습니다.');
+}
+
+async function handleSaveSite(event) {
+    event.preventDefault();
+    const submitButton = elements.siteForm.querySelector('button[type="submit"]');
+    const originalText = submitButton.textContent;
+    submitButton.disabled = true;
+    submitButton.textContent = 'Saving...';
+    try {
+        const formData = new FormData(elements.siteForm);
+        const payload = {
+            heroEyebrow: formData.get('heroEyebrow'),
+            heroTitle: formData.get('heroTitle'),
+            heroSubtitle: formData.get('heroSubtitle'),
+            heroWorkIds: state.siteSettings.heroWorkIds || [],
+            introTitle: formData.get('introTitle'),
+            introBody: formData.get('introBody'),
+            contactEmail: formData.get('contactEmail'),
+            contactPhone: formData.get('contactPhone'),
+            contactAddress: formData.get('contactAddress'),
+            instagramUrl: formData.get('instagramUrl')
+        };
+        const response = await api('/api/admin/site', { method: 'PUT', body: JSON.stringify(payload) });
+        state.siteSettings = response.settings;
+        renderSiteSettings();
+        showToast('사이트 설정이 저장되었습니다. 공개 사이트에 바로 반영됩니다.');
+    } finally {
+        submitButton.disabled = false;
+        submitButton.textContent = originalText;
+    }
 }
 
 function addCreditRow(role = "", name = "") {
@@ -475,11 +713,12 @@ function clearAllStills() {
     renderStillsPreview();
 }
 
-async function uploadOptimizedImage(file, { workId, kind, maxSize, index }) {
+async function uploadOptimizedImage(file, { workId = '', pageSlug = '', kind, maxSize, index }) {
     const blob = await resizeToWebp(file, maxSize);
     const formData = new FormData();
     formData.append('file', blob, `${kind}.webp`);
-    formData.append('workId', workId);
+    if (workId) formData.append('workId', workId);
+    if (pageSlug) formData.append('pageSlug', pageSlug);
     formData.append('kind', kind);
     formData.append('index', String(index));
     return api('/api/admin/assets', { method: 'POST', body: formData, rawBody: true });

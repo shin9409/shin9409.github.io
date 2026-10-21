@@ -10,7 +10,10 @@ const formStatus = document.getElementById('form-status');
 contactForm?.addEventListener('submit', async (event) => {
     event.preventDefault();
     const fields = [...contactForm.querySelectorAll('input, textarea')];
-    fields.forEach((field) => field.closest('.field')?.classList.toggle('field--invalid', !field.validity.valid));
+    fields.forEach((field) => {
+        field.closest('.field')?.classList.toggle('field--invalid', !field.validity.valid);
+        field.setAttribute('aria-invalid', String(!field.validity.valid));
+    });
     const firstInvalid = fields.find((field) => !field.validity.valid);
     if (firstInvalid) {
         firstInvalid.focus();
@@ -21,7 +24,7 @@ contactForm?.addEventListener('submit', async (event) => {
 
     const submitButton = contactForm.querySelector('button[type="submit"]');
     submitButton.disabled = true;
-    submitButton.querySelector('span').textContent = 'Sending...';
+    submitButton.querySelector('span').textContent = '보내는 중...';
     formStatus.textContent = '문의 내용을 보내고 있습니다.';
     formStatus.dataset.state = 'pending';
 
@@ -33,6 +36,7 @@ contactForm?.addEventListener('submit', async (event) => {
             message: document.getElementById('contact-message').value
         });
         contactForm.reset();
+        fields.forEach((field) => field.removeAttribute('aria-invalid'));
         formStatus.textContent = '문의가 전송되었습니다. 확인 후 연락드리겠습니다.';
         formStatus.dataset.state = 'success';
     } catch (error) {
@@ -41,11 +45,14 @@ contactForm?.addEventListener('submit', async (event) => {
         formStatus.dataset.state = 'error';
     } finally {
         submitButton.disabled = false;
-        submitButton.querySelector('span').textContent = 'Send inquiry';
+        submitButton.querySelector('span').textContent = '문의 보내기';
     }
 });
 
 contactForm?.addEventListener('input', (event) => {
     const field = event.target.closest('input, textarea');
-    if (field?.validity.valid) field.closest('.field')?.classList.remove('field--invalid');
+    if (field?.validity.valid) {
+        field.closest('.field')?.classList.remove('field--invalid');
+        field.removeAttribute('aria-invalid');
+    }
 });

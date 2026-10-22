@@ -32,6 +32,7 @@ contactForm?.addEventListener('submit', async (event) => {
         await window.emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
             from_name: document.getElementById('contact-name').value,
             reply_to: document.getElementById('contact-reply').value,
+            phone: document.getElementById('contact-tel')?.value.trim() || '미입력',
             subject: '홈페이지 문의',
             message: document.getElementById('contact-message').value
         });

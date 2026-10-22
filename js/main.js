@@ -5,7 +5,7 @@ const DEFAULT_SITE_SETTINGS = {
     heroWorkIds: ['work002', 'work003'],
     introTitle: 'EVERY FRAME BEGINS WITH A CLEAR POINT OF VIEW.',
     introBody: 'LOOKUP MEDIA는 아이디어에서 현장, 마지막 프레임까지 하나의 시선으로 연결합니다. 프로덕션과 조명을 통해 이야기의 가장 정확한 분위기를 만듭니다.',
-    contactEmail: 'lookupmedia@naver.com',
+    contactEmail: 'contact@lookupmedia.co.kr',
     contactPhone: '010-2433-0583',
     contactAddress: '경기도 고양시 덕양구 지축4로 45 101,102호',
     instagramUrl: 'https://www.instagram.com/lookupmedia_'
@@ -142,6 +142,8 @@ function updateSharedContent() {
 
     setLink('footer-email', `mailto:${siteSettings.contactEmail}`, siteSettings.contactEmail);
     setLink('footer-instagram', siteSettings.instagramUrl, 'Instagram ↗');
+    setLink('footer-phone', `tel:${siteSettings.contactPhone.replace(/[^\d+]/g, '')}`, siteSettings.contactPhone);
+    setText('footer-address', siteSettings.contactAddress);
     setLink('contact-email', `mailto:${siteSettings.contactEmail}`, siteSettings.contactEmail);
     setLink('contact-phone', `tel:${siteSettings.contactPhone.replace(/[^\d+]/g, '')}`, siteSettings.contactPhone);
     const instagramHandle = siteSettings.instagramUrl.match(/instagram\.com\/([^/?#]+)/i)?.[1];
@@ -153,11 +155,29 @@ function renderHome() {
     setText('hero-eyebrow', siteSettings.heroEyebrow);
     setText('hero-title', siteSettings.heroTitle);
     setText('hero-subtitle', siteSettings.heroSubtitle);
-    setText('featured-archive-count', String(allWorks.length).padStart(2, '0'));
-
-    const selected = allWorks.filter((work) => work.featured);
-    renderWorkGrid('featured-works-grid', (selected.length ? selected : allWorks).slice(0, 6));
+    renderHomeFeatured();
     setupHeroSequence(resolveHeroWorks());
+}
+
+// Selected Works uses the admin "Featured" checkbox; without any, the latest production work fills in.
+function renderHomeFeatured() {
+    const list = document.getElementById('home-featured-list');
+    if (!list) return;
+    const production = allWorks.filter((work) => work.majorCategory === 'production');
+    const featured = production.filter((work) => work.featured);
+    const works = (featured.length ? featured : production).slice(0, 4);
+    list.closest('.home-featured').hidden = !works.length;
+    list.innerHTML = works.map((work) => `
+        <a class="home-feature reveal" href="work-detail.html?id=${encodeURIComponent(work.id)}">
+            <div class="home-feature__media"><img src="${escapeAttribute(work.thumbnail)}" alt="${escapeAttribute(work.title)}" loading="lazy" decoding="async"></div>
+            <div class="home-feature__text">
+                <p class="home-feature__type">${escapeHtml(typeLabelFor(work.majorCategory, workTypeKey(work)))}</p>
+                <h3>${escapeHtml(work.title)}</h3>
+                <p class="home-feature__meta">${escapeHtml(joinMeta([work.role, work.date]))}</p>
+                <span class="home-feature__more">View project <span aria-hidden="true">→</span></span>
+            </div>
+        </a>
+    `).join('');
 }
 
 function resolveHeroWorks() {

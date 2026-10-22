@@ -1009,3 +1009,23 @@ select {
         grid-template-columns: 1fr;
     }
 }
+
+.form-group[hidden] {
+    display: none;
+}
+
+.role-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 18px;
+    margin-bottom: 10px;
+}
+
+.role-options label {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin: 0;
+    font-weight: 400;
+    cursor: pointer;
+}

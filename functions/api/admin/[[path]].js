@@ -1,4 +1,6 @@
 import {
+    CONTENT_TYPES,
+    MINOR_CATEGORIES,
     badRequest,
     deletePage,
     deleteWork,
@@ -7,6 +9,7 @@ import {
     json,
     listPages,
     listWorks,
+    minorCategoryForContentType,
     notFound,
     requireBindings,
     upsertPage,
@@ -167,11 +170,17 @@ async function uploadAsset(request, env) {
 }
 
 function sanitizeWork(work) {
+    const majorCategory = ["production", "lighting"].includes(work.majorCategory) ? work.majorCategory : "production";
+    const contentType = majorCategory === "production" && CONTENT_TYPES.includes(work.contentType) ? work.contentType : "";
+    const minorCategory = majorCategory === "production"
+        ? minorCategoryForContentType(contentType)
+        : MINOR_CATEGORIES.includes(work.minorCategory) ? work.minorCategory : "etc";
     return {
         id: slugify(work.id),
         title: String(work.title || "").trim(),
-        majorCategory: ["production", "lighting"].includes(work.majorCategory) ? work.majorCategory : "production",
-        minorCategory: ["musicvideo", "film", "commercial", "etc"].includes(work.minorCategory) ? work.minorCategory : "etc",
+        majorCategory,
+        minorCategory,
+        contentType,
         date: String(work.date || "").trim(),
         role: String(work.role || "").trim(),
         featured: Boolean(work.featured),

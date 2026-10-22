@@ -1,2 +1,5 @@
 .DS_Store
 .wrangler/
+.dev.vars
+.env
+.env.*

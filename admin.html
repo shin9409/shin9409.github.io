@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin - LOOKUP MEDIA</title>
-    <link rel="stylesheet" href="css/admin.css?v=20260710-2">
+    <link rel="stylesheet" href="css/admin.css?v=20261022-cat">
 </head>
 
 <body>
@@ -78,10 +78,12 @@
                             <option value="lighting">Lighting</option>
                         </select>
                         <select id="filter-minor">
-                            <option value="all">All Minor</option>
+                            <option value="all">All Types</option>
                             <option value="musicvideo">Music Video</option>
+                            <option value="commercial">Brand &amp; Commercial</option>
+                            <option value="highlight">Highlight Film</option>
+                            <option value="webcontent">Web Content</option>
                             <option value="film">Film</option>
-                            <option value="commercial">Commercial</option>
                             <option value="etc">Etc</option>
                         </select>
                     </div>
@@ -209,8 +211,18 @@
                                 <option value="lighting">Lighting</option>
                             </select>
                         </div>
-                        <div class="form-group">
-                            <label>Minor Category</label>
+                        <div class="form-group" id="content-type-group">
+                            <label>Content Type (제작 유형)</label>
+                            <select id="work-content-type" name="contentType">
+                                <option value="">유형 선택</option>
+                                <option value="musicvideo">Music Video</option>
+                                <option value="commercial">Brand &amp; Commercial</option>
+                                <option value="highlight">Highlight Film</option>
+                                <option value="webcontent">Web Content</option>
+                            </select>
+                        </div>
+                        <div class="form-group" id="minor-category-group" hidden>
+                            <label>Lighting Type (조명 작품 분류)</label>
                             <select id="work-minor" name="minorCategory">
                                 <option value="musicvideo">Music Video</option>
                                 <option value="film">Film</option>
@@ -225,10 +237,12 @@
                             <label>Date (YYYY or YYYY-MM)</label>
                             <input type="text" id="work-date" name="date" required>
                         </div>
-                        <div class="form-group">
-                            <label>Role</label>
-                            <input type="text" id="work-role" name="role" placeholder="ex) Director, Gaffer">
-                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Role (LOOKUP MEDIA 역할, 여러 개 선택 가능)</label>
+                        <div class="role-options" id="role-options"></div>
+                        <input type="text" id="work-role-extra" placeholder="목록에 없는 역할만 입력 (쉼표로 구분)">
                     </div>
 
                     <div class="form-group">
@@ -361,7 +375,7 @@
         <button type="button" id="discard-btn" class="btn btn-text">Discard</button>
     </div>
 
-    <script src="js/admin.js?v=20260710-2"></script>
+    <script src="js/admin.js?v=20261022-cat"></script>
 </body>
 
 </html>

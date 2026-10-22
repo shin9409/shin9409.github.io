@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lighting — LOOKUP MEDIA</title>
+    <meta name="description" content="LOOKUP MEDIA가 조명으로 참여한 작품.">
+    <meta property="og:title" content="Lighting — LOOKUP MEDIA">
+    <meta property="og:type" content="website">
+    <link rel="icon" href="images/logo.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@800&display=swap" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" media="print" onload="this.media='all'">
+    <link rel="stylesheet" href="css/style.css?v=20261022-cat">
+</head>
+<body data-page="lighting">
+    <a class="skip-link" href="#main-content">Skip to content</a>
+    <header class="site-header site-header--solid" id="site-header">
+        <div class="site-header__inner">
+            <a href="index.html" class="wordmark" aria-label="LOOKUP MEDIA home">LOOK<span>UP</span> MEDIA</a>
+            <nav class="site-nav" id="primary-nav" aria-label="Primary navigation">
+                <a href="index.html">Home</a><a href="works.html" aria-current="page">Works</a><span id="dynamic-nav"></span><a href="contact.html">Contact</a>
+            </nav>
+            <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="primary-nav"><span class="menu-toggle__label">Menu</span><span class="menu-toggle__lines" aria-hidden="true"></span></button>
+        </div>
+    </header>
+    <main id="main-content">
+        <section class="archive-header shell">
+            <h1>Works</h1>
+        </section>
+        <nav class="archive-tabs shell" aria-label="Works sections">
+            <a class="archive-tab" href="works.html"><strong>Production</strong><small>제작 <span id="tab-count-production"></span></small></a>
+            <a class="archive-tab" href="lighting.html" aria-current="page"><strong>Lighting</strong><small>조명 <span id="tab-count-lighting"></span></small></a>
+        </nav>
+        <section class="archive-section">
+            <div class="filter-bar" id="filter-bar">
+                <div class="shell filter-bar__inner filter-bar__inner--single">
+                    <div class="filter-scroll" id="type-filters" aria-label="Project type filters"></div>
+                    <p class="filter-count" id="filter-count-wrap" hidden><span id="filter-count">0</span> projects</p>
+                </div>
+            </div>
+            <div class="editorial-grid editorial-grid--archive shell" id="all-works-grid" aria-live="polite">
+                <div class="skeleton-card"></div><div class="skeleton-card"></div>
+            </div>
+        </section>
+    </main>
+    <footer class="site-footer"><div class="shell site-footer__grid"><a href="index.html" class="wordmark">LOOK<span>UP</span> MEDIA</a><div><p>Video Production</p><p>Seoul / Goyang, Korea</p></div><div><a id="footer-email" href="#">Email</a><br><a id="footer-instagram" href="#" target="_blank" rel="noreferrer">Instagram ↗</a></div><p>© <span id="footer-year"></span> LOOKUP MEDIA</p></div></footer>
+    <script src="js/main.js?v=20261022-cat" defer></script>
+</body>
+</html>

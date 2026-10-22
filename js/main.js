@@ -1,7 +1,7 @@
 const DEFAULT_SITE_SETTINGS = {
     heroEyebrow: 'LOOKUP MEDIA / SEOUL',
-    heroTitle: 'PRODUCTION\n& LIGHTING',
-    heroSubtitle: 'FILM · MUSIC VIDEO · COMMERCIAL',
+    heroTitle: 'Video Production',
+    heroSubtitle: 'Music Video · Brand Film · Highlight Film · Web Content',
     heroWorkIds: ['work002', 'work003'],
     introTitle: 'EVERY FRAME BEGINS WITH A CLEAR POINT OF VIEW.',
     introBody: 'LOOKUP MEDIA는 아이디어에서 현장, 마지막 프레임까지 하나의 시선으로 연결합니다. 프로덕션과 조명을 통해 이야기의 가장 정확한 분위기를 만듭니다.',
@@ -29,7 +29,10 @@ document.addEventListener('DOMContentLoaded', async () => {
             renderHome();
             break;
         case 'works':
-            renderWorksArchive();
+            renderArchive('production');
+            break;
+        case 'lighting':
+            renderArchive('lighting');
             break;
         case 'detail':
             renderWorkDetail();
@@ -161,7 +164,8 @@ function resolveHeroWorks() {
     const configured = (siteSettings.heroWorkIds || [])
         .map((id) => allWorks.find((work) => work.id === id))
         .filter(Boolean);
-    return (configured.length ? configured : allWorks.slice(0, 3)).slice(0, 5);
+    const production = allWorks.filter((work) => work.majorCategory === 'production');
+    return (configured.length ? configured : (production.length ? production : allWorks).slice(0, 3)).slice(0, 5);
 }
 
 function setupHeroSequence(works) {
@@ -205,7 +209,7 @@ function setupHeroSequence(works) {
         });
         const work = works[index];
         projectTitle.textContent = work.title;
-        projectMeta.textContent = joinMeta([labelFor(work.majorCategory), work.role || work.date]);
+        projectMeta.textContent = joinMeta([typeLabelFor(work.majorCategory, workTypeKey(work)) || labelFor(work.majorCategory), work.role || work.date]);
         projectLink.href = `work-detail.html?id=${encodeURIComponent(work.id)}`;
         if (works.length > 1) window.setTimeout(() => ensureLoaded((index + 1) % works.length), 3800);
     };
@@ -232,50 +236,56 @@ function setupHeroSequence(works) {
     }
 }
 
-function renderWorksArchive() {
-    setText('archive-total', String(allWorks.length));
-    const params = new URLSearchParams(window.location.search);
-    const initialMajor = ['production', 'lighting'].includes(params.get('filter')) ? params.get('filter') : 'all';
-    const initialMinor = ['musicvideo', 'film', 'commercial', 'etc'].includes(params.get('type')) ? params.get('type') : 'all';
-    setupFilters(initialMajor, initialMinor);
-}
+const PRODUCTION_TYPES = ['musicvideo', 'commercial', 'highlight', 'webcontent'];
+const LIGHTING_TYPES = ['film', 'commercial', 'musicvideo', 'etc'];
 
-function setupFilters(initialMajor, initialMinor) {
-    const majorButtons = [...document.querySelectorAll('.filter-btn')];
-    const minorButtons = [...document.querySelectorAll('.sub-filter-btn')];
-    let currentMajor = initialMajor;
-    let currentMinor = initialMinor;
+function renderArchive(group) {
+    const params = new URLSearchParams(window.location.search);
+    // Old links pointed at works.html?filter=lighting; lighting now has its own page.
+    if (group === 'production' && params.get('filter') === 'lighting') {
+        const type = LIGHTING_TYPES.includes(params.get('type')) ? `?type=${params.get('type')}` : '';
+        window.location.replace(`lighting.html${type}`);
+        return;
+    }
+
+    const works = allWorks.filter((work) => work.majorCategory === group);
+    const typeOf = group === 'production' ? contentTypeOf : (work) => work.minorCategory;
+    // Only types that already have work are offered, so an empty type never shows up as a dead filter.
+    const types = (group === 'production' ? PRODUCTION_TYPES : LIGHTING_TYPES)
+        .filter((type) => works.some((work) => typeOf(work) === type));
+    setText('tab-count-production', String(allWorks.filter((work) => work.majorCategory === 'production').length));
+    setText('tab-count-lighting', String(allWorks.filter((work) => work.majorCategory === 'lighting').length));
+
+    const filterRow = document.getElementById('type-filters');
+    if (filterRow) {
+        filterRow.innerHTML = ['all', ...types].map((type) => (
+            `<button class="filter-btn" data-filter="${type}" type="button" aria-pressed="false">${escapeHtml(type === 'all' ? 'All' : typeLabelFor(group, type))}</button>`
+        )).join('');
+    }
+    const buttons = [...document.querySelectorAll('#type-filters .filter-btn')];
+    let current = types.includes(params.get('type')) ? params.get('type') : 'all';
 
     const apply = () => {
-        majorButtons.forEach((button) => {
-            const active = button.dataset.filter === currentMajor;
+        buttons.forEach((button) => {
+            const active = button.dataset.filter === current;
             button.classList.toggle('active', active);
             button.setAttribute('aria-pressed', String(active));
         });
-        minorButtons.forEach((button) => {
-            const active = button.dataset.filter === currentMinor;
-            button.classList.toggle('active', active);
-            button.setAttribute('aria-pressed', String(active));
-        });
-        const filtered = allWorks.filter((work) => (
-            (currentMajor === 'all' || work.majorCategory === currentMajor)
-            && (currentMinor === 'all' || work.minorCategory === currentMinor)
-        ));
+        const filtered = current === 'all' ? works : works.filter((work) => typeOf(work) === current);
         setText('filter-count', filtered.length);
+        // The tab already shows the total; the count only appears once a type filter narrows the list.
+        const countWrap = document.getElementById('filter-count-wrap');
+        if (countWrap) countWrap.hidden = current === 'all';
         renderWorkGrid('all-works-grid', filtered);
 
         const url = new URL(window.location.href);
-        currentMajor === 'all' ? url.searchParams.delete('filter') : url.searchParams.set('filter', currentMajor);
-        currentMinor === 'all' ? url.searchParams.delete('type') : url.searchParams.set('type', currentMinor);
+        url.searchParams.delete('filter');
+        current === 'all' ? url.searchParams.delete('type') : url.searchParams.set('type', current);
         window.history.replaceState({}, '', url);
     };
 
-    majorButtons.forEach((button) => button.addEventListener('click', () => {
-        currentMajor = button.dataset.filter;
-        apply();
-    }));
-    minorButtons.forEach((button) => button.addEventListener('click', () => {
-        currentMinor = button.dataset.filter;
+    buttons.forEach((button) => button.addEventListener('click', () => {
+        current = button.dataset.filter;
         apply();
     }));
     apply();
@@ -304,7 +314,7 @@ function createWorkCard(work, index) {
             </div>
             <div class="work-card__info">
                 <h3>${escapeHtml(work.title)}</h3>
-                <p>${escapeHtml(joinMeta([labelFor(work.majorCategory), work.role, work.date]))}</p>
+                <p>${escapeHtml(joinMeta([typeLabelFor(work.majorCategory, workTypeKey(work)), work.role, work.date]))}</p>
             </div>
         </a>
     `;
@@ -323,8 +333,12 @@ function renderWorkDetail() {
     document.title = `${work.title} — LOOKUP MEDIA`;
     document.querySelector('meta[name="description"]')?.setAttribute('content', `${work.title}, ${work.role || labelFor(work.majorCategory)} — LOOKUP MEDIA`);
 
-    const previous = allWorks[(index - 1 + allWorks.length) % allWorks.length];
-    const next = allWorks[(index + 1) % allWorks.length];
+    // Previous/next stay inside the same group so production and lighting work never mix.
+    const siblings = allWorks.filter((item) => item.majorCategory === work.majorCategory);
+    const siblingIndex = siblings.indexOf(work);
+    const previous = siblings[(siblingIndex - 1 + siblings.length) % siblings.length];
+    const next = siblings[(siblingIndex + 1) % siblings.length];
+    const isLighting = work.majorCategory === 'lighting';
     const videoId = getYouTubeId(work.youtubeUrl);
     const credits = Array.isArray(work.credits) ? work.credits : [];
     const stills = Array.isArray(work.stills) ? work.stills : [];
@@ -334,7 +348,7 @@ function renderWorkDetail() {
             <div class="project-hero__media" id="project-media"><img src="${escapeAttribute(heroImage(work))}" alt="${escapeAttribute(work.title)}"></div>
             <div class="project-hero__shade"></div>
             <div class="project-hero__content">
-                <div class="project-hero__topline"><a class="project-hero__back" href="works.html">← Works</a><p class="eyebrow">${escapeHtml(joinMeta([labelFor(work.majorCategory), minorLabelFor(work.minorCategory)]))}</p></div>
+                <div class="project-hero__topline"><a class="project-hero__back" href="${isLighting ? 'lighting.html' : 'works.html'}">← ${isLighting ? 'Lighting' : 'Works'}</a><p class="project-hero__group"><span class="group-badge${isLighting ? ' group-badge--lighting' : ''}">${isLighting ? 'Lighting · 조명' : 'Production · 제작'}</span>${typeLabelFor(work.majorCategory, workTypeKey(work)) ? `<span>${escapeHtml(typeLabelFor(work.majorCategory, workTypeKey(work)))}</span>` : ''}</p></div>
                 <h1>${escapeHtml(work.title)}</h1>
                 <div class="project-hero__bottom">
                     <div class="project-hero__meta"><span>${escapeHtml(work.date || 'Undated')}</span><span>${escapeHtml(work.role || '')}</span></div>
@@ -342,8 +356,8 @@ function renderWorkDetail() {
                 </div>
             </div>
         </section>
-        <section class="project-info shell">
-            <div class="project-info__sticky reveal"><p class="eyebrow">About</p><p>${escapeHtml(work.description || 'Project information will be updated soon.')}</p></div>
+        <section class="project-info shell${work.description?.trim() ? '' : ' project-info--no-desc'}">
+            ${work.description?.trim() ? `<div class="project-info__sticky reveal"><p class="eyebrow">About</p><p>${escapeHtml(work.description)}</p></div>` : ''}
             <div class="project-credits reveal">
                 ${credits.length ? credits.map((credit) => `<div class="credit-item"><span class="credit-item__role">${escapeHtml(credit.role || '')}</span><p>${escapeHtml(credit.name || '')}</p></div>`).join('') : '<div class="credit-item"><span class="credit-item__role">Role</span><p>' + escapeHtml(work.role || 'LOOKUP MEDIA') + '</p></div>'}
             </div>
@@ -479,8 +493,22 @@ function labelFor(value) {
     return String(value || 'Project');
 }
 
-function minorLabelFor(value) {
-    return { musicvideo: 'Music Video', film: 'Film', commercial: 'Commercial', etc: 'Etc' }[value] || '';
+// Works saved before content types existed (or the static fallback) map from the legacy minor category.
+function contentTypeOf(work) {
+    if (work.majorCategory !== 'production') return '';
+    if (PRODUCTION_TYPES.includes(work.contentType)) return work.contentType;
+    return PRODUCTION_TYPES.includes(work.minorCategory) ? work.minorCategory : '';
+}
+
+function workTypeKey(work) {
+    return work.majorCategory === 'production' ? contentTypeOf(work) : work.minorCategory;
+}
+
+function typeLabelFor(group, type) {
+    if (group === 'production') {
+        return { musicvideo: 'Music Video', commercial: 'Brand & Commercial', highlight: 'Highlight Film', webcontent: 'Web Content' }[type] || '';
+    }
+    return { musicvideo: 'Music Video', film: 'Film', commercial: 'Commercial', etc: 'Etc' }[type] || '';
 }
 
 function joinMeta(parts) {

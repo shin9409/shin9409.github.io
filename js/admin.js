@@ -108,6 +108,7 @@ function setupEventListeners() {
     $('#stills-file').addEventListener('change', (event) => handleStillsSelect(Array.from(event.target.files)));
     $('#clear-stills-btn').addEventListener('click', clearAllStills);
     $('#work-youtube').addEventListener('change', handleYoutubeInput);
+    $('#work-major').addEventListener('change', syncCategoryFields);
 
     elements.workForm.addEventListener('submit', handleSaveWork);
     elements.pageForm.addEventListener('submit', handleSavePage);
@@ -184,7 +185,7 @@ function renderWorksTable() {
         work._index = index;
         const matchesSearch = work.title.toLowerCase().includes(searchTerm) || work.id.toLowerCase().includes(searchTerm);
         const matchesMajor = majorFilter === 'all' || work.majorCategory === majorFilter;
-        const matchesMinor = minorFilter === 'all' || work.minorCategory === minorFilter;
+        const matchesMinor = minorFilter === 'all' || workTypeKey(work) === minorFilter;
         return matchesSearch && matchesMajor && matchesMinor;
     });
 
@@ -197,7 +198,7 @@ function renderWorksTable() {
                 <strong>${escapeHtml(work.title)}</strong><br>
                 <small>${work.featured ? '<span style="color:var(--accent)">Featured</span>' : ''}</small>
             </td>
-            <td>${escapeHtml(work.majorCategory)} / ${escapeHtml(work.minorCategory)}</td>
+            <td>${escapeHtml(work.majorCategory)} / ${escapeHtml(workTypeLabel(work))}</td>
             <td>${escapeHtml(work.date || '')}</td>
             <td>
                 <div style="display:flex; gap:5px;">
@@ -320,6 +321,50 @@ function handlePagesTableClick(event) {
     }
 }
 
+const CONTENT_TYPE_LABELS = { musicvideo: 'Music Video', commercial: 'Brand & Commercial', highlight: 'Highlight Film', webcontent: 'Web Content' };
+const MINOR_CATEGORY_LABELS = { musicvideo: 'Music Video', film: 'Film', commercial: 'Commercial', etc: 'Etc' };
+
+// Production works are classified by content type; lighting works keep the minor category.
+function workTypeKey(work) {
+    return work.majorCategory === 'production' ? (work.contentType || '') : work.minorCategory;
+}
+
+function workTypeLabel(work) {
+    if (work.majorCategory === 'production') return CONTENT_TYPE_LABELS[work.contentType] || '유형 미지정';
+    return MINOR_CATEGORY_LABELS[work.minorCategory] || work.minorCategory;
+}
+
+// Roles are picked from a fixed list so cards read consistently; the stored value stays a plain string.
+// 'Production' means LOOKUP MEDIA ran the production as a company; producers are sometimes hired externally.
+const ROLE_OPTIONS = ['Production', 'Director', 'Assistant Director', 'DOP', 'Editor', 'Colorist', 'Gaffer'];
+const ROLE_ALIASES = { product: 'Production', produce: 'Production', direct: 'Director', edit: 'Editor', 'd.o.p': 'DOP', cinematographer: 'DOP' };
+
+function normalizeRole(part) {
+    const key = part.trim().toLowerCase();
+    return ROLE_ALIASES[key] || ROLE_OPTIONS.find((option) => option.toLowerCase() === key) || part.trim();
+}
+
+function renderRoleOptions(role = '') {
+    const parts = String(role).split(/[,/]/).map(normalizeRole).filter(Boolean);
+    $('#role-options').innerHTML = ROLE_OPTIONS.map((option) => (
+        `<label><input type="checkbox" value="${escapeHtml(option)}"${parts.includes(option) ? ' checked' : ''}> ${escapeHtml(option)}</label>`
+    )).join('');
+    $('#work-role-extra').value = [...new Set(parts.filter((part) => !ROLE_OPTIONS.includes(part)))].join(', ');
+}
+
+function collectRole() {
+    const checked = [...document.querySelectorAll('#role-options input:checked')].map((input) => input.value);
+    const extra = $('#work-role-extra').value.split(',').map((part) => normalizeRole(part)).filter(Boolean);
+    return [...new Set([...checked, ...extra])].join(', ');
+}
+
+function syncCategoryFields() {
+    const isProduction = $('#work-major').value === 'production';
+    $('#content-type-group').hidden = !isProduction;
+    $('#minor-category-group').hidden = isProduction;
+    $('#work-content-type').required = isProduction;
+}
+
 function openWorkEditor(index) {
     state.currentWorkIndex = index;
     state.pendingThumbFile = null;
@@ -340,6 +385,8 @@ function openWorkEditor(index) {
         $('#work-id').readOnly = true;
         $('#work-id').value = generateNextId();
         $('#work-date').value = new Date().getFullYear();
+        renderRoleOptions();
+        syncCategoryFields();
         updateUploadPathDisplays();
         addCreditRow();
         return;
@@ -354,8 +401,10 @@ function openWorkEditor(index) {
     $('#work-featured').checked = work.featured;
     $('#work-major').value = work.majorCategory;
     $('#work-minor').value = work.minorCategory;
+    $('#work-content-type').value = work.contentType || '';
+    syncCategoryFields();
     $('#work-date').value = work.date || '';
-    $('#work-role').value = work.role || '';
+    renderRoleOptions(work.role || '');
     $('#work-youtube').value = work.youtubeUrl || '';
     $('#work-desc').value = work.description || '';
     $('#thumb-path-display').value = work.thumbnailKey || work.thumbnail || '';
@@ -513,8 +562,9 @@ async function handleSaveWork(event) {
             title: formData.get('title'),
             majorCategory: formData.get('majorCategory'),
             minorCategory: formData.get('minorCategory'),
+            contentType: formData.get('majorCategory') === 'production' ? formData.get('contentType') : '',
             date: formData.get('date'),
-            role: formData.get('role'),
+            role: collectRole(),
             featured: formData.get('featured') === 'on',
             youtubeUrl: formData.get('youtubeUrl'),
             description: formData.get('description'),
@@ -823,7 +873,7 @@ function showPreview() {
     elements.previewContainer.innerHTML = `
         <div style="color:#fff; padding:40px;">
             <h1 style="font-size:3rem; margin-bottom:20px;">${escapeHtml(formData.get('title') || 'Untitled Project')}</h1>
-            <div style="color:var(--accent); margin-bottom:30px;">${escapeHtml(formData.get('majorCategory'))} / ${escapeHtml(formData.get('minorCategory'))} | ${escapeHtml(formData.get('date'))}</div>
+            <div style="color:var(--accent); margin-bottom:30px;">${escapeHtml(formData.get('majorCategory'))} / ${escapeHtml(workTypeLabel({ majorCategory: formData.get('majorCategory'), minorCategory: formData.get('minorCategory'), contentType: formData.get('contentType') }))} | ${escapeHtml(formData.get('date'))}</div>
             <div style="aspect-ratio:16/9; background:#111; margin-bottom:30px; overflow:hidden;">
                 ${thumb ? `<img src="${thumb}" style="width:100%; height:100%; object-fit:cover;">` : ''}
             </div>

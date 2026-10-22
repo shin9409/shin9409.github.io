@@ -4,13 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Works — LOOKUP MEDIA</title>
-    <meta name="description" content="LOOKUP MEDIA의 Production 및 Lighting 포트폴리오.">
+    <meta name="description" content="LOOKUP MEDIA 제작 포트폴리오.">
     <meta property="og:title" content="Works — LOOKUP MEDIA">
     <meta property="og:type" content="website">
     <link rel="icon" href="images/logo.png">
     <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@800&display=swap" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" media="print" onload="this.media='all'">
-    <link rel="stylesheet" href="css/style.css?v=20261022-type">
+    <link rel="stylesheet" href="css/style.css?v=20261022-cat">
 </head>
 <body data-page="works">
     <a class="skip-link" href="#main-content">Skip to content</a>
@@ -26,24 +26,16 @@
     <main id="main-content">
         <section class="archive-header shell">
             <h1>Works</h1>
-            <span class="archive-header__count" id="archive-total"></span>
         </section>
+        <nav class="archive-tabs shell" aria-label="Works sections">
+            <a class="archive-tab" href="works.html" aria-current="page"><strong>Production</strong><small>제작 <span id="tab-count-production"></span></small></a>
+            <a class="archive-tab" href="lighting.html"><strong>Lighting</strong><small>조명 <span id="tab-count-lighting"></span></small></a>
+        </nav>
         <section class="archive-section">
             <div class="filter-bar" id="filter-bar">
-                <div class="shell filter-bar__inner">
-                    <div class="filter-scroll" aria-label="Major category filters">
-                        <button class="filter-btn active" data-filter="all" type="button" aria-pressed="true">All</button>
-                        <button class="filter-btn" data-filter="production" type="button" aria-pressed="false">Production</button>
-                        <button class="filter-btn" data-filter="lighting" type="button" aria-pressed="false">Lighting</button>
-                    </div>
-                    <div class="filter-scroll filter-scroll--minor" aria-label="Project type filters">
-                        <button class="sub-filter-btn active" data-filter="all" type="button" aria-pressed="true">All types</button>
-                        <button class="sub-filter-btn" data-filter="musicvideo" type="button" aria-pressed="false">Music Video</button>
-                        <button class="sub-filter-btn" data-filter="film" type="button" aria-pressed="false">Film</button>
-                        <button class="sub-filter-btn" data-filter="commercial" type="button" aria-pressed="false">Commercial</button>
-                        <button class="sub-filter-btn" data-filter="etc" type="button" aria-pressed="false">Etc</button>
-                    </div>
-                    <p class="filter-count"><span id="filter-count">0</span> projects</p>
+                <div class="shell filter-bar__inner filter-bar__inner--single">
+                    <div class="filter-scroll" id="type-filters" aria-label="Project type filters"></div>
+                    <p class="filter-count" id="filter-count-wrap" hidden><span id="filter-count">0</span> projects</p>
                 </div>
             </div>
             <div class="editorial-grid editorial-grid--archive shell" id="all-works-grid" aria-live="polite">
@@ -51,7 +43,7 @@
             </div>
         </section>
     </main>
-    <footer class="site-footer"><div class="shell site-footer__grid"><a href="index.html" class="wordmark">LOOK<span>UP</span> MEDIA</a><div><p>Production & Lighting</p><p>Seoul / Goyang, Korea</p></div><div><a id="footer-email" href="#">Email</a><br><a id="footer-instagram" href="#" target="_blank" rel="noreferrer">Instagram ↗</a></div><p>© <span id="footer-year"></span> LOOKUP MEDIA</p></div></footer>
-    <script src="js/main.js?v=20261022-type" defer></script>
+    <footer class="site-footer"><div class="shell site-footer__grid"><a href="index.html" class="wordmark">LOOK<span>UP</span> MEDIA</a><div><p>Video Production</p><p>Seoul / Goyang, Korea</p></div><div><a id="footer-email" href="#">Email</a><br><a id="footer-instagram" href="#" target="_blank" rel="noreferrer">Instagram ↗</a></div><p>© <span id="footer-year"></span> LOOKUP MEDIA</p></div></footer>
+    <script src="js/main.js?v=20261022-cat" defer></script>
 </body>
 </html>

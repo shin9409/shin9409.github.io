@@ -5,8 +5,8 @@ const JSON_HEADERS = {
 
 export const DEFAULT_SITE_SETTINGS = {
     heroEyebrow: "LOOKUP MEDIA / SEOUL",
-    heroTitle: "PRODUCTION\n& LIGHTING",
-    heroSubtitle: "FILM · MUSIC VIDEO · COMMERCIAL",
+    heroTitle: "Video Production",
+    heroSubtitle: "Music Video · Brand Film · Highlight Film · Web Content",
     heroWorkIds: ["work002", "work003"],
     introTitle: "EVERY FRAME BEGINS WITH A CLEAR POINT OF VIEW.",
     introBody: "LOOKUP MEDIA는 아이디어에서 현장, 마지막 프레임까지 하나의 시선으로 연결합니다. 프로덕션과 조명을 통해 이야기의 가장 정확한 분위기를 만듭니다.",
@@ -15,6 +15,22 @@ export const DEFAULT_SITE_SETTINGS = {
     contactAddress: "경기도 고양시 덕양구 지축4로 45 101,102호",
     instagramUrl: "https://www.instagram.com/lookupmedia_"
 };
+
+// Content types apply to production works only; lighting works keep minor_category.
+export const CONTENT_TYPES = ["musicvideo", "commercial", "highlight", "webcontent"];
+export const MINOR_CATEGORIES = ["musicvideo", "film", "commercial", "etc"];
+
+// Rows saved before content_type existed fall back to the closest legacy minor category.
+export function resolveContentType(majorCategory, contentType, minorCategory) {
+    if (majorCategory !== "production") return "";
+    if (CONTENT_TYPES.includes(contentType)) return contentType;
+    return CONTENT_TYPES.includes(minorCategory) ? minorCategory : "";
+}
+
+// minor_category is still NOT NULL with a CHECK, so production rows mirror their content type into it.
+export function minorCategoryForContentType(contentType) {
+    return contentType === "musicvideo" || contentType === "commercial" ? contentType : "etc";
+}
 
 export function json(data, init = {}) {
     return new Response(JSON.stringify(data), {
@@ -58,6 +74,7 @@ export function mapWork(row, env, images = [], credits = []) {
         title: row.title,
         majorCategory: row.major_category,
         minorCategory: row.minor_category,
+        contentType: resolveContentType(row.major_category, row.content_type, row.minor_category),
         date: row.work_date,
         role: row.role || "",
         featured: Boolean(row.featured),
@@ -133,7 +150,7 @@ export async function upsertWork(env, work) {
     if (existing) {
         await env.DB.prepare(`
             UPDATE works
-            SET title = ?, major_category = ?, minor_category = ?, work_date = ?, role = ?,
+            SET title = ?, major_category = ?, minor_category = ?, content_type = ?, work_date = ?, role = ?,
                 featured = ?, youtube_url = ?, description = ?, thumbnail_key = ?,
                 position = ?, updated_at = ?
             WHERE id = ?
@@ -141,6 +158,7 @@ export async function upsertWork(env, work) {
             work.title,
             work.majorCategory,
             work.minorCategory,
+            work.contentType || "",
             work.date,
             work.role || "",
             work.featured ? 1 : 0,
@@ -154,15 +172,16 @@ export async function upsertWork(env, work) {
     } else {
         await env.DB.prepare(`
             INSERT INTO works (
-                id, title, major_category, minor_category, work_date, role, featured,
+                id, title, major_category, minor_category, content_type, work_date, role, featured,
                 youtube_url, description, thumbnail_key, position, created_at, updated_at
             )
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         `).bind(
             work.id,
             work.title,
             work.majorCategory,
             work.minorCategory,
+            work.contentType || "",
             work.date,
             work.role || "",
             work.featured ? 1 : 0,

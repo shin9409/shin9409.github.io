@@ -205,7 +205,7 @@ function setupHeroSequence(works) {
         });
         const work = works[index];
         projectTitle.textContent = work.title;
-        projectMeta.textContent = `${labelFor(work.majorCategory)} / ${work.role || work.date || ''}`;
+        projectMeta.textContent = joinMeta([labelFor(work.majorCategory), work.role || work.date]);
         projectLink.href = `work-detail.html?id=${encodeURIComponent(work.id)}`;
         if (works.length > 1) window.setTimeout(() => ensureLoaded((index + 1) % works.length), 3800);
     };
@@ -215,7 +215,7 @@ function setupHeroSequence(works) {
         const canCycle = works.length > 1 && !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
         toggle.hidden = !canCycle;
         toggle.setAttribute('aria-pressed', String(paused));
-        toggle.textContent = paused ? 'Play sequence' : 'Pause sequence';
+        toggle.textContent = paused ? 'Play' : 'Pause';
         hero?.classList.toggle('is-paused', paused);
     };
 
@@ -233,7 +233,7 @@ function setupHeroSequence(works) {
 }
 
 function renderWorksArchive() {
-    setText('archive-total', String(allWorks.length).padStart(2, '0'));
+    setText('archive-total', String(allWorks.length));
     const params = new URLSearchParams(window.location.search);
     const initialMajor = ['production', 'lighting'].includes(params.get('filter')) ? params.get('filter') : 'all';
     const initialMinor = ['musicvideo', 'film', 'commercial', 'etc'].includes(params.get('type')) ? params.get('type') : 'all';
@@ -301,12 +301,10 @@ function createWorkCard(work, index) {
         <a class="work-card" href="work-detail.html?id=${encodeURIComponent(work.id)}" aria-label="View ${escapeAttribute(work.title)}">
             <div class="work-card__media">
                 <img src="${escapeAttribute(work.thumbnail)}" alt="${escapeAttribute(work.title)}" loading="lazy" decoding="async">
-                <span class="work-card__index">${String(index + 1).padStart(2, '0')}</span>
-                <span class="work-card__arrow" aria-hidden="true">↗</span>
             </div>
             <div class="work-card__info">
                 <h3>${escapeHtml(work.title)}</h3>
-                <p>${escapeHtml(labelFor(work.majorCategory))}<br>${escapeHtml(work.date || '')} / ${escapeHtml(work.role || '')}</p>
+                <p>${escapeHtml(joinMeta([labelFor(work.majorCategory), work.role, work.date]))}</p>
             </div>
         </a>
     `;
@@ -336,7 +334,7 @@ function renderWorkDetail() {
             <div class="project-hero__media" id="project-media"><img src="${escapeAttribute(heroImage(work))}" alt="${escapeAttribute(work.title)}"></div>
             <div class="project-hero__shade"></div>
             <div class="project-hero__content">
-                <div class="project-hero__topline"><a class="project-hero__back" href="works.html">← All works</a><p class="eyebrow">${escapeHtml(labelFor(work.majorCategory))} / ${escapeHtml(work.minorCategory || '')}</p></div>
+                <div class="project-hero__topline"><a class="project-hero__back" href="works.html">← Works</a><p class="eyebrow">${escapeHtml(joinMeta([labelFor(work.majorCategory), minorLabelFor(work.minorCategory)]))}</p></div>
                 <h1>${escapeHtml(work.title)}</h1>
                 <div class="project-hero__bottom">
                     <div class="project-hero__meta"><span>${escapeHtml(work.date || 'Undated')}</span><span>${escapeHtml(work.role || '')}</span></div>
@@ -345,17 +343,17 @@ function renderWorkDetail() {
             </div>
         </section>
         <section class="project-info shell">
-            <div class="project-info__sticky reveal"><p class="eyebrow">ABOUT THE PROJECT</p><p>${escapeHtml(work.description || 'Project information will be updated soon.')}</p></div>
+            <div class="project-info__sticky reveal"><p class="eyebrow">About</p><p>${escapeHtml(work.description || 'Project information will be updated soon.')}</p></div>
             <div class="project-credits reveal">
                 ${credits.length ? credits.map((credit) => `<div class="credit-item"><span class="credit-item__role">${escapeHtml(credit.role || '')}</span><p>${escapeHtml(credit.name || '')}</p></div>`).join('') : '<div class="credit-item"><span class="credit-item__role">Role</span><p>' + escapeHtml(work.role || 'LOOKUP MEDIA') + '</p></div>'}
             </div>
         </section>
-        ${stills.length ? `<section aria-label="Project stills"><div class="stills-heading"><span>Project stills</span><span>${String(stills.length).padStart(2, '0')} images</span></div><div class="stills-gallery">${stills.map((src, stillIndex) => `<button type="button" class="still-button reveal" data-index="${stillIndex}" aria-label="Open still ${stillIndex + 1} of ${stills.length}"><img src="${escapeAttribute(src)}" alt="Still ${stillIndex + 1} from ${escapeAttribute(work.title)}" loading="lazy" decoding="async"></button>`).join('')}</div></section>` : ''}
+        ${stills.length ? `<section aria-label="Project stills"><div class="stills-heading"><span>Stills</span><span>${stills.length}</span></div><div class="stills-gallery">${stills.map((src, stillIndex) => `<button type="button" class="still-button reveal" data-index="${stillIndex}" aria-label="Open still ${stillIndex + 1} of ${stills.length}"><img src="${escapeAttribute(src)}" alt="Still ${stillIndex + 1} from ${escapeAttribute(work.title)}" loading="lazy" decoding="async"></button>`).join('')}</div></section>` : ''}
         <nav class="project-pagination" aria-label="Adjacent projects">
-            <a href="work-detail.html?id=${encodeURIComponent(previous.id)}"><span>Previous project</span><strong>← ${escapeHtml(previous.title)}</strong></a>
-            <a href="work-detail.html?id=${encodeURIComponent(next.id)}"><span>Next project</span><strong>${escapeHtml(next.title)} →</strong></a>
+            <a href="work-detail.html?id=${encodeURIComponent(previous.id)}"><span>Previous</span><strong>← ${escapeHtml(previous.title)}</strong></a>
+            <a href="work-detail.html?id=${encodeURIComponent(next.id)}"><span>Next</span><strong>${escapeHtml(next.title)} →</strong></a>
         </nav>
-        <section class="contact-cta section"><div class="shell"><p class="eyebrow">WORK WITH LOOKUP MEDIA</p><a href="contact.html" class="contact-cta__link">Start a project.<span>↗</span></a></div></section>
+        <section class="contact-cta section"><div class="shell"><p class="eyebrow">Contact</p><a href="contact.html" class="contact-cta__link">Start a project<span>→</span></a></div></section>
     `;
 
     if (videoId) setupVideoModal(videoId, work.title);
@@ -479,6 +477,18 @@ function labelFor(value) {
     if (value === 'production') return 'Production';
     if (value === 'lighting') return 'Lighting';
     return String(value || 'Project');
+}
+
+function minorLabelFor(value) {
+    return { musicvideo: 'Music Video', film: 'Film', commercial: 'Commercial', etc: 'Etc' }[value] || '';
+}
+
+function joinMeta(parts) {
+    const seen = new Set();
+    return parts
+        .map((part) => String(part || '').trim())
+        .filter((part) => part && !seen.has(part.toLowerCase()) && seen.add(part.toLowerCase()))
+        .join(' · ');
 }
 
 function getYouTubeId(url = '') {

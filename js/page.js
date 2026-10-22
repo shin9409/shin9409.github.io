@@ -24,7 +24,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         setMeta('og:description', description, 'property');
         container.innerHTML = `
             <header class="page-article__head reveal is-visible">
-                <p class="eyebrow">LOOKUP MEDIA / PAGE</p>
                 <h1>${escapeHtml(page.title)}</h1>
             </header>
             <div class="page-blocks-public reveal is-visible">${blocks.map(renderBlock).join('')}</div>

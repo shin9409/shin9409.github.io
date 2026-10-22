@@ -3,6 +3,9 @@ const JSON_HEADERS = {
     "cache-control": "no-store"
 };
 
+// Canonical public origin for sitemap and per-work metadata; preview deployments must not advertise their own host.
+export const SITE_ORIGIN = "https://lookupmedia.co.kr";
+
 export const DEFAULT_SITE_SETTINGS = {
     heroEyebrow: "LOOKUP MEDIA / SEOUL",
     heroTitle: "Video Production",

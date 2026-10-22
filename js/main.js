@@ -350,7 +350,11 @@ function renderWorkDetail() {
         return;
     }
 
-    document.title = `${work.title} — LOOKUP MEDIA`;
+    // Same format as the server-rendered title in functions/work-detail.js, so crawlers that run JS see no change.
+    const titleLabel = work.majorCategory === 'lighting'
+        ? joinMeta(['Lighting', typeLabelFor(work.majorCategory, workTypeKey(work))])
+        : typeLabelFor(work.majorCategory, workTypeKey(work));
+    document.title = `${work.title}${titleLabel ? ` | ${titleLabel}` : ''} — LOOKUP MEDIA`;
     document.querySelector('meta[name="description"]')?.setAttribute('content', `${work.title}, ${work.role || labelFor(work.majorCategory)} — LOOKUP MEDIA`);
 
     // Previous/next stay inside the same group so production and lighting work never mix.

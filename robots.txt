@@ -1,0 +1,10 @@
+# LOOKUP MEDIA (lookupmedia.co.kr)
+# All crawlers are welcome, including search engines, AI search bots and AI training bots.
+# Only the admin screen and admin API are excluded; they are protected by login regardless.
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /admin.html
+Disallow: /api/admin/
+
+Sitemap: https://lookupmedia.co.kr/sitemap.xml

@@ -12,7 +12,7 @@ export const DEFAULT_SITE_SETTINGS = {
     heroSubtitle: "Music Video · Brand Film · Highlight Film · Web Content",
     heroWorkIds: ["work002", "work003"],
     introTitle: "EVERY FRAME BEGINS WITH A CLEAR POINT OF VIEW.",
-    introBody: "LOOKUP MEDIA는 아이디어에서 현장, 마지막 프레임까지 하나의 시선으로 연결합니다. 프로덕션과 조명을 통해 이야기의 가장 정확한 분위기를 만듭니다.",
+    introBody: "LOOKUP MEDIA는 아이디어에서 현장, 마지막 프레임까지 하나의 시선으로 연결합니다.",
     contactEmail: "contact@lookupmedia.co.kr",
     contactPhone: "010-2433-0583",
     contactAddress: "경기도 고양시 덕양구 지축4로 45 101,102호",

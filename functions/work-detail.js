@@ -33,7 +33,7 @@ export async function onRequestGet({ request, env }) {
 
     if (!work) {
         return new HTMLRewriter()
-            .on("title", { element: (el) => el.setInnerContent("작품을 찾을 수 없습니다 — LOOKUP MEDIA") })
+            .on("title", { element: (el) => el.setInnerContent("작품을 찾을 수 없습니다 — 룩업미디어 LOOKUP MEDIA") })
             .on("head", { element: (el) => el.append('<meta name="robots" content="noindex">', { html: true }) })
             .on("#work-detail-container", {
                 element: (el) => el.setInnerContent('<div class="detail-skeleton"><p>작품을 찾을 수 없습니다.</p><a class="text-link" href="/works">Works <span>→</span></a></div>', { html: true })
@@ -49,7 +49,7 @@ export async function onRequestGet({ request, env }) {
     const description = summarize(work, groupLabel, typeLabel);
     // Lighting titles keep the group so a lighting credit is not read as our own production.
     const titleLabel = isLighting ? [groupLabel, typeLabel].filter(Boolean).join(" · ") : typeLabel;
-    const pageTitle = `${work.title}${titleLabel ? ` | ${titleLabel}` : ""} — LOOKUP MEDIA`;
+    const pageTitle = `${work.title}${titleLabel ? ` | ${titleLabel}` : ""} — 룩업미디어 LOOKUP MEDIA`;
 
     const position = siblings.findIndex((item) => item.id === work.id);
     const previous = siblings.length > 1 ? siblings[(position - 1 + siblings.length) % siblings.length] : null;

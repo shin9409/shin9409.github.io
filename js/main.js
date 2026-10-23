@@ -4,7 +4,7 @@ const DEFAULT_SITE_SETTINGS = {
     heroSubtitle: 'Music Video · Brand Film · Highlight Film · Web Content',
     heroWorkIds: ['work002', 'work003'],
     introTitle: 'EVERY FRAME BEGINS WITH A CLEAR POINT OF VIEW.',
-    introBody: 'LOOKUP MEDIA는 아이디어에서 현장, 마지막 프레임까지 하나의 시선으로 연결합니다. 프로덕션과 조명을 통해 이야기의 가장 정확한 분위기를 만듭니다.',
+    introBody: 'LOOKUP MEDIA는 아이디어에서 현장, 마지막 프레임까지 하나의 시선으로 연결합니다.',
     contactEmail: 'contact@lookupmedia.co.kr',
     contactPhone: '010-2433-0583',
     contactAddress: '경기도 고양시 덕양구 지축4로 45 101,102호',
@@ -136,7 +136,7 @@ function updateSharedContent() {
     const dynamicNav = document.getElementById('dynamic-nav');
     if (dynamicNav) {
         dynamicNav.innerHTML = siteNavigation.map((item) => (
-            `<a href="page.html?slug=${encodeURIComponent(item.slug)}">${escapeHtml(item.title)}</a>`
+            `<a href="/page?slug=${encodeURIComponent(item.slug)}">${escapeHtml(item.title)}</a>`
         )).join('');
     }
 
@@ -168,7 +168,7 @@ function renderHomeFeatured() {
     const works = (featured.length ? featured : production).slice(0, 4);
     list.closest('.home-featured').hidden = !works.length;
     list.innerHTML = works.map((work) => `
-        <a class="home-feature reveal" href="work-detail.html?id=${encodeURIComponent(work.id)}">
+        <a class="home-feature reveal" href="/work-detail?id=${encodeURIComponent(work.id)}">
             <div class="home-feature__media"><img src="${escapeAttribute(work.thumbnail)}" alt="${escapeAttribute(work.title)}" loading="lazy" decoding="async"></div>
             <div class="home-feature__text">
                 <p class="home-feature__type">${escapeHtml(typeLabelFor(work.majorCategory, workTypeKey(work)))}</p>
@@ -230,7 +230,7 @@ function setupHeroSequence(works) {
         const work = works[index];
         projectTitle.textContent = work.title;
         projectMeta.textContent = joinMeta([typeLabelFor(work.majorCategory, workTypeKey(work)) || labelFor(work.majorCategory), work.role || work.date]);
-        projectLink.href = `work-detail.html?id=${encodeURIComponent(work.id)}`;
+        projectLink.href = `/work-detail?id=${encodeURIComponent(work.id)}`;
         if (works.length > 1) window.setTimeout(() => ensureLoaded((index + 1) % works.length), 3800);
     };
 
@@ -262,19 +262,20 @@ const LIGHTING_TYPES = ['film', 'commercial', 'musicvideo', 'etc'];
 function renderArchive(group) {
     const params = new URLSearchParams(window.location.search);
     // Old links pointed at works.html?filter=lighting; lighting now has its own page.
+    // Old links pointed at works.html?filter=lighting; lighting now has its own page.
     if (group === 'production' && params.get('filter') === 'lighting') {
         const type = LIGHTING_TYPES.includes(params.get('type')) ? `?type=${params.get('type')}` : '';
-        window.location.replace(`lighting.html${type}`);
+        window.location.replace(`/lighting${type}`);
         return;
     }
 
     const works = allWorks.filter((work) => work.majorCategory === group);
+    setText('tab-count-production', String(allWorks.filter((work) => work.majorCategory === 'production').length));
+    setText('tab-count-lighting', String(allWorks.filter((work) => work.majorCategory === 'lighting').length));
     const typeOf = group === 'production' ? contentTypeOf : (work) => work.minorCategory;
     // Only types that already have work are offered, so an empty type never shows up as a dead filter.
     const types = (group === 'production' ? PRODUCTION_TYPES : LIGHTING_TYPES)
         .filter((type) => works.some((work) => typeOf(work) === type));
-    setText('tab-count-production', String(allWorks.filter((work) => work.majorCategory === 'production').length));
-    setText('tab-count-lighting', String(allWorks.filter((work) => work.majorCategory === 'lighting').length));
 
     const filterRow = document.getElementById('type-filters');
     if (filterRow) {
@@ -328,7 +329,7 @@ function renderWorkGrid(containerId, works) {
 
 function createWorkCard(work, index) {
     return `
-        <a class="work-card" href="work-detail.html?id=${encodeURIComponent(work.id)}" aria-label="View ${escapeAttribute(work.title)}">
+        <a class="work-card" href="/work-detail?id=${encodeURIComponent(work.id)}" aria-label="View ${escapeAttribute(work.title)}">
             <div class="work-card__media">
                 <img src="${escapeAttribute(work.thumbnail)}" alt="${escapeAttribute(work.title)}" loading="lazy" decoding="async">
             </div>
@@ -346,7 +347,7 @@ function renderWorkDetail() {
     const work = allWorks[index];
     const container = document.getElementById('work-detail-container');
     if (!container || !work) {
-        if (container) container.innerHTML = '<div class="detail-skeleton"><p>Project not found.</p><a class="text-link" href="works.html">Back to works</a></div>';
+        if (container) container.innerHTML = '<div class="detail-skeleton"><p>Project not found.</p><a class="text-link" href="/works">Back to works</a></div>';
         return;
     }
 
@@ -354,7 +355,7 @@ function renderWorkDetail() {
     const titleLabel = work.majorCategory === 'lighting'
         ? joinMeta(['Lighting', typeLabelFor(work.majorCategory, workTypeKey(work))])
         : typeLabelFor(work.majorCategory, workTypeKey(work));
-    document.title = `${work.title}${titleLabel ? ` | ${titleLabel}` : ''} — LOOKUP MEDIA`;
+    document.title = `${work.title}${titleLabel ? ` | ${titleLabel}` : ''} — 룩업미디어 LOOKUP MEDIA`;
     document.querySelector('meta[name="description"]')?.setAttribute('content', `${work.title}, ${work.role || labelFor(work.majorCategory)} — LOOKUP MEDIA`);
 
     // Previous/next stay inside the same group so production and lighting work never mix.
@@ -372,7 +373,7 @@ function renderWorkDetail() {
             <div class="project-hero__media" id="project-media"><img src="${escapeAttribute(heroImage(work))}" alt="${escapeAttribute(work.title)}"></div>
             <div class="project-hero__shade"></div>
             <div class="project-hero__content">
-                <div class="project-hero__topline"><a class="project-hero__back" href="${isLighting ? 'lighting.html' : 'works.html'}">← ${isLighting ? 'Lighting' : 'Works'}</a><p class="project-hero__group"><span class="group-badge${isLighting ? ' group-badge--lighting' : ''}">${isLighting ? 'Lighting · 조명' : 'Production · 제작'}</span>${typeLabelFor(work.majorCategory, workTypeKey(work)) ? `<span>${escapeHtml(typeLabelFor(work.majorCategory, workTypeKey(work)))}</span>` : ''}</p></div>
+                <div class="project-hero__topline"><a class="project-hero__back" href="${isLighting ? '/lighting' : '/works'}">← ${isLighting ? 'Lighting' : 'Works'}</a><p class="project-hero__group"><span class="group-badge${isLighting ? ' group-badge--lighting' : ''}">${isLighting ? 'Lighting · 조명' : 'Production · 제작'}</span>${typeLabelFor(work.majorCategory, workTypeKey(work)) ? `<span>${escapeHtml(typeLabelFor(work.majorCategory, workTypeKey(work)))}</span>` : ''}</p></div>
                 <h1>${escapeHtml(work.title)}</h1>
                 <div class="project-hero__bottom">
                     <div class="project-hero__meta"><span>${escapeHtml(work.date || 'Undated')}</span><span>${escapeHtml(work.role || '')}</span></div>
@@ -388,10 +389,10 @@ function renderWorkDetail() {
         </section>
         ${stills.length ? `<section aria-label="Project stills"><div class="stills-heading"><span>Stills</span><span>${stills.length}</span></div><div class="stills-gallery">${stills.map((src, stillIndex) => `<button type="button" class="still-button reveal" data-index="${stillIndex}" aria-label="Open still ${stillIndex + 1} of ${stills.length}"><img src="${escapeAttribute(src)}" alt="Still ${stillIndex + 1} from ${escapeAttribute(work.title)}" loading="lazy" decoding="async"></button>`).join('')}</div></section>` : ''}
         <nav class="project-pagination" aria-label="Adjacent projects">
-            <a href="work-detail.html?id=${encodeURIComponent(previous.id)}"><span>Previous</span><strong>← ${escapeHtml(previous.title)}</strong></a>
-            <a href="work-detail.html?id=${encodeURIComponent(next.id)}"><span>Next</span><strong>${escapeHtml(next.title)} →</strong></a>
+            <a href="/work-detail?id=${encodeURIComponent(previous.id)}"><span>Previous</span><strong>← ${escapeHtml(previous.title)}</strong></a>
+            <a href="/work-detail?id=${encodeURIComponent(next.id)}"><span>Next</span><strong>${escapeHtml(next.title)} →</strong></a>
         </nav>
-        <section class="contact-cta section"><div class="shell"><p class="eyebrow">Contact</p><a href="contact.html" class="contact-cta__link">Start a project<span>→</span></a></div></section>
+        <section class="contact-cta section"><div class="shell"><p class="eyebrow">Contact</p><a href="/contact" class="contact-cta__link">Start a project<span>→</span></a></div></section>
     `;
 
     if (videoId) setupVideoModal(videoId, work.title);

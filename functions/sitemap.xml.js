@@ -1,7 +1,7 @@
 import { SITE_ORIGIN, requireBindings } from "./api/_lib.js";
 
 // Built from D1 on every request so works saved in the admin appear without a redeploy.
-const STATIC_PATHS = ["/", "/works", "/lighting", "/contact"];
+const STATIC_PATHS = ["/", "/works", "/lighting", "/about", "/contact"];
 
 export async function onRequestGet({ env }) {
     const missing = requireBindings(env, ["DB"]);

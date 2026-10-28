@@ -37,6 +37,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         case 'detail':
             renderWorkDetail();
             break;
+        case 'about':
+            renderAboutFlow();
+            setupAboutFields();
+            break;
         default:
             break;
     }
@@ -167,7 +171,94 @@ function renderHomeFeatured() {
     const featured = production.filter((work) => work.featured);
     const works = (featured.length ? featured : production).slice(0, 4);
     list.closest('.home-featured').hidden = !works.length;
-    list.innerHTML = works.map((work) => `
+    list.innerHTML = works.map(featureCard).join('');
+}
+
+// About shows every work as three drifting rows: production large in the middle, lighting small above and below.
+function renderAboutFlow() {
+    const flow = document.getElementById('about-flow');
+    if (!flow) return;
+    const works = allWorks.filter((work) => work.thumbnail);
+    flow.closest('.about-works').hidden = !works.length;
+    if (!works.length) return;
+    const production = works.filter((work) => work.majorCategory === 'production');
+    const lighting = works.filter((work) => work.majorCategory !== 'production');
+    const half = Math.ceil(lighting.length / 2);
+    const rows = [
+        { items: lighting.slice(0, half), speed: 22, dir: -1 },
+        { items: production, speed: 34, dir: 1, main: true },
+        { items: lighting.slice(half), speed: 18, dir: -1 },
+    ].filter((row) => row.items.length);
+    flow.innerHTML = rows.map((row) => {
+        // Repeat short rows so each half is wider than the screen, then double once for a seamless loop.
+        const set = row.items.map(aboutTile).join('').repeat(Math.max(1, Math.ceil(12 / row.items.length)));
+        return `<div class="about-flow__row${row.main ? ' is-main' : ''}" data-speed="${row.speed}" data-dir="${row.dir}">${set}${set}</div>`;
+    }).join('');
+    // The second copy of each row is only there for the loop, so keep it away from screen readers and the tab order.
+    flow.querySelectorAll('.about-flow__row').forEach((row) => {
+        const tiles = [...row.children];
+        tiles.slice(tiles.length / 2).forEach((tile) => { tile.setAttribute('aria-hidden', 'true'); tile.tabIndex = -1; });
+    });
+    if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) startAboutFlow(flow);
+}
+
+// About fields: panels with several scenes take turns cross-fading to the next one, so only one panel changes at a time.
+// A hovered panel holds its scene; with reduced motion only the first scene shows.
+function setupAboutFields() {
+    const panels = [...document.querySelectorAll('.about-field')].filter((panel) => panel.querySelectorAll('img').length > 1);
+    if (!panels.length || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    let turn = 0;
+    window.setInterval(() => {
+        const panel = panels[turn % panels.length];
+        turn += 1;
+        if (document.hidden || panel.matches(':hover')) return;
+        const scenes = [...panel.querySelectorAll('img')];
+        const current = scenes.findIndex((img) => img.classList.contains('is-on'));
+        scenes[current].classList.remove('is-on');
+        scenes[(current + 1) % scenes.length].classList.add('is-on');
+    }, 2000);
+}
+
+function aboutTile(work) {
+    const group = work.majorCategory === 'production' ? 'production' : 'lighting';
+    const type = typeLabelFor(group, workTypeKey(work));
+    const label = group === 'production' ? type : `Lighting${type ? ` · ${type}` : ''}`;
+    return `<a class="about-tile" href="/work-detail?id=${encodeURIComponent(work.id)}"><img src="${escapeAttribute(work.thumbnail)}" alt="" decoding="async"><span class="about-tile__over"><b>${escapeHtml(work.title)}</b><i>${escapeHtml(label)}</i></span></a>`;
+}
+
+// Constant drift; scrolling the page adds speed that eases off, and hovering a row slows it right down.
+function startAboutFlow(flow) {
+    const rows = [...flow.querySelectorAll('.about-flow__row')].map((el) => ({ el, x: 0, speed: Number(el.dataset.speed), dir: Number(el.dataset.dir), hover: false }));
+    rows.forEach((row) => {
+        row.el.addEventListener('mouseenter', () => { row.hover = true; });
+        row.el.addEventListener('mouseleave', () => { row.hover = false; });
+    });
+    let boost = 0;
+    let lastY = window.scrollY;
+    let last = performance.now();
+    window.addEventListener('scroll', () => {
+        boost = Math.min(boost + Math.abs(window.scrollY - lastY) * 4, 900);
+        lastY = window.scrollY;
+    }, { passive: true });
+    const frame = (now) => {
+        const dt = Math.min((now - last) / 1000, 0.05);
+        last = now;
+        boost *= Math.pow(0.04, dt);
+        rows.forEach((row) => {
+            const half = row.el.scrollWidth / 2;
+            const speed = (row.speed + boost * (row.speed / 30)) * (row.hover ? 0.2 : 1);
+            row.x += speed * row.dir * dt;
+            if (row.x <= -half) row.x += half;
+            if (row.x > 0) row.x -= half;
+            row.el.style.transform = `translate3d(${row.x.toFixed(2)}px, 0, 0)`;
+        });
+        requestAnimationFrame(frame);
+    };
+    requestAnimationFrame(frame);
+}
+
+function featureCard(work) {
+    return `
         <a class="home-feature reveal" href="/work-detail?id=${encodeURIComponent(work.id)}">
             <div class="home-feature__media"><img src="${escapeAttribute(work.thumbnail)}" alt="${escapeAttribute(work.title)}" loading="lazy" decoding="async"></div>
             <div class="home-feature__text">
@@ -177,7 +268,7 @@ function renderHomeFeatured() {
                 <span class="home-feature__more">View project <span aria-hidden="true">→</span></span>
             </div>
         </a>
-    `).join('');
+    `;
 }
 
 function resolveHeroWorks() {

@@ -79,8 +79,11 @@ p, h1, h2, h3, h4 { margin: 0; }
 .site-header::after { content: ''; position: absolute; inset: auto 0 0; height: 1px; background: rgba(255,255,255,.12); }
 .site-header.is-scrolled, .site-header--solid { background: rgba(8, 8, 8, .91); backdrop-filter: blur(18px); }
 .site-header__inner { width: var(--shell); height: 100%; margin-inline: auto; display: flex; align-items: center; justify-content: space-between; }
-.wordmark { font-family: var(--font-wordmark); font-size: 1.1rem; font-weight: 800; letter-spacing: -.04em; white-space: nowrap; }
-.wordmark span { color: var(--red); }
+/* Brand logo from the original .ai (light versions for the dark site): lettering in the header, small stacked logo in the footer. */
+.wordmark { display: inline-flex; align-items: center; flex: none; }
+.wordmark img { display: block; width: auto; }
+.wordmark__type { height: 14px; }
+.wordmark--footer img { width: 64px; height: auto; }
 .site-nav { display: flex; align-items: center; gap: 32px; }
 .site-nav > span { display: contents; }
 .site-nav a { position: relative; color: rgba(242,239,232,.66); font-size: var(--fs-sm); font-weight: 500; }
@@ -171,6 +174,86 @@ p, h1, h2, h3, h4 { margin: 0; }
 .home-contact__link:hover .home-contact__arrow { border-color: var(--red); background: var(--red); transform: translateX(6px); }
 .home-contact__direct { margin-top: 40px; color: var(--muted); font-size: var(--fs-sm); }
 .home-contact__direct a:hover { color: var(--paper); }
+
+/* About: a full-screen opening shot with the statement set as a subtitle, then a quiet centred column and a strip of all work. */
+/* Temporary work stills carry 2.39:1 letterbox bars inside a 16:9 file; zoom past them until the owner's photos arrive. */
+.about-media--letterbox { scale: 1.345; }
+.about-open { position: relative; height: 100svh; min-height: 560px; overflow: hidden; background: #000; }
+.about-open img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; animation: about-settle 2.6s var(--ease) both; }
+.about-open img.about-media--letterbox { animation-name: about-settle-letterbox; }
+@keyframes about-settle { from { opacity: 0; scale: 1.08; } }
+@keyframes about-settle-letterbox { from { opacity: 0; scale: 1.45; } }
+.about-open::after { content: ''; position: absolute; inset: 0; background: linear-gradient(0deg, rgba(0,0,0,.78), rgba(0,0,0,.1) 45%, rgba(0,0,0,.25)); }
+.about-open__sub { position: absolute; left: 16px; right: 16px; bottom: clamp(64px, 11vh, 120px); z-index: 1; text-align: center; }
+.about-open__label { margin-bottom: 18px; color: rgba(242,239,232,.6); font-size: var(--fs-sm); }
+.about-open h1 { font-size: var(--fs-lg); font-weight: 400; letter-spacing: -.02em; line-height: 1.5; text-shadow: 0 1px 14px rgba(0,0,0,.45); }
+
+/* Big lines rise out of a mask one by one, after the opening shot settles; the generic fade-up is turned off for them. */
+.about-lines.reveal { opacity: 1; transform: none; }
+.about-lines .line { display: block; overflow: hidden; padding-bottom: .08em; }
+.about-lines .line > span { display: block; transform: translateY(105%); transition: transform 1.2s var(--ease); }
+.about-lines.is-visible .line > span { transform: none; }
+.about-open h1 .line:first-child > span { transition-delay: .9s; }
+.about-open h1 .line:nth-child(2) > span { transition-delay: 1.05s; }
+.about-open h1 .line:nth-child(3) > span { transition-delay: 1.2s; }
+
+.about-body { text-align: center; }
+.about-brand { margin-top: clamp(120px, 14vw, 200px); }
+.about-brand__logo { display: block; width: clamp(160px, 16vw, 230px); height: auto; margin: 0 auto; }
+.about-brand p { margin-top: 28px; font-size: var(--fs-md); letter-spacing: -.01em; }
+.about-intro { max-width: 34em; margin: clamp(48px, 6vw, 72px) auto 0; }
+.about-intro > p { color: var(--paper-dim); line-height: 1.9; }
+.about-intro > p + p { margin-top: 16px; }
+
+/* Sections taken from the company brochure: fields as photo cards, a wide still, then the way of working and the process as quiet text. */
+.about-section { padding-top: clamp(120px, 14vw, 200px); text-align: center; }
+.about-title { font-size: var(--fs-lg); font-weight: 400; letter-spacing: -.02em; line-height: 1.5; }
+.about-title .line:nth-child(2) > span { transition-delay: .14s; }
+.about-lead { max-width: 30em; margin: 20px auto 0; color: var(--paper-dim); line-height: 1.85; }
+/* Copy pulls focus like a lens: blurred and slightly low, then sharp. */
+.about-brand.reveal, .about-intro.reveal, .about-lead.reveal, .about-way li.reveal, .about-process.reveal { filter: blur(10px); transform: translateY(12px); transition: opacity 1.4s var(--ease), transform 1.4s var(--ease), filter 1.6s var(--ease); }
+.about-brand.reveal.is-visible, .about-intro.reveal.is-visible, .about-lead.reveal.is-visible, .about-way li.reveal.is-visible, .about-process.reveal.is-visible { filter: none; transform: none; }
+.about-field-grid { display: flex; gap: 6px; height: clamp(360px, 32vw, 460px); margin-top: clamp(48px, 6vw, 72px); text-align: left; }
+.about-field { position: relative; flex: 1; min-width: 0; overflow: hidden; background: var(--ink-soft); transition: flex .7s var(--ease); }
+.about-field:hover, .about-field:focus-visible { flex: 2.2; }
+.about-field figure { position: absolute; inset: 0; margin: 0; }
+/* Each panel holds several scenes that cross-fade in turn (main.js); --pos keeps each subject in the narrow panel, and the hovered panel widens to show more of the frame. */
+.about-field img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: var(--pos, center); opacity: 0; filter: brightness(.72); transition: opacity 1.6s ease, filter .7s ease, transform 1.2s var(--ease); }
+.about-field img.is-on { opacity: 1; }
+.about-field:hover img { filter: none; transform: scale(1.03); }
+/* Event stills carry the event title in the top corners; zoom a little from the bottom edge so it stays out of frame. */
+.about-media--trim-top { scale: 1.12; transform-origin: 50% 100%; }
+.about-field::after { content: ''; position: absolute; inset: 0; background: linear-gradient(0deg, rgba(0,0,0,.75), transparent 55%); }
+.about-field__text { position: absolute; left: 24px; right: 24px; bottom: 24px; z-index: 1; display: grid; gap: 8px; }
+.about-field__text b { font-size: var(--fs-md); font-weight: 500; }
+.about-field__text i { color: var(--paper-dim); font-size: var(--fs-sm); font-style: normal; line-height: 1.6; }
+/* A work still laid dimly behind a section, fading into the page at top and bottom (--scene set inline in about.html). */
+.about-scene { position: relative; isolation: isolate; padding-bottom: clamp(80px, 10vw, 140px); }
+.about-scene::before { content: ''; position: absolute; z-index: -1; top: clamp(40px, 6vw, 100px); bottom: 0; left: 50%; width: 100vw; transform: translateX(-50%); background: linear-gradient(var(--ink), rgba(8,8,8,.55) 28%, rgba(8,8,8,.55) 72%, var(--ink)), var(--scene) center / cover; opacity: .55; filter: saturate(.8); pointer-events: none; }
+.about-way { display: grid; grid-template-columns: repeat(2, 1fr); gap: 56px 64px; max-width: 960px; margin: clamp(48px, 6vw, 72px) auto 0; text-align: left; list-style: none; }
+.about-way span, .about-process span { color: var(--red); font-size: var(--fs-sm); font-variant-numeric: tabular-nums; }
+.about-way h3 { margin-top: 10px; font-size: var(--fs-md); font-weight: 500; }
+.about-way p { margin-top: 12px; color: var(--paper-dim); line-height: 1.85; }
+.about-process { display: grid; grid-template-columns: repeat(6, 1fr); max-width: 1080px; margin: clamp(48px, 6vw, 72px) auto 0; padding: 0; list-style: none; text-align: left; border-top: 1px solid var(--line); }
+.about-process li { display: grid; gap: 8px; align-content: start; padding: 24px 16px 0 0; }
+.about-process b { font-size: var(--fs-md); font-weight: 500; }
+.about-process i { color: var(--paper-dim); font-size: var(--fs-sm); font-style: normal; line-height: 1.6; }
+
+/* Works strip: production work large in the middle row, lighting work small above and below, drifting in opposite directions (motion in main.js). */
+.about-works { padding: clamp(96px, 12vw, 160px) 0; text-align: center; }
+.about-works[hidden] { display: none; }
+.about-works h2 { color: var(--muted); font-size: var(--fs-sm); font-weight: 500; }
+.about-flow { display: grid; gap: 8px; width: 100vw; margin: 40px 0 56px calc(50% - 50vw); overflow: hidden; text-align: left; -webkit-mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent); mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent); }
+.about-flow__row { --h: clamp(64px, 7vw, 108px); display: flex; gap: var(--gap, 8px); width: max-content; will-change: transform; }
+.about-flow__row.is-main { --h: clamp(150px, 17vw, 270px); --gap: 10px; }
+.about-tile { position: relative; display: block; flex: none; height: var(--h); aspect-ratio: 16 / 9; overflow: hidden; background: var(--ink-soft); }
+.about-tile img { width: 100%; height: 100%; object-fit: cover; transition: transform .8s var(--ease), opacity .4s ease; }
+.about-flow__row:hover .about-tile:not(:hover) img { opacity: .35; }
+.about-tile:hover img { transform: scale(1.04); }
+.about-tile__over { position: absolute; inset: auto 0 0; padding: 10px 12px; background: linear-gradient(0deg, rgba(0,0,0,.8), transparent); opacity: 0; transform: translateY(6px); transition: opacity .35s ease, transform .35s var(--ease); }
+.about-tile:hover .about-tile__over, .about-tile:focus-visible .about-tile__over { opacity: 1; transform: none; }
+.about-tile__over b { display: block; font-size: var(--fs-xs); font-weight: 500; line-height: 1.4; }
+.about-tile__over i { display: block; color: rgba(242,239,232,.6); font-size: var(--fs-xs); font-style: normal; }
 
 .editorial-grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 72px 28px; align-items: stretch; }
 .work-card { display: flex; flex-direction: column; min-width: 0; color: inherit; }
@@ -363,6 +446,8 @@ p, h1, h2, h3, h4 { margin: 0; }
     .site-header.is-scrolled, .site-header--solid { backdrop-filter: none; }
     .site-nav { position: fixed; inset: 0; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end; gap: 12px; padding: 110px 16px 50px; background: var(--red); transform: translateX(100%); transition: transform .45s var(--ease); }
     .site-nav.is-open { transform: none; }
+    .wordmark__type { height: 12px; }
+    .wordmark--footer img { width: 56px; }
     .site-nav > span { display: contents; }
     .site-nav a { color: #fff; font-size: clamp(2.25rem, 11vw, 3.5rem); font-weight: 600; letter-spacing: -.02em; line-height: 1.1; }
     .site-nav a::after { display: none; }
@@ -419,10 +504,18 @@ p, h1, h2, h3, h4 { margin: 0; }
     .home-contact__link { gap: 16px; }
     .home-contact__arrow { width: 52px; }
     .home-contact__direct { margin-top: 28px; }
+    .about-open { min-height: 520px; }
+    .about-field-grid { flex-direction: column; height: auto; }
+    .about-field, .about-field:hover { flex: none; aspect-ratio: 16 / 10; }
+    .about-way { grid-template-columns: 1fr; gap: 40px; }
+    .about-process { grid-template-columns: 1fr; border-top: 0; }
+    .about-process li { grid-template-columns: 28px 7em 1fr; align-items: baseline; gap: 0 8px; padding: 16px 0; border-top: 1px solid var(--line); }
 }
 
 @media (prefers-reduced-motion: reduce) {
     html { scroll-behavior: auto; }
     *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; transition-duration: .01ms !important; }
     .reveal { opacity: 1; transform: none; }
+    .about-lines .line > span { transform: none; }
+    .about-flow { overflow-x: auto; }
 }

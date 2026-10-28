@@ -45,7 +45,7 @@ export async function onRequestGet({ request, env }) {
     const typeLabel = isLighting ? MINOR_CATEGORY_LABELS[work.minorCategory] || "" : CONTENT_TYPE_LABELS[work.contentType] || "";
     const groupLabel = isLighting ? "Lighting" : "Production";
     const canonical = `${SITE_ORIGIN}/work-detail?id=${encodeURIComponent(work.id)}`;
-    const image = work.thumbnail ? new URL(work.thumbnail, SITE_ORIGIN).href : `${SITE_ORIGIN}/images/logo.png`;
+    const image = work.thumbnail ? new URL(work.thumbnail, SITE_ORIGIN).href : `${SITE_ORIGIN}/images/og-image.png`;
     const description = summarize(work, groupLabel, typeLabel);
     // Lighting titles keep the group so a lighting credit is not read as our own production.
     const titleLabel = isLighting ? [groupLabel, typeLabel].filter(Boolean).join(" · ") : typeLabel;

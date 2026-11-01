@@ -457,8 +457,9 @@ function renderWorkDetail() {
     const stills = Array.isArray(work.stills) ? work.stills : [];
 
     container.innerHTML = `
-        <section class="project-hero">
+        <section class="project-hero${videoId ? ' project-hero--video' : ''}">
             <div class="project-hero__media" id="project-media"><img ${imageSourceAttrs(heroImage(work), SIZES_COVER)} alt="${escapeAttribute(work.title)}"></div>
+            ${videoId ? '<button type="button" class="project-hero__play" tabindex="-1" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 4.5v15l12.5-7.5z"/></svg></button>' : ''}
             <div class="project-hero__shade"></div>
             <div class="project-hero__content">
                 <div class="project-hero__topline"><a class="project-hero__back" href="${isLighting ? '/lighting' : '/works'}">← ${isLighting ? 'Lighting' : 'Works'}</a><p class="project-hero__group">${escapeHtml(joinMeta([isLighting ? '조명 참여' : '제작', typeLabelFor(work.majorCategory, workTypeKey(work))]))}</p></div>
@@ -508,6 +509,9 @@ function setupVideoModal(videoId, title) {
     };
 
     trigger.addEventListener('click', open);
+    // The hero image and its centre play mark open the same film; the bottom button stays the keyboard control.
+    document.getElementById('project-media')?.addEventListener('click', open);
+    document.querySelector('.project-hero__play')?.addEventListener('click', open);
     closeButton.addEventListener('click', close);
     modal.addEventListener('click', (event) => { if (event.target === modal) close(); });
     modal.addEventListener('keydown', (event) => {

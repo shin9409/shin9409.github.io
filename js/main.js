@@ -183,11 +183,10 @@ function renderAboutFlow() {
     if (!works.length) return;
     const production = works.filter((work) => work.majorCategory === 'production');
     const lighting = works.filter((work) => work.majorCategory !== 'production');
-    const half = Math.ceil(lighting.length / 2);
+    // Production leads (owner: promote production first); lighting follows as one smaller row.
     const rows = [
-        { items: lighting.slice(0, half), speed: 22, dir: -1 },
         { items: production, speed: 34, dir: 1, main: true },
-        { items: lighting.slice(half), speed: 18, dir: -1 },
+        { items: lighting, speed: 20, dir: -1 },
     ].filter((row) => row.items.length);
     flow.innerHTML = rows.map((row) => {
         // Repeat short rows so each half is wider than the screen, then double once for a seamless loop.
@@ -264,7 +263,7 @@ function featureCard(work) {
             <div class="home-feature__text">
                 <p class="home-feature__type">${escapeHtml(typeLabelFor(work.majorCategory, workTypeKey(work)))}</p>
                 <h3>${escapeHtml(work.title)}</h3>
-                <p class="home-feature__meta">${escapeHtml(joinMeta([work.role, work.date]))}</p>
+                <p class="home-feature__meta">${escapeHtml(joinMeta([work.role, displayYear(work.date)]))}</p>
                 <span class="home-feature__more">View project <span aria-hidden="true">→</span></span>
             </div>
         </a>
@@ -320,7 +319,7 @@ function setupHeroSequence(works) {
         });
         const work = works[index];
         projectTitle.textContent = work.title;
-        projectMeta.textContent = joinMeta([typeLabelFor(work.majorCategory, workTypeKey(work)) || labelFor(work.majorCategory), work.role || work.date]);
+        projectMeta.textContent = joinMeta([typeLabelFor(work.majorCategory, workTypeKey(work)) || labelFor(work.majorCategory), work.role || displayYear(work.date)]);
         projectLink.href = `/work-detail?id=${encodeURIComponent(work.id)}`;
         if (works.length > 1) window.setTimeout(() => ensureLoaded((index + 1) % works.length), 3800);
     };
@@ -361,8 +360,6 @@ function renderArchive(group) {
     }
 
     const works = allWorks.filter((work) => work.majorCategory === group);
-    setText('tab-count-production', String(allWorks.filter((work) => work.majorCategory === 'production').length));
-    setText('tab-count-lighting', String(allWorks.filter((work) => work.majorCategory === 'lighting').length));
     const typeOf = group === 'production' ? contentTypeOf : (work) => work.minorCategory;
     // Only types that already have work are offered, so an empty type never shows up as a dead filter.
     const types = (group === 'production' ? PRODUCTION_TYPES : LIGHTING_TYPES)
@@ -426,7 +423,7 @@ function createWorkCard(work, index) {
             </div>
             <div class="work-card__info">
                 <h3>${escapeHtml(work.title)}</h3>
-                <p>${escapeHtml(joinMeta([typeLabelFor(work.majorCategory, workTypeKey(work)), work.role, work.date]))}</p>
+                <p>${escapeHtml(joinMeta([typeLabelFor(work.majorCategory, workTypeKey(work)), work.role, displayYear(work.date)]))}</p>
             </div>
         </a>
     `;
@@ -464,11 +461,11 @@ function renderWorkDetail() {
             <div class="project-hero__media" id="project-media"><img ${imageSourceAttrs(heroImage(work), SIZES_COVER)} alt="${escapeAttribute(work.title)}"></div>
             <div class="project-hero__shade"></div>
             <div class="project-hero__content">
-                <div class="project-hero__topline"><a class="project-hero__back" href="${isLighting ? '/lighting' : '/works'}">← ${isLighting ? 'Lighting' : 'Works'}</a><p class="project-hero__group"><span class="group-badge${isLighting ? ' group-badge--lighting' : ''}">${isLighting ? 'Lighting · 조명' : 'Production · 제작'}</span>${typeLabelFor(work.majorCategory, workTypeKey(work)) ? `<span>${escapeHtml(typeLabelFor(work.majorCategory, workTypeKey(work)))}</span>` : ''}</p></div>
+                <div class="project-hero__topline"><a class="project-hero__back" href="${isLighting ? '/lighting' : '/works'}">← ${isLighting ? 'Lighting' : 'Works'}</a><p class="project-hero__group">${escapeHtml(joinMeta([isLighting ? '조명 참여' : '제작', typeLabelFor(work.majorCategory, workTypeKey(work))]))}</p></div>
                 <h1>${escapeHtml(work.title)}</h1>
                 <div class="project-hero__bottom">
-                    <div class="project-hero__meta"><span>${escapeHtml(work.date || 'Undated')}</span><span>${escapeHtml(work.role || '')}</span></div>
-                    ${videoId ? '<button type="button" class="play-button" id="play-film"><span>▶</span> Play film</button>' : ''}
+                    <div class="project-hero__meta"><span>${escapeHtml(displayYear(work.date))}</span><span>${escapeHtml(work.role || '')}</span></div>
+                    ${videoId ? '<button type="button" class="play-button" id="play-film"><span>▶</span> 영상 보기</button>' : ''}
                 </div>
             </div>
         </section>
@@ -483,7 +480,7 @@ function renderWorkDetail() {
             <a href="/work-detail?id=${encodeURIComponent(previous.id)}"><span>Previous</span><strong>← ${escapeHtml(previous.title)}</strong></a>
             <a href="/work-detail?id=${encodeURIComponent(next.id)}"><span>Next</span><strong>${escapeHtml(next.title)} →</strong></a>
         </nav>
-        <section class="contact-cta section"><div class="shell"><p class="eyebrow">Contact</p><a href="/contact" class="contact-cta__link">Start a project<span>→</span></a></div></section>
+        <section class="contact-cta section"><div class="shell"><a href="/contact" class="contact-cta__link">프로젝트 문의<span>→</span></a></div></section>
     `;
 
     if (videoId) setupVideoModal(videoId, work.title);
@@ -597,6 +594,12 @@ function setupRevealObserver() {
 
 function heroImage(work) {
     return work.stills?.[0] || work.thumbnail || '';
+}
+
+// Dates are stored as YYYY or YYYY-MM; lists show the year only so the two forms read the same.
+function displayYear(date) {
+    const match = String(date || '').match(/^\d{4}/);
+    return match ? match[0] : '';
 }
 
 function sequenceImage(work) {

@@ -1,4 +1,4 @@
-// Shared by /works and /lighting: puts the group's work links and tab counts into the first HTML,
+// Shared by /works and /lighting: puts the group's work links into the first HTML,
 // so crawlers that don't run JS can reach every work page. js/main.js replaces the list with the card grid.
 const CONTENT_TYPE_LABELS = { musicvideo: "Music Video", commercial: "Brand & Commercial", highlight: "Highlight Film", webcontent: "Web Content" };
 const MINOR_CATEGORY_LABELS = { musicvideo: "Music Video", film: "Film", commercial: "Commercial", etc: "Etc" };
@@ -18,8 +18,6 @@ export async function renderArchive({ request, env }, group) {
         return shell;
     }
 
-    const counts = { production: 0, lighting: 0 };
-    rows.forEach((row) => { if (row.major_category in counts) counts[row.major_category] += 1; });
     const items = rows.filter((row) => row.major_category === group).map((row) => {
         const type = group === "lighting" ? MINOR_CATEGORY_LABELS[row.minor_category] : CONTENT_TYPE_LABELS[row.content_type] || CONTENT_TYPE_LABELS[row.minor_category];
         const meta = [type, row.role, row.work_date].filter(Boolean).join(" · ");
@@ -31,8 +29,6 @@ export async function renderArchive({ request, env }, group) {
     headers.delete("content-length");
 
     return new HTMLRewriter()
-        .on("#tab-count-production", { element: (el) => el.setInnerContent(String(counts.production)) })
-        .on("#tab-count-lighting", { element: (el) => el.setInnerContent(String(counts.lighting)) })
         .on("#all-works-grid", { element: (el) => el.setInnerContent(`<ul class="archive-ssr">${items.join("")}</ul>`, { html: true }) })
         .transform(new Response(shell.body, { status: 200, headers }));
 }

@@ -223,7 +223,7 @@ function aboutTile(work) {
     const group = work.majorCategory === 'production' ? 'production' : 'lighting';
     const type = typeLabelFor(group, workTypeKey(work));
     const label = group === 'production' ? type : `Lighting${type ? ` · ${type}` : ''}`;
-    return `<a class="about-tile" href="/work-detail?id=${encodeURIComponent(work.id)}"><img src="${escapeAttribute(work.thumbnail)}" alt="" decoding="async"><span class="about-tile__over"><b>${escapeHtml(work.title)}</b><i>${escapeHtml(label)}</i></span></a>`;
+    return `<a class="about-tile" href="/work-detail?id=${encodeURIComponent(work.id)}"><img ${imageSourceAttrs(work.thumbnail, '480px')} alt="" decoding="async"><span class="about-tile__over"><b>${escapeHtml(work.title)}</b><i>${escapeHtml(label)}</i></span></a>`;
 }
 
 // Constant drift; scrolling the page adds speed that eases off, and hovering a row slows it right down.
@@ -260,7 +260,7 @@ function startAboutFlow(flow) {
 function featureCard(work) {
     return `
         <a class="home-feature reveal" href="/work-detail?id=${encodeURIComponent(work.id)}">
-            <div class="home-feature__media"><img src="${escapeAttribute(work.thumbnail)}" alt="${escapeAttribute(work.title)}" loading="lazy" decoding="async"></div>
+            <div class="home-feature__media"><img ${imageSourceAttrs(work.thumbnail, '(max-width: 760px) 100vw, 66vw')} alt="${escapeAttribute(work.title)}" loading="lazy" decoding="async"></div>
             <div class="home-feature__text">
                 <p class="home-feature__type">${escapeHtml(typeLabelFor(work.majorCategory, workTypeKey(work)))}</p>
                 <h3>${escapeHtml(work.title)}</h3>
@@ -291,7 +291,7 @@ function setupHeroSequence(works) {
 
     media.innerHTML = works.map((work, index) => {
         const image = sequenceImage(work);
-        return `<div class="hero-frame${index === 0 ? ' is-active' : ''}" data-src="${escapeAttribute(image)}">${index === 0 ? `<img src="${escapeAttribute(image)}" alt="" fetchpriority="high">` : ''}</div>`;
+        return `<div class="hero-frame${index === 0 ? ' is-active' : ''}" data-src="${escapeAttribute(image)}">${index === 0 ? `<img ${imageSourceAttrs(image, SIZES_COVER)} alt="" fetchpriority="high">` : ''}</div>`;
     }).join('');
     progress.innerHTML = works.map((_, index) => `<span class="${index === 0 ? 'is-active' : ''}"></span>`).join('');
 
@@ -304,7 +304,7 @@ function setupHeroSequence(works) {
         const frame = frames[index];
         if (!frame || frame.querySelector('img')) return;
         const image = document.createElement('img');
-        image.src = frame.dataset.src;
+        setImageSource(image, frame.dataset.src, SIZES_COVER);
         image.alt = '';
         image.decoding = 'async';
         frame.appendChild(image);
@@ -422,7 +422,7 @@ function createWorkCard(work, index) {
     return `
         <a class="work-card" href="/work-detail?id=${encodeURIComponent(work.id)}" aria-label="View ${escapeAttribute(work.title)}">
             <div class="work-card__media">
-                <img src="${escapeAttribute(work.thumbnail)}" alt="${escapeAttribute(work.title)}" loading="lazy" decoding="async">
+                <img ${imageSourceAttrs(work.thumbnail, SIZES_HALF)} alt="${escapeAttribute(work.title)}" loading="lazy" decoding="async">
             </div>
             <div class="work-card__info">
                 <h3>${escapeHtml(work.title)}</h3>
@@ -461,7 +461,7 @@ function renderWorkDetail() {
 
     container.innerHTML = `
         <section class="project-hero">
-            <div class="project-hero__media" id="project-media"><img src="${escapeAttribute(heroImage(work))}" alt="${escapeAttribute(work.title)}"></div>
+            <div class="project-hero__media" id="project-media"><img ${imageSourceAttrs(heroImage(work), SIZES_COVER)} alt="${escapeAttribute(work.title)}"></div>
             <div class="project-hero__shade"></div>
             <div class="project-hero__content">
                 <div class="project-hero__topline"><a class="project-hero__back" href="${isLighting ? '/lighting' : '/works'}">← ${isLighting ? 'Lighting' : 'Works'}</a><p class="project-hero__group"><span class="group-badge${isLighting ? ' group-badge--lighting' : ''}">${isLighting ? 'Lighting · 조명' : 'Production · 제작'}</span>${typeLabelFor(work.majorCategory, workTypeKey(work)) ? `<span>${escapeHtml(typeLabelFor(work.majorCategory, workTypeKey(work)))}</span>` : ''}</p></div>
@@ -478,7 +478,7 @@ function renderWorkDetail() {
                 ${credits.length ? credits.map((credit) => `<div class="credit-item"><span class="credit-item__role">${escapeHtml(credit.role || '')}</span><p>${escapeHtml(credit.name || '')}</p></div>`).join('') : '<div class="credit-item"><span class="credit-item__role">Role</span><p>' + escapeHtml(work.role || 'LOOKUP MEDIA') + '</p></div>'}
             </div>
         </section>
-        ${stills.length ? `<section aria-label="Project stills"><div class="stills-heading"><span>Stills</span><span>${stills.length}</span></div><div class="stills-gallery">${stills.map((src, stillIndex) => `<button type="button" class="still-button reveal" data-index="${stillIndex}" aria-label="Open still ${stillIndex + 1} of ${stills.length}"><img src="${escapeAttribute(src)}" alt="Still ${stillIndex + 1} from ${escapeAttribute(work.title)}" loading="lazy" decoding="async"></button>`).join('')}</div></section>` : ''}
+        ${stills.length ? `<section aria-label="Project stills"><div class="stills-heading"><span>Stills</span><span>${stills.length}</span></div><div class="stills-gallery">${stills.map((src, stillIndex) => `<button type="button" class="still-button reveal" data-index="${stillIndex}" aria-label="Open still ${stillIndex + 1} of ${stills.length}"><img ${imageSourceAttrs(src, stillIndex % 5 === 0 ? '(max-width: 760px) 100vw, 92vw' : SIZES_HALF)} alt="Still ${stillIndex + 1} from ${escapeAttribute(work.title)}" loading="lazy" decoding="async"></button>`).join('')}</div></section>` : ''}
         <nav class="project-pagination" aria-label="Adjacent projects">
             <a href="/work-detail?id=${encodeURIComponent(previous.id)}"><span>Previous</span><strong>← ${escapeHtml(previous.title)}</strong></a>
             <a href="/work-detail?id=${encodeURIComponent(next.id)}"><span>Next</span><strong>${escapeHtml(next.title)} →</strong></a>
@@ -663,4 +663,43 @@ function escapeHtml(value) {
 
 function escapeAttribute(value) {
     return escapeHtml(value).replace(/`/g, '&#096;');
+}
+
+// Cloudflare Image Transformations serve screen-sized copies of R2 images; the 3840px / 0.96 originals
+// stay untouched for the lightbox. If resizing is unavailable the img falls back to the original.
+const RESIZE_HOST = 'lookupmedia.co.kr';
+const RESIZE_WIDTHS = [960, 1600, 2400, 3840];
+const RESIZE_FALLBACK = "this.onerror=null;this.removeAttribute('srcset');this.src=this.dataset.original";
+const SIZES_COVER = '(max-aspect-ratio: 16/9) 178vh, 100vw';
+const SIZES_HALF = '(max-width: 760px) 100vw, 50vw';
+
+function resizedSources(src, sizes) {
+    if (!src || location.hostname !== RESIZE_HOST) return null;
+    const url = new URL(src, location.origin);
+    if (url.origin !== location.origin || !url.pathname.startsWith('/api/assets/')) return null;
+    const at = (width) => `/cdn-cgi/image/width=${width},quality=96,fit=scale-down,format=auto${url.pathname}`;
+    return { src: at(1600), srcset: RESIZE_WIDTHS.map((width) => `${at(width)} ${width}w`).join(', '), sizes };
+}
+
+function imageSourceAttrs(src, sizes) {
+    const resized = resizedSources(src, sizes);
+    if (!resized) return `src="${escapeAttribute(src)}"`;
+    return `src="${resized.src}" srcset="${resized.srcset}" sizes="${resized.sizes}" data-original="${escapeAttribute(src)}" onerror="${RESIZE_FALLBACK}"`;
+}
+
+function setImageSource(image, src, sizes) {
+    const resized = resizedSources(src, sizes);
+    if (!resized) {
+        image.src = src;
+        return;
+    }
+    image.dataset.original = src;
+    image.onerror = () => {
+        image.onerror = null;
+        image.removeAttribute('srcset');
+        image.src = src;
+    };
+    image.sizes = resized.sizes;
+    image.srcset = resized.srcset;
+    image.src = resized.src;
 }

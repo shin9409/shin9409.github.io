@@ -453,18 +453,8 @@ p, h1, h2, h3, h4 { margin: 0; }
     .filter-count { grid-column: 2; grid-row: 1; }
 }
 
-@media (max-width: 760px) {
-    :root { --header-h: 66px; --shell: calc(100% - 32px); --fs-xl: 2rem; --fs-lg: 1.625rem; --fs-md: 1.125rem; }
-    .site-header.is-scrolled, .site-header--solid { backdrop-filter: none; }
-    .site-nav { position: fixed; inset: 0; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end; gap: 12px; padding: 110px 16px 50px; background: var(--red); transform: translateX(100%); transition: transform .45s var(--ease); }
-    .site-nav.is-open { transform: none; }
-    .wordmark__type { height: 12px; }
-    .wordmark--footer img { width: 56px; }
-    .site-nav > span { display: contents; }
-    .site-nav a { color: #fff; font-size: clamp(2.25rem, 11vw, 3.5rem); font-weight: 600; letter-spacing: -.02em; line-height: 1.1; }
-    .site-nav a::after { display: none; }
-    .menu-toggle { position: relative; z-index: 2; display: flex; }
-    /* Phones: the cover image sits whole in a 16:9 frame under the header (letterboxed, never cropped),
+@media (max-width: 760px), (max-width: 1024px) and (orientation: portrait) {
+    /* Phones and portrait tablets: the cover image sits whole in a 16:9 frame under the header (letterboxed, never cropped),
        and the title, meta and buttons follow on the dark page below it. */
     .hero-sequence { min-height: 0; padding-top: var(--header-h); background: var(--ink); }
     .hero-sequence__media { position: relative; inset: auto; aspect-ratio: 16 / 9; overflow: hidden; background: var(--ink); }
@@ -480,6 +470,37 @@ p, h1, h2, h3, h4 { margin: 0; }
     .hero-progress { bottom: 56px; }
     .hero-progress span { width: 18px; }
     .hero-toggle { bottom: 20px; }
+    .project-hero { min-height: 0; display: block; padding-top: var(--header-h); background: var(--ink); }
+    .project-hero__media { position: relative; inset: auto; height: auto; aspect-ratio: 16 / 9; overflow: hidden; background: var(--ink); }
+    .project-hero__media img { object-fit: contain; background: var(--ink); }
+    .project-hero__shade { display: none; }
+    .project-hero__content { padding: 24px 0 48px; }
+    .project-hero__bottom { flex-wrap: wrap; align-items: center; gap: 16px 24px; margin-top: 24px; padding-top: 16px; }
+    .project-hero__meta { flex-wrap: wrap; gap: 6px 16px; }
+    /* The round mark on the image is the main play control here; the button below stays as a quieter outline (and the keyboard control). */
+    .project-hero__bottom .play-button { gap: 10px; padding: 10px 18px 10px 14px; border: 1px solid rgba(242,239,232,.4); background: transparent; color: var(--paper); font-size: var(--fs-sm); font-weight: 500; }
+    .project-hero__bottom .play-button:hover { border-color: var(--paper); background: transparent; }
+    /* Bottom-right corner of the full-width 16:9 frame (header height plus 56.25vw), so the mark never sits on a centred logo or face. */
+    .project-hero__play { left: auto; right: 16px; top: calc(var(--header-h) + 56.25vw - 16px); width: 56px; height: 56px; transform: translateY(-100%); }
+    .project-hero__play:hover, .project-hero__media:hover + .project-hero__play { transform: translateY(-100%) scale(1.06); }
+    .project-hero__play svg { width: 18px; height: 18px; }
+    /* Before main.js renders the project, the summary and the loader keep the same 16:9 frame space so the title does not jump. */
+    .detail-ssr { padding-top: 0; }
+    .detail-ssr::before { content: ''; display: block; width: 100vw; margin: var(--header-h) 0 24px calc(50% - 50vw); aspect-ratio: 16 / 9; background: var(--ink-soft); }
+    .detail-skeleton:has(> div) { place-content: start center; padding-top: calc(var(--header-h) + 56.25vw + 48px); background: linear-gradient(var(--ink-soft), var(--ink-soft)) 0 var(--header-h) / 100% 56.25vw no-repeat; }
+}
+
+@media (max-width: 760px) {
+    :root { --header-h: 66px; --shell: calc(100% - 32px); --fs-xl: 2rem; --fs-lg: 1.625rem; --fs-md: 1.125rem; }
+    .site-header.is-scrolled, .site-header--solid { backdrop-filter: none; }
+    .site-nav { position: fixed; inset: 0; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end; gap: 12px; padding: 110px 16px 50px; background: var(--red); transform: translateX(100%); transition: transform .45s var(--ease); }
+    .site-nav.is-open { transform: none; }
+    .wordmark__type { height: 12px; }
+    .wordmark--footer img { width: 56px; }
+    .site-nav > span { display: contents; }
+    .site-nav a { color: #fff; font-size: clamp(2.25rem, 11vw, 3.5rem); font-weight: 600; letter-spacing: -.02em; line-height: 1.1; }
+    .site-nav a::after { display: none; }
+    .menu-toggle { position: relative; z-index: 2; display: flex; }
     .section { padding: 96px 0; }
     .editorial-grid { grid-template-columns: 1fr; gap: 44px; }
     .work-card, .work-card:nth-child(n), .skeleton-card { grid-column: 1; }
@@ -492,24 +513,7 @@ p, h1, h2, h3, h4 { margin: 0; }
     .filter-count { margin: 4px 0 0 10px; }
     .project-hero h1 { font-size: clamp(2rem, 9vw, 2.75rem); }
     .project-hero__topline { align-items: flex-end; }
-    .project-hero { min-height: 0; display: block; padding-top: var(--header-h); background: var(--ink); }
-    .project-hero__media { position: relative; inset: auto; height: auto; aspect-ratio: 16 / 9; overflow: hidden; background: var(--ink); }
-    .project-hero__media img { object-fit: contain; background: var(--ink); }
-    .project-hero__shade { display: none; }
-    .project-hero__content { padding: 24px 0 48px; }
-    .project-hero__bottom { flex-wrap: wrap; align-items: center; gap: 16px 24px; margin-top: 24px; padding-top: 16px; }
-    .project-hero__meta { flex-wrap: wrap; gap: 6px 16px; }
-    /* The round mark on the image is the main play control here; the button below stays as a quieter outline (and the keyboard control). */
-    .project-hero__bottom .play-button { gap: 10px; padding: 10px 18px 10px 14px; border: 1px solid rgba(242,239,232,.4); background: transparent; color: var(--paper); font-size: var(--fs-sm); font-weight: 500; }
-    .project-hero__bottom .play-button:hover { border-color: var(--paper); background: transparent; }
-    /* Centre of the full-width 16:9 frame: header height plus half of 56.25vw. */
-    .project-hero__play { top: calc(var(--header-h) + 28.125vw); width: 64px; height: 64px; }
-    .project-hero__play svg { width: 20px; height: 20px; }
-    /* Before main.js renders the project, the summary and the loader keep the same 16:9 frame space so the title does not jump. */
-    .detail-ssr { padding-top: 0; }
-    .detail-ssr::before { content: ''; display: block; width: 100vw; margin: var(--header-h) 0 24px calc(50% - 50vw); aspect-ratio: 16 / 9; background: var(--ink-soft); }
     .detail-ssr h1 { font-size: clamp(2rem, 9vw, 2.75rem); }
-    .detail-skeleton:has(> div) { place-content: start center; padding-top: calc(var(--header-h) + 56.25vw + 48px); background: linear-gradient(var(--ink-soft), var(--ink-soft)) 0 var(--header-h) / 100% 56.25vw no-repeat; }
     .project-info { grid-template-columns: 1fr; gap: 56px; padding: 72px 0 96px; }
     .project-info__sticky { position: static; }
     .project-info--no-desc .project-credits { grid-column: 1; }

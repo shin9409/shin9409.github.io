@@ -681,8 +681,8 @@ function escapeAttribute(value) {
 const RESIZE_HOST = 'lookupmedia.co.kr';
 const RESIZE_WIDTHS = [960, 1600, 2400, 3840];
 const RESIZE_FALLBACK = "this.onerror=null;this.removeAttribute('srcset');this.src=this.dataset.original";
-// Phones show cover images in a full-width 16:9 frame (css/style.css, max-width 760px); wider screens fill the viewport.
-const SIZES_COVER = '(max-width: 760px) 100vw, (max-aspect-ratio: 16/9) 178vh, 100vw';
+// Phones and portrait tablets show cover images in a full-width 16:9 frame (css/style.css); wider screens fill the viewport.
+const SIZES_COVER = '(max-width: 760px) 100vw, (max-width: 1024px) and (orientation: portrait) 100vw, (max-aspect-ratio: 16/9) 178vh, 100vw';
 const SIZES_HALF = '(max-width: 760px) 100vw, 50vw';
 
 function resizedSources(src, sizes) {

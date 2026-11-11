@@ -11,6 +11,7 @@ import {
     listWorks,
     minorCategoryForContentType,
     notFound,
+    purgePublicCache,
     requireBindings,
     upsertPage,
     upsertSiteSettings,
@@ -20,7 +21,17 @@ import {
 const COOKIE_NAME = "lookup_admin";
 const SESSION_MAX_AGE = 60 * 60 * 12;
 
-export async function onRequest({ request, env, params }) {
+export async function onRequest(context) {
+    const response = await route(context);
+    const method = context.request.method.toUpperCase();
+    // A successful admin write clears this data centre's 60-second copy of the public API at once.
+    if (response.ok && method !== "GET" && context.env.DB && (await isAuthenticated(context.request, context.env))) {
+        await purgePublicCache(context.request).catch((error) => console.warn("Public API cache purge failed", error));
+    }
+    return response;
+}
+
+async function route({ request, env, params }) {
     const path = "/" + normalizePath(params.path);
     const method = request.method.toUpperCase();
 

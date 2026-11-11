@@ -90,6 +90,10 @@ p, h1, h2, h3, h4 { margin: 0; }
 .site-nav a::after { content: ''; position: absolute; left: 0; right: 100%; bottom: -6px; height: 1px; background: var(--red); transition: right .35s var(--ease); }
 .site-nav a:hover, .site-nav a[aria-current="page"] { color: var(--paper); }
 .site-nav a:hover::after, .site-nav a[aria-current="page"]::after { right: 0; }
+/* While the header is still transparent over a cover image, a soft shadow helps the menu on bright frames. */
+@media (min-width: 761px) {
+    .site-header:not(.is-scrolled):not(.site-header--solid) .site-nav a { text-shadow: 0 1px 8px rgba(0,0,0,.45); }
+}
 .menu-toggle { display: none; align-items: center; gap: 12px; border: 0; background: none; cursor: pointer; padding: 10px 0; }
 .menu-toggle__label { font-size: var(--fs-sm); font-weight: 500; }
 .menu-toggle__lines, .menu-toggle__lines::before { display: block; width: 24px; height: 1px; background: currentColor; transition: transform .3s ease; }
@@ -103,7 +107,8 @@ p, h1, h2, h3, h4 { margin: 0; }
 .hero-frame { opacity: 0; transform: scale(1.035); transition: opacity 1.2s ease, transform 7s linear; }
 .hero-frame.is-active { opacity: 1; transform: scale(1); }
 .hero-frame img { width: 100%; height: 100%; object-fit: cover; }
-.hero-sequence__shade { position: absolute; inset: 0; background: linear-gradient(100deg, rgba(0,0,0,.7) 0%, rgba(0,0,0,.2) 55%, rgba(0,0,0,.4) 100%), linear-gradient(0deg, rgba(0,0,0,.66), transparent 46%); }
+/* The first layer darkens only the top fifth so the transparent header stays readable over bright images. */
+.hero-sequence__shade { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,.7), rgba(0,0,0,.42) 8%, transparent 20%), linear-gradient(100deg, rgba(0,0,0,.7) 0%, rgba(0,0,0,.2) 55%, rgba(0,0,0,.4) 100%), linear-gradient(0deg, rgba(0,0,0,.66), transparent 46%); }
 .hero-sequence__content { position: relative; z-index: 2; width: var(--shell); min-height: 100svh; margin-inline: auto; display: flex; flex-direction: column; justify-content: flex-end; padding: 150px 0 96px; }
 /* The site-settings eyebrow repeats the wordmark, so the home hero leaves it out. */
 .hero-sequence .eyebrow { display: none; }
@@ -321,7 +326,7 @@ p, h1, h2, h3, h4 { margin: 0; }
 .project-hero__media, .project-hero__media img, .project-hero__shade { position: absolute; inset: 0; width: 100%; height: 100%; }
 .project-hero__media img { object-fit: cover; }
 .project-hero__media iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; background: #000; }
-.project-hero__shade { background: linear-gradient(0deg, rgba(0,0,0,.86), rgba(0,0,0,.35) 40%, transparent 70%), linear-gradient(90deg, rgba(0,0,0,.4), transparent 50%); }
+.project-hero__shade { background: linear-gradient(180deg, rgba(0,0,0,.7), rgba(0,0,0,.42) 8%, transparent 20%), linear-gradient(0deg, rgba(0,0,0,.86), rgba(0,0,0,.35) 40%, transparent 70%), linear-gradient(90deg, rgba(0,0,0,.4), transparent 50%); }
 .project-hero__content { position: relative; z-index: 2; width: var(--shell); margin-inline: auto; padding: 150px 0 64px; }
 .project-hero__topline { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; font-size: var(--fs-sm); text-shadow: 0 1px 10px rgba(0,0,0,.6); }
 .project-hero__back { color: rgba(255,255,255,.8); }
@@ -459,7 +464,15 @@ p, h1, h2, h3, h4 { margin: 0; }
     .site-nav a { color: #fff; font-size: clamp(2.25rem, 11vw, 3.5rem); font-weight: 600; letter-spacing: -.02em; line-height: 1.1; }
     .site-nav a::after { display: none; }
     .menu-toggle { position: relative; z-index: 2; display: flex; }
-    .hero-sequence__content { padding-bottom: 84px; }
+    /* Phones: the cover image sits whole in a 16:9 frame under the header (letterboxed, never cropped),
+       and the title, meta and buttons follow on the dark page below it. */
+    .hero-sequence { min-height: 0; padding-top: var(--header-h); background: var(--ink); }
+    .hero-sequence__media { position: relative; inset: auto; aspect-ratio: 16 / 9; overflow: hidden; background: var(--ink); }
+    .hero-frame img { object-fit: contain; background: var(--ink); }
+    .hero-sequence__shade { display: none; }
+    .hero-sequence__content { min-height: 0; justify-content: flex-start; padding: 28px 0 84px; }
+    /* The hero no longer fills the screen here, so the intro follows it more closely. */
+    .home-intro { padding-top: 56px; }
     .hero-sequence h1 { max-width: 94%; }
     .hero-sequence__actions { display: grid; gap: 28px; margin-top: 32px; }
     .hero-sequence__actions .text-link { justify-self: start; }
@@ -479,11 +492,24 @@ p, h1, h2, h3, h4 { margin: 0; }
     .filter-count { margin: 4px 0 0 10px; }
     .project-hero h1 { font-size: clamp(2rem, 9vw, 2.75rem); }
     .project-hero__topline { align-items: flex-end; }
-    .project-hero__bottom { align-items: flex-start; flex-direction: column; }
+    .project-hero { min-height: 0; display: block; padding-top: var(--header-h); background: var(--ink); }
+    .project-hero__media { position: relative; inset: auto; height: auto; aspect-ratio: 16 / 9; overflow: hidden; background: var(--ink); }
+    .project-hero__media img { object-fit: contain; background: var(--ink); }
+    .project-hero__shade { display: none; }
+    .project-hero__content { padding: 24px 0 48px; }
+    .project-hero__bottom { flex-wrap: wrap; align-items: center; gap: 16px 24px; margin-top: 24px; padding-top: 16px; }
     .project-hero__meta { flex-wrap: wrap; gap: 6px 16px; }
-    .project-hero__bottom .play-button { width: 100%; }
-    .project-hero__play { top: 40%; width: 72px; height: 72px; }
-    .project-hero__play svg { width: 22px; height: 22px; }
+    /* The round mark on the image is the main play control here; the button below stays as a quieter outline (and the keyboard control). */
+    .project-hero__bottom .play-button { gap: 10px; padding: 10px 18px 10px 14px; border: 1px solid rgba(242,239,232,.4); background: transparent; color: var(--paper); font-size: var(--fs-sm); font-weight: 500; }
+    .project-hero__bottom .play-button:hover { border-color: var(--paper); background: transparent; }
+    /* Centre of the full-width 16:9 frame: header height plus half of 56.25vw. */
+    .project-hero__play { top: calc(var(--header-h) + 28.125vw); width: 64px; height: 64px; }
+    .project-hero__play svg { width: 20px; height: 20px; }
+    /* Before main.js renders the project, the summary and the loader keep the same 16:9 frame space so the title does not jump. */
+    .detail-ssr { padding-top: 0; }
+    .detail-ssr::before { content: ''; display: block; width: 100vw; margin: var(--header-h) 0 24px calc(50% - 50vw); aspect-ratio: 16 / 9; background: var(--ink-soft); }
+    .detail-ssr h1 { font-size: clamp(2rem, 9vw, 2.75rem); }
+    .detail-skeleton:has(> div) { place-content: start center; padding-top: calc(var(--header-h) + 56.25vw + 48px); background: linear-gradient(var(--ink-soft), var(--ink-soft)) 0 var(--header-h) / 100% 56.25vw no-repeat; }
     .project-info { grid-template-columns: 1fr; gap: 56px; padding: 72px 0 96px; }
     .project-info__sticky { position: static; }
     .project-info--no-desc .project-credits { grid-column: 1; }

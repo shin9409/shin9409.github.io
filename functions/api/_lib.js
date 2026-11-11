@@ -271,13 +271,75 @@ export async function deletePage(env, slug) {
 }
 
 export async function getSiteSettings(env) {
+    return (await readSiteSettings(env)).settings;
+}
+
+// Same as getSiteSettings, but says whether the defaults stood in for a failed read, so that answer is never cached.
+export async function readSiteSettings(env) {
     try {
         const row = await env.DB.prepare("SELECT * FROM site_settings WHERE id = 1").first();
-        return row ? mapSiteSettings(row) : { ...DEFAULT_SITE_SETTINGS };
+        return { settings: row ? mapSiteSettings(row) : { ...DEFAULT_SITE_SETTINGS }, fallback: false };
     } catch (error) {
         console.warn("site_settings is not ready; using defaults", error);
-        return { ...DEFAULT_SITE_SETTINGS };
+        return { settings: { ...DEFAULT_SITE_SETTINGS }, fallback: true };
     }
+}
+
+// Public GET /api/works and /api/site are kept for 60 seconds in this data centre's edge cache (caches.default),
+// so pages don't wait on D1 for every visitor. Browsers always revalidate, so a saved change shows within 60 seconds;
+// admin writes also clear the copy in the data centre that handled the save. Admin routes and errors stay no-store.
+export const PUBLIC_CACHE_PATHS = ["/api/works", "/api/site"];
+const PUBLIC_CACHE_TTL = 60;
+const PUBLIC_BROWSER_CACHE = "public, max-age=0, must-revalidate";
+
+function edgeCache() {
+    return typeof caches !== "undefined" && caches.default ? caches.default : null;
+}
+
+// One fixed key per path: query strings and request headers never create extra copies.
+function publicCacheKey(request, path) {
+    return new Request(new URL(path, request.url).toString(), { method: "GET" });
+}
+
+// build() returns { data, cacheable }; only cacheable answers are stored, and the JSON body is exactly data.
+export async function cachedPublicJson(context, path, build) {
+    const cache = edgeCache();
+    const key = publicCacheKey(context.request, path);
+
+    if (cache) {
+        const hit = await cache.match(key).catch(() => null);
+        if (hit) {
+            const response = new Response(hit.body, hit);
+            response.headers.set("cache-control", PUBLIC_BROWSER_CACHE);
+            response.headers.set("x-lookup-cache", "HIT");
+            return response;
+        }
+    }
+
+    const { data, cacheable = true } = await build();
+    const body = JSON.stringify(data);
+    const contentType = JSON_HEADERS["content-type"];
+
+    if (cache && cacheable) {
+        const stored = new Response(body, { headers: { "content-type": contentType, "cache-control": `public, max-age=${PUBLIC_CACHE_TTL}` } });
+        const put = cache.put(key, stored).catch((error) => console.warn("Public API cache put failed", error));
+        if (typeof context.waitUntil === "function") context.waitUntil(put);
+        else await put;
+    }
+
+    return new Response(body, {
+        headers: {
+            "content-type": contentType,
+            "cache-control": cacheable ? PUBLIC_BROWSER_CACHE : "no-store",
+            "x-lookup-cache": cacheable ? "MISS" : "BYPASS"
+        }
+    });
+}
+
+export async function purgePublicCache(request) {
+    const cache = edgeCache();
+    if (!cache) return;
+    await Promise.all(PUBLIC_CACHE_PATHS.map((path) => cache.delete(publicCacheKey(request, path)).catch(() => false)));
 }
 
 export async function upsertSiteSettings(env, settings) {

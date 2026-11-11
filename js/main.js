@@ -15,10 +15,14 @@ let allWorks = [];
 let siteSettings = { ...DEFAULT_SITE_SETTINGS };
 let siteNavigation = [];
 
+// Both API requests start as soon as this script runs instead of waiting for DOMContentLoaded.
+const worksRequest = fetchWorks();
+const siteRequest = fetchSite();
+
 document.addEventListener('DOMContentLoaded', async () => {
     setupShell();
 
-    const [works, site] = await Promise.all([fetchWorks(), fetchSite()]);
+    const [works, site] = await Promise.all([worksRequest, siteRequest]);
     allWorks = works;
     siteSettings = { ...DEFAULT_SITE_SETTINGS, ...(site.settings || {}) };
     siteNavigation = site.navigation || [];
@@ -677,7 +681,8 @@ function escapeAttribute(value) {
 const RESIZE_HOST = 'lookupmedia.co.kr';
 const RESIZE_WIDTHS = [960, 1600, 2400, 3840];
 const RESIZE_FALLBACK = "this.onerror=null;this.removeAttribute('srcset');this.src=this.dataset.original";
-const SIZES_COVER = '(max-aspect-ratio: 16/9) 178vh, 100vw';
+// Phones show cover images in a full-width 16:9 frame (css/style.css, max-width 760px); wider screens fill the viewport.
+const SIZES_COVER = '(max-width: 760px) 100vw, (max-aspect-ratio: 16/9) 178vh, 100vw';
 const SIZES_HALF = '(max-width: 760px) 100vw, 50vw';
 
 function resizedSources(src, sizes) {
